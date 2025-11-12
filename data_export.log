@@ -1,0 +1,43 @@
+2025-11-10 12:17:31,004 - INFO - Created export directory: exported_data
+2025-11-10 12:17:31,022 - INFO - [OK] MongoDB connection established
+2025-11-10 12:17:31,026 - INFO - [OK] Exported 15 programs to CSV: exported_data\universities_programs.csv
+2025-11-10 12:17:31,185 - INFO - [OK] Exported 15 programs to Excel: exported_data\universities_programs.xlsx
+2025-11-10 12:17:31,190 - INFO - [OK] Exported 15 programs to JSON: exported_data\universities_programs.json
+2025-11-10 12:17:31,322 - INFO - [OK] Exported 15 programs to Excel (pandas): exported_data\universities_programs_pandas.xlsx
+2025-11-10 12:17:31,340 - INFO - [OK] MongoDB connection closed
+2025-11-10 12:20:41,475 - INFO - [OK] MongoDB connection established
+2025-11-10 12:23:04,686 - INFO - [OK] MongoDB connection established
+2025-11-10 12:23:04,689 - INFO - [OK] Exported 15 programs to CSV: exported_data\universities_programs.csv
+2025-11-10 12:23:04,791 - INFO - [OK] Exported 15 programs to Excel: exported_data\universities_programs.xlsx
+2025-11-10 12:23:04,794 - INFO - [OK] Exported 15 programs to JSON: exported_data\universities_programs.json
+2025-11-10 12:23:04,881 - INFO - [OK] Exported 15 programs to Excel (pandas): exported_data\universities_programs_pandas.xlsx
+2025-11-10 12:23:04,896 - INFO - [OK] MongoDB connection closed
+2025-11-10 12:31:46,310 - INFO - [OK] MongoDB connection established
+2025-11-10 12:31:46,312 - INFO - [OK] Exported 15 programs to CSV: exported_data\universities_programs.csv
+2025-11-10 12:31:46,398 - INFO - [OK] Exported 15 programs to Excel: exported_data\universities_programs.xlsx
+2025-11-10 12:31:46,403 - INFO - [OK] Exported 15 programs to JSON: exported_data\universities_programs.json
+2025-11-10 12:31:46,473 - INFO - [OK] Exported 15 programs to Excel (pandas): exported_data\universities_programs_pandas.xlsx
+2025-11-10 12:31:46,482 - INFO - [OK] MongoDB connection closed
+2025-11-10 13:59:38,691 - INFO - [OK] MongoDB connection established
+2025-11-10 13:59:38,692 - INFO - [OK] Exported 15 programs to CSV: exported_data\universities_programs.csv
+2025-11-10 13:59:38,741 - INFO - [OK] Exported 15 programs to Excel: exported_data\universities_programs.xlsx
+2025-11-10 13:59:38,742 - INFO - [OK] Exported 15 programs to JSON: exported_data\universities_programs.json
+2025-11-10 13:59:38,793 - INFO - [OK] Exported 15 programs to Excel (pandas): exported_data\universities_programs_pandas.xlsx
+2025-11-10 13:59:38,803 - INFO - [OK] MongoDB connection closed
+2025-11-10 14:23:27,261 - INFO - [OK] MongoDB connection established
+2025-11-10 14:23:27,263 - INFO - [OK] Exported 15 programs to CSV: exported_data\universities_programs.csv
+2025-11-10 14:23:27,311 - INFO - [OK] Exported 15 programs to Excel: exported_data\universities_programs.xlsx
+2025-11-10 14:23:27,313 - INFO - [OK] Exported 15 programs to JSON: exported_data\universities_programs.json
+2025-11-10 14:23:27,397 - INFO - [OK] Exported 15 programs to Excel (pandas): exported_data\universities_programs_pandas.xlsx
+2025-11-10 14:25:06,706 - INFO - [OK] MongoDB connection established
+2025-11-10 14:25:06,708 - INFO - [OK] Exported 15 programs to CSV: exported_data\universities_programs.csv
+2025-11-10 14:25:06,767 - INFO - [OK] Exported 15 programs to Excel: exported_data\universities_programs.xlsx
+2025-11-10 14:25:06,769 - INFO - [OK] Exported 15 programs to JSON: exported_data\universities_programs.json
+2025-11-10 14:25:06,819 - INFO - [OK] Exported 15 programs to Excel (pandas): exported_data\universities_programs_pandas.xlsx
+2025-11-10 14:25:06,826 - INFO - [OK] MongoDB connection closed
+2025-11-10 14:32:23,329 - INFO - [OK] MongoDB connection established
+2025-11-10 14:32:23,332 - INFO - [OK] Exported 100 programs to CSV: exported_data\universities_programs.csv
+2025-11-10 14:32:23,486 - INFO - [OK] Exported 100 programs to Excel: exported_data\universities_programs.xlsx
+2025-11-10 14:32:23,492 - INFO - [OK] Exported 100 programs to JSON: exported_data\universities_programs.json
+2025-11-10 14:32:23,588 - INFO - [OK] Exported 100 programs to Excel (pandas): exported_data\universities_programs_pandas.xlsx
+2025-11-10 14:32:23,601 - INFO - [OK] MongoDB connection closed
