@@ -1,0 +1,73 @@
+{
+  "summary": {
+    "total_universities": 22,
+    "completed_validations": 22,
+    "average_score": 0.61,
+    "score_distribution": {
+      "excellent": 0,
+      "good": 2,
+      "needs_improvement": 20,
+      "critical_issues": 0
+    }
+  },
+  "issues": {
+    "total_issues": 54,
+    "by_category": {
+      "program_fees": 20,
+      "data_completeness": 22,
+      "program_descriptions": 12
+    },
+    "top_issues": [
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "data_completeness: .1%",
+      "data_completeness: .1%",
+      "program_descriptions: .1%",
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "program_descriptions: .1%",
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "program_descriptions: .1%",
+      "program_fees: .1%"
+    ]
+  },
+  "recommendations": [
+    "Improve data completeness by adding missing fields",
+    "Add university ranking information from QS, THE, or US News"
+  ],
+  "milestones": {
+    "University of Oxford": {
+      "university_name": "University of Oxford",
+      "university_id": "034e4add99a2",
+      "status": "completed",
+      "score": 0.6428571428571429,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T12:21:00.197343"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T12:21:00.197382"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T12:21:00.197397"
+        },
+        "university_id_format": {
+          "passed": 

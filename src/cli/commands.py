@@ -294,16 +294,14 @@ def config(ctx):
 • Collection: {settings.database.collection_name}
 
 [green]LLM Service:[/green]
-• Model: {settings.llm.model_name}
+• Model: {settings.llm.model}
 • Timeout: {settings.llm.timeout}s
 • Max Retries: {settings.llm.max_retries}
 
 [green]Scraping:[/green]
 • Timeout: {settings.scraping.timeout}s
 • Max Concurrent: {settings.scraping.max_concurrent_requests}
-• Rate Limit Delay: {settings.scraping.rate_limit_delay}s
-
-[green]Logging:[/green]
+    • Rate Limit Delay: {settings.scraping.retry_backoff_factor}s[green]Logging:[/green]
 • Level: {settings.logging.level}
 • File: {settings.logging.file_path or 'console only'}
     """)

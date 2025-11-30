@@ -26,15 +26,21 @@ class TestSettings:
         """Test LLM settings with default values."""
         from src.core.config import settings
         llm_settings = settings.llm
-        assert llm_settings.model == "llama3-70b-8192"
-        assert llm_settings.timeout == 30
+        assert llm_settings.provider == "groq"
         assert llm_settings.max_retries == 3
+        assert llm_settings.temperature == 0.1
+        # Test nested provider settings
+        assert llm_settings.groq.model == "llama3-70b-8192"
+        assert llm_settings.groq.timeout == 30
+        assert llm_settings.deepseek.model == "deepseek-chat"
+        assert llm_settings.deepseek.timeout == 30
 
     @patch.dict('os.environ', {
         'MONGO_CONNECTION_STRING': 'mongodb://test:27017',
         'DATABASE_NAME': 'test_db',
         'GROQ_API_KEY': 'test_key',
-        'GROQ_MODEL': 'test-model'
+        'GROQ_MODEL': 'test-model',
+        'DEEPSEEK_API_KEY': 'deepseek_test_key'
     })
     def test_settings_from_env(self):
         """Test settings loaded from environment variables."""
@@ -42,20 +48,32 @@ class TestSettings:
         from pydantic_settings import BaseSettings, SettingsConfigDict
         from pydantic import Field
         
+        class TestGroqSettings(BaseSettings):
+            api_key: str = Field("", alias="GROQ_API_KEY")
+            model: str = Field("llama3-70b-8192", alias="GROQ_MODEL")
+            timeout: int = Field(30, alias="GROQ_TIMEOUT")
+            model_config = SettingsConfigDict(case_sensitive=False, env_prefix="", extra="ignore")
+
+        class TestDeepSeekSettings(BaseSettings):
+            api_key: str = Field("", alias="DEEPSEEK_API_KEY")
+            model: str = Field("deepseek-chat", alias="DEEPSEEK_MODEL")
+            timeout: int = Field(30, alias="DEEPSEEK_TIMEOUT")
+            model_config = SettingsConfigDict(case_sensitive=False, env_prefix="", extra="ignore")
+
+        class TestLLMSettings(BaseSettings):
+            provider: str = Field("groq", alias="LLM_PROVIDER")
+            max_retries: int = Field(3)
+            temperature: float = Field(0.1)
+            groq: TestGroqSettings = Field(default_factory=TestGroqSettings)
+            deepseek: TestDeepSeekSettings = Field(default_factory=TestDeepSeekSettings)
+            model_config = SettingsConfigDict(case_sensitive=False, env_prefix="", extra="ignore")
+
         class TestDatabaseSettings(BaseSettings):
             connection_string: str = Field("mongodb://localhost:27017", alias="MONGO_CONNECTION_STRING")
             database_name: str = Field("university_db", alias="DATABASE_NAME")
             collection_name: str = Field("programs", alias="COLLECTION_NAME")
             connection_timeout: int = 30
             max_pool_size: int = 10
-            model_config = SettingsConfigDict(case_sensitive=False, env_prefix="", extra="ignore")
-
-        class TestLLMSettings(BaseSettings):
-            api_key: str = Field("", alias="GROQ_API_KEY")
-            model: str = Field("llama3-70b-8192", alias="GROQ_MODEL")
-            timeout: int = Field(30, alias="LLM_TIMEOUT")
-            max_retries: int = 3
-            temperature: float = 0.1
             model_config = SettingsConfigDict(case_sensitive=False, env_prefix="", extra="ignore")
 
         class TestSettings(BaseSettings):
@@ -67,8 +85,9 @@ class TestSettings:
         
         assert test_settings.database.connection_string == "mongodb://test:27017"
         assert test_settings.database.database_name == "test_db"
-        assert test_settings.llm.api_key == "test_key"
-        assert test_settings.llm.model == "test-model"
+        assert test_settings.llm.groq.api_key == "test_key"
+        assert test_settings.llm.groq.model == "test-model"
+        assert test_settings.llm.deepseek.api_key == "deepseek_test_key"
 
     def test_settings_paths(self):
         """Test settings path properties."""

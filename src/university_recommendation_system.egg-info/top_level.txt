@@ -1,0 +1,7 @@
+analyzers
+cli
+core
+database
+models
+scrapers
+services

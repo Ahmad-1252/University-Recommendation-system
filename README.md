@@ -77,8 +77,245 @@ python scripts/monitor_quality.py
 
 ### 4. Interactive Dashboard
 ```bash
+# Using the launcher script (recommended)
+./urs.bat dashboard
+# or
+./urs.ps1 dashboard
+
+# Using Python module directly
 python -m src.cli.commands dashboard
 ```
+
+## 🔄 How the System Works
+
+### Architecture Overview
+
+The University Recommendation System follows a modular, layered architecture designed for scalability and maintainability:
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   CLI Layer     │    │ Service Layer   │    │  Data Layer     │
+│                 │    │                 │    │                 │
+│ • Commands      │◄──►│ • LLM Service   │◄──►│ • MongoDB       │
+│ • Dashboard     │    │ • Validation    │    │ • Repositories  │
+│ • Data Viewer   │    │ • Enrichment    │    │ • Models        │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         ▲                       ▲                       ▲
+         │                       │                       │
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ Scraping Layer  │    │ Analysis Layer  │    │ Config Layer    │
+│                 │    │                 │    │                 │
+│ • Base Scraper  │    │ • Quality       │    │ • Pydantic      │
+│ • Content Ext.  │    │ • Statistics    │    │ • Environment   │
+│ • Link Discovery│    │ • Metrics       │    │ • Constants     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### Data Flow Pipeline
+
+1. **URL Discovery & Validation**
+   - Input: University website URLs
+   - Process: Link discovery using crawl4ai
+   - Output: Valid program page URLs
+
+2. **Content Extraction**
+   - Input: Valid program URLs
+   - Process: LLM-powered extraction with structured prompts
+   - Output: Raw program data with confidence scores
+
+3. **Data Validation & Enrichment**
+   - Input: Raw extracted data
+   - Process: Pydantic validation + business logic enrichment
+   - Output: Validated UniversityProgram objects
+
+4. **Storage & Indexing**
+   - Input: Validated program data
+   - Process: MongoDB storage with indexing
+   - Output: Persistent, queryable data
+
+5. **Analysis & Export**
+   - Input: Stored program data
+   - Process: Quality analysis and multi-format export
+   - Output: Insights and downloadable datasets
+
+### Core Components Deep Dive
+
+#### 1. Data Models (`src/models/university.py`)
+
+The system uses Pydantic v2 for robust data validation and type safety:
+
+```python
+class UniversityProgram(BaseModel):
+    # Core identification
+    university_name: str
+    program_name: str
+    degree_type: DegreeType
+
+    # Academic requirements
+    gpa_requirement_min: Optional[float]
+    language_requirements: LanguageProficiency
+
+    # Financial information
+    tuition_fees: TuitionFees
+
+    # Rankings and metadata
+    rankings: Rankings
+    confidence_score: float  # 0.0-1.0
+    data_completeness: float  # Auto-calculated
+```
+
+**Key Features:**
+- **Enum Validation**: Degree types, university tiers
+- **Field Validators**: GPA ranges, URL formats
+- **Model Validators**: Auto-calculates data completeness
+- **JSON Encoding**: Custom serializers for datetime/URLs
+
+#### 2. Scraping Engine (`src/scrapers/`)
+
+**Base Scraper (`base_scraper.py`)**:
+- Abstract base class with common scraping functionality
+- Rate limiting and retry logic
+- Concurrent processing with semaphores
+- Error handling and logging
+
+**University Scraper (`university_scraper.py`)**:
+```python
+async def scrape_program_data(self, url: str) -> Optional[UniversityProgram]:
+    # 1. URL validation
+    if not await self.validate_url(url):
+        return None
+
+    # 2. Create LLM extraction strategy
+    extraction_strategy = self.content_extractor.create_extraction_strategy()
+
+    # 3. Perform crawl with extraction
+    result = await crawler.arun(url=url, extraction_strategy=extraction_strategy)
+
+    # 4. Process and validate extracted data
+    if result.extracted_content:
+        program = UniversityProgram(**result.extracted_content[0])
+        program = self._enrich_program_data(program)
+        return program
+```
+
+**Content Extractor (`content_extractor.py`)**:
+- Uses Groq LLM with structured prompts
+- Caches responses to reduce API calls
+- Handles extraction failures gracefully
+- Provides confidence scoring
+
+#### 3. LLM Integration (`src/services/llm_service.py`)
+
+**Groq API Integration**:
+```python
+class LLMService:
+    def __init__(self):
+        self.client = Groq(api_key=settings.llm.api_key)
+        self.model = settings.llm.model  # llama3-70b-8192
+        self.temperature = 0.1  # Low for consistent extraction
+
+    async def extract_program_data(self, content: str) -> Dict[str, Any]:
+        prompt = LLM_PROMPTS["program_extraction"].format(content=content)
+        response = await self.client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.temperature
+        )
+        return self._parse_response(response)
+```
+
+**Prompt Engineering**:
+- Structured prompts for consistent extraction
+- Field-specific instructions
+- Confidence scoring guidelines
+- Error handling for malformed responses
+
+#### 4. Database Layer (`src/database/`)
+
+**Repository Pattern**:
+```python
+class ProgramRepository:
+    def save(self, program: UniversityProgram) -> bool:
+        # Convert to dict and save to MongoDB
+        doc = program.model_dump()
+        result = self.collection.insert_one(doc)
+        return result.acknowledged
+
+    def find_by_university(self, university: str) -> List[UniversityProgram]:
+        # Query with indexing support
+        docs = self.collection.find({"university_name": university})
+        return [UniversityProgram(**doc) for doc in docs]
+```
+
+**Indexing Strategy**:
+- Compound indexes on university + program
+- Text indexes for search functionality
+- Geospatial indexes for location queries
+
+#### 5. CLI Interface (`src/cli/`)
+
+**Command Structure**:
+```python
+@click.group()
+def cli():
+    """University Recommendation System CLI"""
+
+@cli.command()
+def scrape():
+    """Scrape program data from URLs"""
+    # Implementation
+
+@cli.command()
+def analyze():
+    """Analyze data quality"""
+    # Implementation
+```
+
+**Interactive Dashboard**:
+- Real-time system monitoring
+- Data visualization with Rich
+- Interactive menus and navigation
+- Live statistics updates
+
+### Configuration Management
+
+**Pydantic Settings** (`src/core/config.py`):
+```python
+class Settings(BaseSettings):
+    # Database configuration
+    database: DatabaseSettings
+
+    # LLM configuration
+    llm: LLMSettings
+
+    # Scraping parameters
+    scraping: ScrapingSettings
+
+    # Application metadata
+    app_name: str = "University Recommendation System"
+    version: str = "1.0.0"
+```
+
+**Environment Variables**:
+- Automatic loading from `.env` files
+- Type validation and conversion
+- Hierarchical configuration structure
+
+### Quality Assurance Pipeline
+
+1. **Data Validation**: Pydantic model validation
+2. **Schema Compliance**: Required field checking
+3. **Confidence Scoring**: LLM-based accuracy assessment
+4. **Completeness Analysis**: Automated gap detection
+5. **Duplicate Detection**: Hash-based deduplication
+
+### Performance Optimizations
+
+- **Async Processing**: Concurrent URL scraping
+- **Response Caching**: LLM API call reduction
+- **Batch Operations**: Bulk database inserts
+- **Rate Limiting**: Respectful web scraping
+- **Connection Pooling**: Efficient database connections
 
 ## 📊 Data Structure
 
@@ -109,7 +346,7 @@ python -m src.cli.commands dashboard
     "duration_years": 2.0,
     "program_description": "Comprehensive CS program...",
     "specializations": ["AI", "Systems", "Theory"],
-    "research_interests": ["Machine Learning", "Computer Vision"],
+    "faculty_research_interests": ["Machine Learning", "Computer Vision"],
 
     # Rankings & Reputation
     "rankings": {
@@ -132,142 +369,196 @@ python -m src.cli.commands dashboard
 university-recommendation-system/
 ├── src/
 │   ├── core/                 # Configuration & shared utilities
-│   │   ├── config.py        # Pydantic settings
-│   │   ├── constants.py     # URLs, metadata, enums
-│   │   └── exceptions.py    # Custom exceptions
-│   ├── models/              # Data models
-│   │   └── university.py    # Pydantic models
-│   ├── database/            # Data persistence
+│   │   ├── config.py        # Pydantic settings management
+│   │   ├── constants.py     # URLs, prompts, enums
+│   │   ├── exceptions.py    # Custom exception classes
+│   │   └── __init__.py
+│   ├── models/              # Data models & validation
+│   │   ├── university.py    # Pydantic program models
+│   │   └── __init__.py
+│   ├── database/            # Data persistence layer
 │   │   ├── mongodb.py       # Connection management
-│   │   └── repositories.py  # Repository pattern
-│   ├── scrapers/            # Web scraping logic
-│   │   ├── base_scraper.py  # Abstract scraper
-│   │   ├── university_scraper.py  # Main scraper
-│   │   ├── content_extractor.py   # LLM extraction
-│   │   └── link_discoverer.py     # Link discovery
-│   ├── services/            # Business logic
+│   │   ├── repositories.py  # Repository pattern implementation
+│   │   └── __init__.py
+│   ├── scrapers/            # Web scraping components
+│   │   ├── base_scraper.py  # Abstract scraper base class
+│   │   ├── university_scraper.py  # Main scraping logic
+│   │   ├── content_extractor.py   # LLM-powered extraction
+│   │   ├── link_discoverer.py     # Link discovery & validation
+│   │   └── __init__.py
+│   ├── services/            # Business logic services
 │   │   ├── llm_service.py   # Groq API client
-│   │   ├── validation_service.py  # Data validation
-│   │   └── enrichment_service.py  # Data enrichment
-│   ├── analyzers/           # Data analysis
-│   │   └── quality_analyzer.py    # Quality metrics
-│   └── cli/                 # Command-line interface
-│       ├── dashboard.py     # Interactive dashboard
-│       ├── data_viewer.py   # Data browser
-│       └── commands.py      # CLI commands
-├── scripts/                 # Executable scripts
-│   ├── run_scraper.py       # Main scraping script
-│   ├── monitor_quality.py   # Quality monitoring
-│   └── validate_urls.py     # URL validation
+│   │   ├── validation_service.py  # Data validation logic
+│   │   ├── enrichment_service.py  # Data enrichment
+│   │   └── __init__.py
+│   ├── analyzers/           # Data analysis tools
+│   │   ├── quality_analyzer.py    # Quality metrics & reporting
+│   │   └── __init__.py
+│   ├── cli/                 # Command-line interface
+│   │   ├── commands.py      # CLI command definitions
+│   │   ├── dashboard.py     # Interactive dashboard
+│   │   ├── data_viewer.py   # Data browsing interface
+│   │   └── __init__.py
+│   └── __init__.py
+├── scripts/                 # Executable utility scripts
+│   ├── run_scraper.py       # Main scraping execution
+│   ├── validate_urls.py     # URL validation utility
+│   ├── monitor_quality.py   # Quality monitoring script
+│   ├── data_exporter.py     # Data export utilities
+│   └── ...
 ├── tests/                   # Test suite
-├── data/                    # Data files
-│   └── exports/            # Exported data
-├── logs/                   # Application logs
-├── docs/                   # Documentation
-├── .env.example           # Environment template
-├── pyproject.toml         # Project configuration
-├── setup.py              # Package setup
-└── requirements.txt      # Dependencies
+│   ├── test_core.py         # Core functionality tests
+│   ├── test_database.py     # Database layer tests
+│   ├── test_export.py       # Export functionality tests
+│   ├── test_models.py       # Data model tests
+│   ├── test_scrapers/       # Scraping tests
+│   └── ...
+├── data/                    # Data files and exports
+│   ├── raw/                 # Raw scraped data
+│   ├── processed/           # Processed datasets
+│   └── exports/             # Export files
+├── logs/                    # Application logs
+├── docs/                    # Documentation
+├── .env.example            # Environment configuration template
+├── pyproject.toml          # Project configuration & dependencies
+├── setup.py               # Package setup script
+├── requirements.txt       # Python dependencies
+├── .gitignore            # Git ignore rules
+└── README.md             # This file
 ```
 
 ## 🎮 CLI Usage
+
+### Quick Start
+The system provides convenient launcher scripts for easy CLI access:
+
+**Windows Batch Script (recommended for Windows):**
+```cmd
+./urs.bat --help
+./urs.bat dashboard
+./urs.bat scrape https://example-university.edu
+```
+
+**PowerShell Script:**
+```powershell
+./urs.ps1 --help
+./urs.ps1 dashboard
+./urs.ps1 scrape https://example-university.edu
+```
+
+**Direct Python Module (alternative):**
+```bash
+python -m src.cli.commands --help
+python -m src.cli.commands dashboard
+python -m src.cli.commands scrape https://example-university.edu
+```
 
 ### Interactive Dashboard
 ```bash
 urs dashboard
 ```
 Features:
-- Real-time system status
-- Data overview and statistics
-- Recent activity monitoring
-- Quick action menu
+- Real-time system status monitoring
+- Data overview with statistics
+- Recent activity logs
+- Quick action menu navigation
 
 ### Data Viewer
 ```bash
-urs view
+# Using launcher script
+./urs.bat view
+
+# Using Python module directly
+python -m src.cli.commands view
 ```
 Capabilities:
-- Search programs by keywords
-- Browse by university
+- Search programs by keywords or filters
+- Browse by university or country
 - View detailed program information
 - Export filtered results
 
 ### Search Programs
 ```bash
-# Search by query
-urs search "machine learning"
+# Using launcher script
+./urs.bat search "machine learning"
+./urs.bat search --country "Germany" "computer science"
 
-# Filter by country
-urs search --country "Germany" "computer science"
-
-# Filter by degree type
-urs search --degree "Master of Science" "AI"
+# Using Python module directly
+python -m src.cli.commands search "machine learning"
+python -m src.cli.commands search --country "Germany" "computer science"
 ```
 
 ### Scrape Data
 ```bash
-# Scrape specific URLs
-urs scrape https://cs.stanford.edu/ https://cs.berkeley.edu/
+# Using launcher script
+./urs.bat scrape https://cs.stanford.edu/
+./urs.bat scrape --file urls.txt --concurrent 3
 
-# Scrape from file
-urs scrape --file urls.txt
-
-# Control concurrency
-urs scrape --concurrent 3 urls.txt
+# Using Python module directly
+python -m src.cli.commands scrape https://cs.stanford.edu/
+python -m src.cli.commands scrape --file urls.txt --concurrent 3
 ```
 
 ### Validate URLs
 ```bash
-urs validate https://cs.stanford.edu/
-urs validate --file university_urls.txt
+# Using launcher script
+./urs.bat validate https://cs.stanford.edu/
+./urs.bat validate --file university_urls.txt
+
+# Using Python module directly
+python -m src.cli.commands validate https://cs.stanford.edu/
+python -m src.cli.commands validate --file university_urls.txt
 ```
 
 ### Export Data
 ```bash
-# Export all data
-urs export
+# Using launcher script
+./urs.bat export
+./urs.bat export --format csv --format json --output ./my_exports
 
-# Export specific formats
-urs export --format csv --format json
-
-# Custom output directory
-urs export --output ./my_exports
+# Using Python module directly
+python -m src.cli.commands export
+python -m src.cli.commands export --format csv --format json --output ./my_exports
 ```
 
 ### Quality Analysis
 ```bash
-urs analyze
+# Using launcher script
+./urs.bat analyze
+
+# Using Python module directly
+python -m src.cli.commands analyze
 ```
 Provides:
-- Data completeness metrics
+- Data completeness metrics (0-100%)
 - Quality score analysis
-- Coverage statistics
+- Coverage statistics by university/country
 - Improvement recommendations
 
 ## 🔧 Configuration
 
 ### Environment Variables
 ```env
-# Database
+# Database Configuration
 MONGO_CONNECTION_STRING=mongodb://localhost:27017
 DATABASE_NAME=university_db
 COLLECTION_NAME=programs
 
-# LLM Service
+# LLM Service Configuration
 GROQ_API_KEY=your_key_here
 GROQ_MODEL=llama3-70b-8192
 LLM_TIMEOUT=30
 
-# Scraping
+# Scraping Parameters
 SCRAPE_TIMEOUT=30
 MAX_CONCURRENT_REQUESTS=5
 RATE_LIMIT_DELAY=2.0
 
-# Logging
+# Logging Configuration
 LOG_LEVEL=INFO
 LOG_FILE_PATH=logs/app.log
 
-# Export
+# Export Settings
 EXPORT_DIR=data/exports
 ```
 

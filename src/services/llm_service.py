@@ -1,55 +1,136 @@
-"""LLM service for Groq API integration."""
+"""LLM service with provider abstraction and enhanced features."""
 
 import asyncio
 import logging
 from typing import Dict, List, Optional, Any
-from groq import Groq
 import hashlib
 import json
 
 from ..core.config import get_settings
-from ..core.exceptions import GroqAPIError, RateLimitError
+from ..core.exceptions import (
+    GroqAPIError,
+    RateLimitError,
+    DeepSeekAPIError,
+    ErrorContext,
+    NetworkError,
+    TimeoutError
+)
 from ..core.constants import LLM_PROMPTS
+from ..core.retry import retry_with_backoff, RetryConfig
+from ..core.circuit_breaker import get_circuit_breaker, CircuitBreakerConfig
+from .llm import LLMProviderFactory, LLMProvider, LLMResponse, LLMError
 
 logger = logging.getLogger(__name__)
 
 
 class LLMService:
-    """Service for handling Groq LLM API interactions."""
+    """Enhanced LLM service with provider abstraction and caching."""
 
-    def __init__(self):
+    def __init__(self, provider: Optional[LLMProvider] = None, use_cache: bool = True):
         self.settings = get_settings()
-        self.client = Groq(api_key=self.settings.llm.api_key)
-        self.model = self.settings.llm.model
-        self.timeout = self.settings.llm.timeout
+
+        # Initialize provider (deferred to avoid event loop issues)
+        self._provider = provider
+        self._provider_initialized = provider is not None
+
+        # Legacy settings for backward compatibility (will be set after provider init)
+        self.model = "unknown"
+        self.timeout = 30
         self.max_retries = self.settings.llm.max_retries
         self.temperature = self.settings.llm.temperature
         self.rate_limit_delay = 1.0  # Default rate limit delay
 
-        # Response cache
-        self._cache: Dict[str, Dict[str, Any]] = {}
-        self._cache_enabled = True
+        # Initialize cache if requested
+        self._cache = None
+        self._cache_enabled = False
+        if use_cache:
+            try:
+                from .cache import CacheFactory
+                self._cache = CacheFactory.create_cache()
+                self._cache_enabled = True
+                logger.info("LLM service cache initialized")
+            except Exception as e:
+                logger.warning(f"Failed to initialize cache: {e}")
+
+        # Initialize circuit breaker for API calls
+        self._circuit_breaker = None
+        if self.settings.error_handling.enable_circuit_breakers:
+            try:
+                circuit_config = CircuitBreakerConfig(
+                    failure_threshold=self.settings.error_handling.circuit_failure_threshold,
+                    recovery_timeout=self.settings.error_handling.circuit_recovery_timeout,
+                    success_threshold=self.settings.error_handling.circuit_success_threshold,
+                    timeout=self.settings.error_handling.circuit_timeout,
+                    name="llm_api"
+                )
+                self._circuit_breaker = get_circuit_breaker("llm_api", circuit_config)
+                logger.info("LLM service circuit breaker initialized")
+            except Exception as e:
+                logger.warning(f"Failed to initialize circuit breaker: {e}")
+
+        # Cache namespaces
+        self._namespaces = {
+            "completions": "llm:completions",
+            "extractions": "llm:extractions",
+            "validations": "llm:validations",
+            "summaries": "llm:summaries"
+        }
+
+    @property
+    def provider(self) -> LLMProvider:
+        """Get the LLM provider, initializing it if necessary."""
+        if not self._provider_initialized:
+            # For now, create a simple provider directly to avoid async issues
+            # In production, this should be initialized asynchronously
+            try:
+                self._provider = LLMProviderFactory.create_provider()
+                self._provider_initialized = True
+
+                # Update legacy settings
+                self.model = self._provider.model
+                self.timeout = self._provider.timeout
+
+                logger.info(f"Initialized LLM service with provider: {self._provider.name}")
+            except ValueError as e:
+                logger.error(f"Failed to initialize LLM provider: {e}")
+                raise
+        return self._provider
+
+    @provider.setter
+    def provider(self, value: LLMProvider) -> None:
+        """Set the LLM provider."""
+        self._provider = value
+        self._provider_initialized = True
+        self.model = value.model
+        self.timeout = value.timeout
 
     def enable_cache(self) -> None:
         """Enable response caching."""
-        self._cache_enabled = True
-        logger.info("LLM response caching enabled")
+        if self._cache:
+            self._cache_enabled = True
+            logger.info("LLM response caching enabled")
+        else:
+            logger.warning("Cache backend not available")
 
     def disable_cache(self) -> None:
         """Disable response caching."""
         self._cache_enabled = False
         logger.info("LLM response caching disabled")
 
-    def clear_cache(self) -> None:
+    async def clear_cache(self) -> None:
         """Clear the response cache."""
-        self._cache.clear()
-        logger.info("LLM response cache cleared")
+        if self._cache:
+            await self._cache.clear()
+            logger.info("LLM response cache cleared")
+        else:
+            logger.warning("Cache backend not available")
 
     def _get_cache_key(self, prompt: str, **kwargs) -> str:
         """Generate cache key from prompt and parameters."""
         key_data = {
             "prompt": prompt,
-            "model": self.model,
+            "provider": self.provider.name,
+            "model": self.provider.model,
             **kwargs
         }
         key_string = json.dumps(key_data, sort_keys=True)
@@ -61,7 +142,7 @@ class LLMService:
                                 max_tokens: Optional[int] = None,
                                 **kwargs) -> str:
         """
-        Generate a completion using the Groq API.
+        Generate a completion using the configured LLM provider.
 
         Args:
             prompt: The prompt to send to the LLM
@@ -73,74 +154,136 @@ class LLMService:
             Generated text response
 
         Raises:
-            GroqAPIError: If API call fails
-            RateLimitError: If rate limit is exceeded
+            GroqAPIError: Legacy exception for backward compatibility
+            DeepSeekAPIError: For DeepSeek provider errors
+            RateLimitError: When rate limits are exceeded
+            NetworkError: For network-related issues
         """
         # Check cache first
-        cache_key = self._get_cache_key(prompt, temperature=temperature, max_tokens=max_tokens, **kwargs)
-
-        if self._cache_enabled and cache_key in self._cache:
-            cached_response = self._cache[cache_key]
-            logger.debug("Using cached LLM response")
-            return cached_response["response"]
-
-        # Prepare API call parameters
-        api_params = {
-            "model": self.model,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": temperature,
-            "max_tokens": max_tokens,
-        }
-
-        # Remove None values
-        api_params = {k: v for k, v in api_params.items() if v is not None}
-
-        # Add any additional kwargs
-        api_params.update(kwargs)
-
-        for attempt in range(self.max_retries + 1):
+        if self._cache_enabled and self._cache:
+            cache_key = self._get_cache_key(prompt, temperature=temperature, max_tokens=max_tokens, **kwargs)
             try:
-                logger.debug(f"Making LLM API call (attempt {attempt + 1})")
+                cached_response = await self._cache.get(cache_key, self._namespaces["completions"])
+                if cached_response is not None:
+                    logger.debug("Using cached LLM response")
+                    return cached_response
+            except Exception as e:
+                logger.debug(f"Cache retrieval failed: {e}")
 
-                response = await asyncio.get_event_loop().run_in_executor(
-                    None,
-                    lambda: self.client.chat.completions.create(**api_params)
+        # Cache miss - use retry framework with circuit breaker
+        async def _api_call() -> str:
+            """Make the actual API call with error handling."""
+            try:
+                logger.debug(f"Making LLM API call with provider {self.provider.name}")
+
+                # Use provider's extract_program_data method (adapted for general completion)
+                full_prompt = f"Please respond to the following request:\n\n{prompt}"
+
+                response: LLMResponse = await self.provider.extract_program_data(
+                    content="",  # Empty content for general completion
+                    prompt=full_prompt
                 )
 
-                generated_text = response.choices[0].message.content
-
-                # Cache the response
-                if self._cache_enabled:
-                    self._cache[cache_key] = {
-                        "response": generated_text,
-                        "timestamp": asyncio.get_event_loop().time()
-                    }
+                generated_text = response.content
 
                 # Rate limiting delay
                 await asyncio.sleep(self.rate_limit_delay)
 
                 return generated_text
 
-            except Exception as e:
-                error_msg = str(e).lower()
+            except LLMError as e:
+                # Convert LLMError to appropriate BaseError
+                error_context = ErrorContext(
+                    operation="generate_completion",
+                    component=f"llm_provider_{self.provider.name}",
+                    metadata={
+                        "provider": self.provider.name,
+                        "model": self.provider.model,
+                        "prompt_length": len(prompt)
+                    }
+                )
 
-                if "rate limit" in error_msg:
-                    if attempt < self.max_retries:
-                        delay = (2 ** attempt) * 2  # Exponential backoff
-                        logger.warning(f"Rate limit hit, retrying in {delay}s")
-                        await asyncio.sleep(delay)
-                        continue
+                if e.error_type == "rate_limit":
+                    raise RateLimitError(
+                        f"Rate limit exceeded: {e.message}",
+                        context=error_context
+                    ) from e
+                elif e.error_type == "timeout":
+                    raise TimeoutError(
+                        f"Request timeout: {e.message}",
+                        context=error_context
+                    ) from e
+                elif e.error_type == "network":
+                    raise NetworkError(
+                        f"Network error: {e.message}",
+                        context=error_context
+                    ) from e
+                else:
+                    # Provider-specific errors
+                    if "groq" in self.provider.name.lower():
+                        raise GroqAPIError(
+                            f"Groq API error: {e.message}",
+                            context=error_context
+                        ) from e
+                    elif "deepseek" in self.provider.name.lower():
+                        raise DeepSeekAPIError(
+                            f"DeepSeek API error: {e.message}",
+                            context=error_context
+                        ) from e
                     else:
-                        raise RateLimitError("Rate limit exceeded, max retries reached") from e
+                        raise GroqAPIError(
+                            f"LLM API error: {e.message}",
+                            context=error_context
+                        ) from e
 
-                if attempt == self.max_retries:
-                    logger.error(f"LLM API call failed after {self.max_retries + 1} attempts: {e}")
-                    raise GroqAPIError(f"LLM API call failed: {e}") from e
+        try:
+            # Configure retry policy
+            retry_config = RetryConfig(
+                max_attempts=self.settings.error_handling.default_max_retries,
+                initial_delay=self.settings.error_handling.default_retry_delay,
+                max_delay=self.settings.error_handling.default_max_retry_delay,
+                backoff_factor=self.settings.error_handling.default_backoff_factor,
+                retryable_errors=["API_002", "API_003", "API_004", "NET_001", "NET_002"]  # API and network errors
+            )
 
-                # Exponential backoff for other errors
-                delay = 2 ** attempt
-                logger.warning(f"LLM API call failed (attempt {attempt + 1}), retrying in {delay}s: {e}")
-                await asyncio.sleep(delay)
+            # Execute with retry and circuit breaker
+            if self._circuit_breaker:
+                # Use circuit breaker retry
+                from ..core.retry import CircuitBreakerRetry
+                retry_policy = CircuitBreakerRetry(retry_config, self._circuit_breaker)
+                generated_text = await retry_policy.execute(_api_call)
+            else:
+                # Use simple exponential backoff retry
+                generated_text = await retry_with_backoff(
+                    _api_call,
+                    max_attempts=retry_config.max_attempts,
+                    initial_delay=retry_config.initial_delay,
+                    backoff_factor=retry_config.backoff_factor,
+                    max_delay=retry_config.max_delay,
+                    retryable_errors=retry_config.retryable_errors
+                )
+
+            # Cache the response if caching is enabled
+            if self._cache_enabled and self._cache:
+                try:
+                    cache_key = self._get_cache_key(prompt, temperature=temperature, max_tokens=max_tokens, **kwargs)
+                    await self._cache.set(cache_key, generated_text, None, self._namespaces["completions"])
+                    logger.debug("Cached LLM response")
+                except Exception as e:
+                    logger.debug(f"Cache storage failed: {e}")
+
+            return generated_text
+
+        except RateLimitError:
+            # Re-raise rate limit errors as-is
+            raise
+        except (GroqAPIError, DeepSeekAPIError):
+            # Re-raise provider-specific errors as-is for backward compatibility
+            raise
+        except Exception as e:
+            # Wrap any other errors
+            logger.error(f"Unexpected error in generate_completion: {e}")
+            raise GroqAPIError(f"LLM completion failed: {str(e)}") from e
 
     async def extract_structured_data(self,
                                     content: str,
@@ -190,6 +333,61 @@ class LLMService:
         except Exception as e:
             logger.error(f"Structured data extraction failed: {e}")
             raise GroqAPIError(f"Data extraction failed: {e}") from e
+
+    async def extract_program_data(self,
+                                 content: str,
+                                 prompt: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Extract program data using the LLM provider.
+
+        Args:
+            content: Web page content to analyze
+            prompt: Custom extraction prompt
+
+        Returns:
+            Extracted program data as dict
+        """
+        if prompt is None:
+            prompt = LLM_PROMPTS["program_extraction"]
+
+        try:
+            response: LLMResponse = await self.provider.extract_program_data(content, prompt)
+
+            # Try to parse the response as JSON
+            try:
+                data = json.loads(response.content)
+                # Add metadata
+                data["_metadata"] = {
+                    "confidence_score": response.confidence_score,
+                    "provider": response.provider_name,
+                    "model": response.model_name,
+                    "tokens_used": response.tokens_used,
+                    "processing_time": response.processing_time
+                }
+                return data
+            except json.JSONDecodeError:
+                logger.warning("LLM response is not valid JSON, attempting to extract JSON from text")
+                # Try to extract JSON from the response
+                json_start = response.content.find('{')
+                json_end = response.content.rfind('}') + 1
+                if json_start != -1 and json_end > json_start:
+                    json_str = response.content[json_start:json_end]
+                    data = json.loads(json_str)
+                    # Add metadata
+                    data["_metadata"] = {
+                        "confidence_score": response.confidence_score,
+                        "provider": response.provider_name,
+                        "model": response.model_name,
+                        "tokens_used": response.tokens_used,
+                        "processing_time": response.processing_time
+                    }
+                    return data
+                else:
+                    raise ValueError("No JSON found in LLM response")
+
+        except LLMError as e:
+            logger.error(f"Program data extraction failed: {e}")
+            raise GroqAPIError(f"Data extraction failed: {e.message}") from e
 
     async def validate_data_quality(self,
                                   data: Dict[str, Any],
@@ -268,13 +466,55 @@ class LLMService:
             logger.error(f"Summary generation failed: {e}")
             return f"Summary unavailable: {str(e)}"
 
+    def switch_provider(self, provider_name: str) -> None:
+        """
+        Switch to a different LLM provider.
+
+        Args:
+            provider_name: Name of the provider to switch to
+
+        Raises:
+            ValueError: If provider is not available
+        """
+        try:
+            new_provider = LLMProviderFactory.create_provider(provider_name)
+            self.provider = new_provider
+            self.model = new_provider.model
+            self.timeout = new_provider.timeout
+            logger.info(f"Switched to LLM provider: {provider_name}")
+        except ValueError as e:
+            logger.error(f"Failed to switch provider: {e}")
+            raise
+
+    async def get_cache_stats(self) -> Dict[str, Any]:
+        """Get cache statistics."""
+        if self._cache:
+            return await self._cache.get_stats()
+        return {"cache_enabled": False, "error": "Cache backend not available"}
+
+    async def get_circuit_breaker_stats(self) -> Dict[str, Any]:
+        """Get circuit breaker statistics."""
+        if self._circuit_breaker:
+            return self._circuit_breaker.get_stats()
+        return {"circuit_breaker_enabled": False, "error": "Circuit breaker not available"}
+
     def get_service_stats(self) -> Dict[str, Any]:
         """Get service statistics."""
         return {
-            "model": self.model,
-            "timeout": self.timeout,
+            "provider": self.provider.name,
+            "model": self.provider.model,
+            "timeout": self.provider.timeout,
             "max_retries": self.max_retries,
             "rate_limit_delay": self.rate_limit_delay,
             "cache_enabled": self._cache_enabled,
-            "cache_size": len(self._cache)
+            "cache_backend_available": self._cache is not None,
+            "circuit_breaker_enabled": self._circuit_breaker is not None,
+            "available_providers": LLMProviderFactory.get_available_providers(),
+            "error_handling_config": {
+                "max_retries": self.settings.error_handling.default_max_retries,
+                "retry_delay": self.settings.error_handling.default_retry_delay,
+                "max_retry_delay": self.settings.error_handling.default_max_retry_delay,
+                "backoff_factor": self.settings.error_handling.default_backoff_factor,
+                "circuit_breakers_enabled": self.settings.error_handling.enable_circuit_breakers
+            }
         }

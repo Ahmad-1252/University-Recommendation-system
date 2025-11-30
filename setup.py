@@ -17,7 +17,7 @@ setup(
     name="university-recommendation-system",
     version="1.0.0",
     author="University Recommendation System Team",
-    author_email="team@university-recommendation.dev",
+    author_email="ahmadzaoor3029@gmail.com",
     description="AI-powered system for scraping and analyzing computer science programs from global universities",
     long_description=long_description,
     long_description_content_type="text/markdown",

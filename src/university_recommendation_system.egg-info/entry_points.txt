@@ -1,0 +1,5 @@
+[console_scripts]
+monitor-quality = scripts.monitor_quality:main
+scrape-universities = scripts.run_scraper:main
+urs = src.cli.commands:cli
+validate-urls = scripts.validate_urls:main

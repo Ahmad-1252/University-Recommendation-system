@@ -3,35 +3,250 @@
 from typing import Dict, List
 
 
-# University program URLs for computer science programs
-UNIVERSITY_URLS: Dict[str, str] = {
-    # Top Universities
-    "University of Oxford": "https://www.cs.ox.ac.uk/research/graduate-study/mphil-dphil-computer-science/",
-    "University of Cambridge": "https://www.cst.cam.ac.uk/prospective/postgraduate",
-    "Imperial College London": "https://www.imperial.ac.uk/computing/prospective-students/courses/msc-computing/",
-    "ETH Zurich": "https://ethz.ch/en/studies/en/master/computer-science.html",
-    "UCL": "https://www.ucl.ac.uk/prospective-students/graduate/taught-degrees/computer-science-msc",
-    "Université PSL": "https://www.psl.eu/en/academic-offer/master-programmes/computer-science",
-    "Technical University of Munich": "https://www.tum.de/en/studies/application/master/computer-science/",
-    "EPFL": "https://www.epfl.ch/education/studies/en/rules-and-procedures/master/computer-science/",
+# Program Categories/Fields to scrape
+PROGRAM_CATEGORIES: Dict[str, List[str]] = {
+    "Computer Science": [
+        "computer science", "computing", "informatics", "software engineering",
+        "artificial intelligence", "machine learning", "data science", "cybersecurity",
+        "information technology", "computer engineering"
+    ],
+    "Networking": [
+        "networking", "network engineering", "telecommunications", "network security",
+        "network administration", "computer networks", "wireless networks"
+    ],
+    "Business": [
+        "business", "mba", "management", "finance", "accounting", "marketing",
+        "entrepreneurship", "business administration", "commerce", "economics",
+        "international business", "supply chain", "operations management"
+    ],
+    "Medical": [
+        "medicine", "medical", "healthcare", "nursing", "pharmacy", "dentistry",
+        "public health", "biomedical", "clinical", "health sciences", "physiotherapy",
+        "occupational therapy", "medical imaging", "pathology"
+    ],
+    "Education": [
+        "education", "teaching", "pedagogy", "curriculum", "educational leadership",
+        "special education", "early childhood", "educational psychology", "tesol",
+        "educational technology"
+    ],
+    "Engineering": [
+        "engineering", "mechanical", "electrical", "civil", "chemical", "aerospace",
+        "industrial", "environmental engineering", "materials science"
+    ],
+    "Law": [
+        "law", "legal", "jurisprudence", "llm", "jd"
+    ],
+    "Arts & Humanities": [
+        "arts", "humanities", "literature", "history", "philosophy", "linguistics",
+        "languages", "music", "fine arts", "creative writing"
+    ],
+    "Sciences": [
+        "biology", "chemistry", "physics", "mathematics", "statistics",
+        "environmental science", "geology", "astronomy"
+    ]
+}
 
-    # Strong Universities
-    "University of Edinburgh": "https://www.ed.ac.uk/studying/postgraduate/degrees/index.php?r=site/view&id=919",
-    "University of Manchester": "https://www.manchester.ac.uk/study/postgraduate-research/programmes/list/02674/msc-advanced-computer-science/",
+# Degree Levels to scrape
+DEGREE_LEVELS: Dict[str, List[str]] = {
+    "Undergraduate": [
+        "bachelor", "bsc", "ba", "beng", "bba", "undergraduate", "ug"
+    ],
+    "Graduate": [
+        "graduate", "postgraduate", "pg"
+    ],
+    "Masters": [
+        "master", "msc", "ma", "mba", "meng", "mphil", "masters", "taught masters"
+    ],
+    "PhD": [
+        "phd", "doctorate", "doctoral", "dphil", "research degree"
+    ]
+}
+
+# University Course Directory URLs - These are the main pages listing all programs
+# Each university has URLs for different degree levels
+UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
+    "University of Oxford": {
+        "undergraduate": "https://www.ox.ac.uk/admissions/undergraduate/courses/course-listing/",
+        "graduate": "https://www.ox.ac.uk/admissions/graduate/courses/courses-a-z-listing/",
+        "base_url": "https://www.ox.ac.uk",
+        "program_url_pattern": "/admissions/graduate/courses/(?:msc|ma|mba|dphil|pgdip|pgcert|bm|bcl)-"
+    },
+    "University of Cambridge": {
+        "undergraduate": "https://www.undergraduate.study.cam.ac.uk/courses/directory",
+        "graduate": "https://www.postgraduate.study.cam.ac.uk/courses/departments",
+        "base_url": "https://www.postgraduate.study.cam.ac.uk",
+        "program_url_pattern": "/courses/directory/[a-z]+"
+    },
+    "Imperial College London": {
+        "undergraduate": "https://www.imperial.ac.uk/study/courses/undergraduate/",
+        "graduate": "https://www.imperial.ac.uk/study/courses/postgraduate-taught/",
+        "phd": "https://www.imperial.ac.uk/study/courses/postgraduate-research/",
+        "base_url": "https://www.imperial.ac.uk",
+        "program_url_pattern": "/study/courses/(?:undergraduate|postgraduate-taught|postgraduate-research)/\\d{4}/[a-z]"
+    },
+    "UCL": {
+        "undergraduate": "https://www.ucl.ac.uk/prospective-students/undergraduate/degrees",
+        "graduate": "https://www.ucl.ac.uk/prospective-students/graduate/taught-degrees",
+        "phd": "https://www.ucl.ac.uk/prospective-students/graduate/research-degrees",
+        "base_url": "https://www.ucl.ac.uk",
+        "program_url_pattern": "/prospective-students/(?:undergraduate|graduate)/(?:degrees|taught-degrees|research-degrees)/[a-z]"
+    },
+    "University of Edinburgh": {
+        "undergraduate": "https://study.ed.ac.uk/programmes/undergraduate-a-z",
+        "graduate": "https://study.ed.ac.uk/programmes/postgraduate-taught-a-z",
+        "phd": "https://study.ed.ac.uk/programmes/postgraduate-research-a-z",
+        "base_url": "https://study.ed.ac.uk",
+        "program_url_pattern": "/programmes/postgraduate-taught/\\d+-"
+    },
+    "University of Manchester": {
+        "undergraduate": "https://www.manchester.ac.uk/study/undergraduate/courses/list/",
+        "graduate": "https://www.manchester.ac.uk/study/masters/courses/list/",
+        "phd": "https://www.manchester.ac.uk/study/postgraduate-research/programmes/",
+        "base_url": "https://www.manchester.ac.uk",
+        "program_url_pattern": "/study/masters/courses/list/\\d+/[a-z]"
+    },
+    "King's College London": {
+        "undergraduate": "https://www.kcl.ac.uk/study/undergraduate/courses",
+        "graduate": "https://www.kcl.ac.uk/study/postgraduate-taught/courses",
+        "phd": "https://www.kcl.ac.uk/study/postgraduate-research/courses",
+        "base_url": "https://www.kcl.ac.uk",
+        "program_url_pattern": "/study/(?:undergraduate|postgraduate-taught|postgraduate-research)/courses/[a-z]"
+    },
+    "University of Glasgow": {
+        "undergraduate": "https://www.gla.ac.uk/undergraduate/degrees/",
+        "graduate": "https://www.gla.ac.uk/postgraduate/taught/",
+        "phd": "https://www.gla.ac.uk/postgraduate/research/",
+        "base_url": "https://www.gla.ac.uk",
+        "program_url_pattern": "/(?:undergraduate/degrees|postgraduate/(?:taught|research))/[a-z]"
+    },
+    "University of Leeds": {
+        "undergraduate": "https://courses.leeds.ac.uk/course-search/undergraduate-courses",
+        "graduate": "https://courses.leeds.ac.uk/course-search/masters-courses",
+        "phd": "https://courses.leeds.ac.uk/course-search/research-degrees",
+        "base_url": "https://www.leeds.ac.uk",
+        "program_url_pattern": "/[a-z]\\d+/"
+    },
+    "University of Warwick": {
+        "undergraduate": "https://warwick.ac.uk/study/undergraduate/courses/",
+        "graduate": "https://warwick.ac.uk/study/postgraduate/courses/",
+        "base_url": "https://warwick.ac.uk",
+        "program_url_pattern": "/study/(?:undergraduate|postgraduate)/courses/[a-z]"
+    },
+    "ETH Zurich": {
+        "undergraduate": "https://ethz.ch/en/studies/bachelor/degree-programmes.html",
+        "graduate": "https://ethz.ch/en/studies/master/degree-programmes/engineering-sciences.html",
+        "graduate_sciences": "https://ethz.ch/en/studies/master/degree-programmes/natural-sciences-and-mathematics.html",
+        "graduate_arch": "https://ethz.ch/en/studies/master/degree-programmes/architecture-and-civil-engineering.html",
+        "graduate_mgmt": "https://ethz.ch/en/studies/master/degree-programmes/management-and-social-sciences.html",
+        "phd": "https://ethz.ch/en/doctorate.html",
+        "base_url": "https://ethz.ch",
+        "program_url_pattern": "/studies/(?:master|bachelor)/degree-programmes/[^/]+/[a-z][^/]+\\.html$"
+    },
+    "EPFL": {
+        "undergraduate": "https://www.epfl.ch/education/bachelor/programs/",
+        "graduate": "https://www.epfl.ch/education/master/programs/",
+        "phd": "https://www.epfl.ch/education/phd/programs/",
+        "base_url": "https://www.epfl.ch",
+        "program_url_pattern": "/education/(?:bachelor|master|phd)/programs/[a-z]"
+    },
+    "Technical University of Munich": {
+        "all": "https://www.tum.de/en/studies/degree-programs/",
+        "base_url": "https://www.tum.de",
+        "program_url_pattern": "/studies/degree-programs/detail/[a-z]",
+        "pagination": {
+            "type": "hash",
+            "pattern": "#page={page}",
+            "max_pages": 15
+        }
+    },
+    "LMU Munich": {
+        "all": "https://www.lmu.de/en/study/all-degrees-and-programs/international-degree-programs/",
+        "base_url": "https://www.lmu.de",
+        "program_url_pattern": "uni-muenchen\\.de/.*(?:studium|study|master|index)\\.html"
+    },
+    "Heidelberg University": {
+        "all": "https://www.uni-heidelberg.de/en/study/all-subjects",
+        "base_url": "https://www.uni-heidelberg.de",
+        "program_url_pattern": "/study/all-subjects/[a-z]"
+    },
+    "University of Amsterdam": {
+        "undergraduate": "https://www.uva.nl/en/programmes/bachelors/bachelors.html",
+        "graduate": "https://www.uva.nl/en/programmes/masters/masters.html",
+        "base_url": "https://www.uva.nl",
+        "program_url_pattern": "/programmes/(?:bachelors|masters)/[a-z][^/]+/[a-z]"
+    },
+    "Delft University of Technology": {
+        "undergraduate": "https://www.tudelft.nl/en/education/programmes/bachelors",
+        "graduate": "https://www.tudelft.nl/en/education/programmes/masters",
+        "base_url": "https://www.tudelft.nl",
+        "program_url_pattern": "/education/programmes/(?:bachelors|masters)/[a-z]"
+    },
+    "KU Leuven": {
+        "undergraduate": "https://www.kuleuven.be/programmes/bachelors",
+        "graduate": "https://www.kuleuven.be/programmes/masters",
+        "base_url": "https://www.kuleuven.be",
+        "program_url_pattern": "/programmes/(?:bachelor|master)-[a-z]"
+    },
+    "Leiden University": {
+        "undergraduate": "https://www.universiteitleiden.nl/en/education/study-programmes/bachelor",
+        "graduate": "https://www.universiteitleiden.nl/en/education/study-programmes/master",
+        "base_url": "https://www.universiteitleiden.nl",
+        "program_url_pattern": "/education/study-programmes/(?:bachelor|master)/[a-z]"
+    },
+    "Utrecht University": {
+        "undergraduate": "https://www.uu.nl/en/bachelors/bachelors-programmes",
+        "graduate": "https://www.uu.nl/en/masters/masters-programmes",
+        "base_url": "https://www.uu.nl",
+        "program_url_pattern": "/(?:masters|bachelors)/[a-z][a-z0-9-]+$"
+    },
+    "Université PSL": {
+        "graduate": "https://www.psl.eu/en/education",
+        "base_url": "https://www.psl.eu",
+        "program_url_pattern": "/education/[a-z]"
+    },
+    "University of Tartu": {
+        "undergraduate": "https://ut.ee/en/bachelors-programmes",
+        "graduate": "https://ut.ee/en/masters-programmes",
+        "phd": "https://ut.ee/en/doctoral-programmes",
+        "base_url": "https://ut.ee",
+        "program_url_pattern": "/curriculum/[a-z]"
+    },
+    "National and Kapodistrian University of Athens": {
+        "all": "https://en.uoa.gr/studies/",
+        "base_url": "https://en.uoa.gr",
+        "program_url_pattern": "/studies/(?:undergraduate|postgraduate)/[a-z]"
+    }
+}
+
+# Legacy: Single program URLs (for backward compatibility)
+UNIVERSITY_URLS: Dict[str, str] = {
+    # Top Universities - Official Admissions/Program Pages
+    "University of Oxford": "https://www.ox.ac.uk/admissions/graduate/courses/msc-advanced-computer-science",
+    "University of Cambridge": "https://www.postgraduate.study.cam.ac.uk/courses/directory/cscsmpacs",
+    "Imperial College London": "https://www.imperial.ac.uk/study/courses/postgraduate-taught/computing/",
+    "ETH Zurich": "https://ethz.ch/en/studies/master/degree-programmes/engineering-sciences/computer-science.html",
+    "UCL": "https://www.ucl.ac.uk/prospective-students/graduate/taught-degrees/computer-science-msc",
+    "Université PSL": "https://www.psl.eu/en/education/master-computer-science",
+    "Technical University of Munich": "https://www.tum.de/en/studies/degree-programs/detail/informatics-master-of-science-msc",
+    "EPFL": "https://www.epfl.ch/education/master/programs/computer-science/",
+
+    # Strong Universities - Official Admissions/Program Pages
+    "University of Edinburgh": "https://www.ed.ac.uk/studying/postgraduate/degrees/index.php?r=site/view&edition=2024&id=110",
+    "University of Manchester": "https://www.manchester.ac.uk/study/masters/courses/list/02674/msc-advanced-computer-science/",
     "King's College London": "https://www.kcl.ac.uk/study/postgraduate-taught/courses/computer-science-msc",
-    "Delft University of Technology": "https://www.tudelft.nl/en/education/programmes/masters/computer-science/msc-computer-science/",
-    "University of Glasgow": "https://www.gla.ac.uk/postgraduate/taught/computerscience/",
-    "University of Leeds": "https://www.leeds.ac.uk/info/130000/postgraduate_taught_courses/130001/Computer_Science",
-    "University of Amsterdam": "https://www.uva.nl/en/programmes/master-s/master-s-programmes/content/folder/computer-science/computer-science.html",
-    "LMU Munich": "https://www.lmu.de/en/studies/degree-programmes/master/computer-science/",
-    "University of Warwick": "https://warwick.ac.uk/study/postgraduate/courses/computerscience",
+    "Delft University of Technology": "https://www.tudelft.nl/en/education/programmes/masters/computer-science/msc-computer-science",
+    "University of Glasgow": "https://www.gla.ac.uk/postgraduate/taught/computing-science/",
+    "University of Leeds": "https://courses.leeds.ac.uk/j702/advanced-computer-science-msc",
+    "University of Amsterdam": "https://www.uva.nl/en/programmes/masters/computer-science/computer-science.html",
+    "LMU Munich": "https://www.lmu.de/en/study/all-degree-programs/computer-science-master/",
+    "University of Warwick": "https://warwick.ac.uk/study/postgraduate/courses/csmscdcs/",
     "Heidelberg University": "https://www.uni-heidelberg.de/en/study/all-subjects/computer-science/computer-science-master",
 
-    # Medium Universities
+    # Medium Universities - Official Admissions/Program Pages
     "Utrecht University": "https://www.uu.nl/en/masters/computer-science",
-    "University of Tartu": "https://www.ut.ee/en/study/programme/computer-science-msc",
-    "University of Athens": "https://www.uoa.gr/en/studies/postgraduate-studies/postgraduate-programmes/computer-science",
-    "KU Leuven": "https://www.kuleuven.be/en/study/programmes/master-of-science-in-computer-science",
+    "University of Tartu": "https://ut.ee/en/curriculum/computer-science",
+    "National and Kapodistrian University of Athens": "https://www.di.uoa.gr/en/studies/postgraduate",
+    "KU Leuven": "https://www.kuleuven.be/programmes/master-computer-science",
     "Leiden University": "https://www.universiteitleiden.nl/en/education/study-programmes/master/computer-science"
 }
 
@@ -439,32 +654,79 @@ EXPORT_CONFIGS: Dict[str, Dict] = {
         "engine": "openpyxl",
         "date_format": "%Y-%m-%d"
     }
+    
 }
 
 # LLM prompt templates
 LLM_PROMPTS: Dict[str, str] = {
     "program_extraction": """
-Extract detailed information about the computer science program from the provided webpage content.
+Extract detailed information about the academic program from the provided webpage content.
+This could be any type of program: Computer Science, Business, Medical, Education, Engineering, Law, Arts, Sciences, etc.
 Focus on academic requirements, tuition, deadlines, and program details.
+
+CRITICAL - ENGLISH ONLY OUTPUT:
+- ALL extracted text MUST be translated to ENGLISH regardless of the source language
+- If the webpage is in German, French, Dutch, Estonian, Greek, Swedish, or any other language, YOU MUST TRANSLATE everything
+- Program names should be in English (e.g., "Master of Computer Science" not "Master Informatik")
+- Descriptions, prerequisites, specializations - ALL in English
+- Do NOT leave any text in the original language
+- Use standard English academic terminology
 
 Return a structured JSON object with the following fields:
 - university_name: Full university name
-- program_name: Complete program name
-- degree_type: Type of degree (Bachelor/Master/PhD)
-- duration: Program duration in years or semesters
-- tuition_fee_per_year: Annual tuition in USD
-- application_deadline: Next deadline in YYYY-MM-DD format
-- gpa_requirement_min: Minimum GPA required (4.0 scale)
-- toefl_min: Minimum TOEFL score
-- ielts_min: Minimum IELTS score
-- prerequisites: List of required courses/degrees
+- program_name: Complete program name (e.g., "MSc Computer Science", "MBA", "Bachelor of Medicine")
+- degree_type: Type of degree - use one of these exact values:
+  * For undergraduate: "Bachelor of Science", "Bachelor of Arts", "Bachelor of Engineering", "Bachelor of Medicine"
+  * For masters: "Master of Science", "Master of Arts", "Master of Business Administration", "Master of Engineering", "Master of Philosophy"
+  * For doctoral: "Doctor of Philosophy", "Doctor of Medicine", "Doctor of Science"
+- degree_level: One of "Undergraduate", "Graduate", "Masters", "PhD"
+- program_category: Main field/category (e.g., "Computer Science", "Business", "Medical", "Education", "Engineering", "Law", "Arts", "Sciences")
+- duration_years: Program duration in years (e.g., 1, 2, 3, 4)
+- tuition_fees: Object with domestic_per_year and international_per_year in local currency
+- application_deadline: Next deadline in YYYY-MM-DD format or description
+- gpa_requirement_min: Minimum GPA required (4.0 scale) or equivalent
+- toefl_min: Minimum TOEFL score (if applicable)
+- ielts_min: Minimum IELTS score (if applicable)
+- prerequisites: List of required courses/degrees/qualifications
 - program_description: Detailed program description
-- specializations: List of available specializations
-- faculty_research_interests: Key research areas
+- specializations: List of available specializations or tracks
+- faculty_research_interests: Key research areas (if applicable)
+- career_outcomes: Typical career paths for graduates
 - country: Country where university is located
 - city: City where university is located
 
 Be as accurate and complete as possible. If information is not available, use null.
+Remember: ALL output must be in English, translate any non-English content.
+""",
+    "program_list_extraction": """
+Extract a list of all academic programs/courses from this university webpage.
+Look for program names, degree types, and links to individual program pages.
+
+CRITICAL - ENGLISH ONLY OUTPUT:
+- ALL program names and descriptions MUST be translated to ENGLISH
+- If content is in German, French, Dutch, Estonian, Greek, or any other language - TRANSLATE IT
+- Use standard English program names (e.g., "Computer Science" not "Informatik", "Business Administration" not "Betriebswirtschaft")
+- Do NOT leave any text in the original language
+
+Return a JSON object with:
+- programs: Array of objects, each containing:
+  * program_name: Full program name (IN ENGLISH)
+  * degree_type: Bachelor/Master/PhD etc.
+  * program_category: Field (Computer Science, Business, Medical, etc.)
+  * program_url: Link to the detailed program page (if available)
+  * department: Department or faculty name (if available, IN ENGLISH)
+
+Focus on finding ALL programs listed on the page across all fields:
+- Computer Science, IT, Software Engineering
+- Business, MBA, Management, Finance, Accounting
+- Medical, Healthcare, Nursing, Pharmacy
+- Education, Teaching
+- Engineering (all types)
+- Law
+- Arts & Humanities
+- Natural Sciences
+
+Be thorough and extract every program you can find.
 """,
     "quality_assessment": """
 Assess the quality and completeness of the extracted program data.

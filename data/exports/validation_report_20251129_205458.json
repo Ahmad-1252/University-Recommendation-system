@@ -1,0 +1,2061 @@
+{
+  "summary": {
+    "total_universities": 22,
+    "completed_validations": 22,
+    "average_score": 0.61,
+    "score_distribution": {
+      "excellent": 0,
+      "good": 2,
+      "needs_improvement": 20,
+      "critical_issues": 0
+    }
+  },
+  "issues": {
+    "total_issues": 54,
+    "by_category": {
+      "program_fees": 20,
+      "data_completeness": 22,
+      "program_descriptions": 12
+    },
+    "top_issues": [
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "data_completeness: .1%",
+      "data_completeness: .1%",
+      "program_descriptions: .1%",
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "program_descriptions: .1%",
+      "program_fees: .1%",
+      "data_completeness: .1%",
+      "program_descriptions: .1%",
+      "program_fees: .1%"
+    ]
+  },
+  "recommendations": [
+    "Add university ranking information from QS, THE, or US News",
+    "Improve data completeness by adding missing fields"
+  ],
+  "milestones": {
+    "University of Oxford": {
+      "university_name": "University of Oxford",
+      "university_id": "034e4add99a2",
+      "status": "completed",
+      "score": 0.6428571428571429,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.685781"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.685819"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.685830"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.686136"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.686156"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.686186"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.686204"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.686242"
+        },
+        "program_descriptions": {
+          "passed": true,
+          "details": ".1%",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.686270"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.686280"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.686324"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.690902"
+        }
+      },
+      "issues": [
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.690791",
+      "total_checks": 12,
+      "passed_checks": 6
+    },
+    "University of Cambridge": {
+      "university_name": "University of Cambridge",
+      "university_id": "cd1e97a94688",
+      "status": "completed",
+      "score": 0.6428571428571429,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691001"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691017"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691029"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691067"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691079"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691100"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691114"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691148"
+        },
+        "program_descriptions": {
+          "passed": true,
+          "details": ".1%",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691173"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.691183"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.691216"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691290"
+        }
+      },
+      "issues": [
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.691233",
+      "total_checks": 12,
+      "passed_checks": 6
+    },
+    "Imperial College London": {
+      "university_name": "Imperial College London",
+      "university_id": "e34025a23097",
+      "status": "completed",
+      "score": 0.7142857142857143,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691350"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691363"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691375"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691400"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691411"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691426"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691437"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691465"
+        },
+        "program_descriptions": {
+          "passed": true,
+          "details": ".1%",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691487"
+        },
+        "program_fees": {
+          "passed": true,
+          "details": ".1%",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691498"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.691521"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691575"
+        }
+      },
+      "issues": [
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.691535",
+      "total_checks": 12,
+      "passed_checks": 7
+    },
+    "University College London": {
+      "university_name": "University College London",
+      "university_id": "b518666df0bb",
+      "status": "completed",
+      "score": 0.7142857142857143,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691620"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691635"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691648"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691672"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691683"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691698"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691710"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691732"
+        },
+        "program_descriptions": {
+          "passed": true,
+          "details": ".1%",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691750"
+        },
+        "program_fees": {
+          "passed": true,
+          "details": ".1%",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691760"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.691783"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691840"
+        }
+      },
+      "issues": [
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.691796",
+      "total_checks": 12,
+      "passed_checks": 7
+    },
+    "PSL University": {
+      "university_name": "PSL University",
+      "university_id": "654820ad2e5f",
+      "status": "completed",
+      "score": 0.5714285714285714,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691881"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691893"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691904"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691924"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691935"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691949"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691960"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.691981"
+        },
+        "program_descriptions": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.691997"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.692009"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.692031"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692102"
+        }
+      },
+      "issues": [
+        "program_descriptions: .1%",
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.692044",
+      "total_checks": 12,
+      "passed_checks": 5
+    },
+    "Technical University of Munich": {
+      "university_name": "Technical University of Munich",
+      "university_id": "9e550f3fda50",
+      "status": "completed",
+      "score": 0.6428571428571429,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692141"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692154"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692165"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692185"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692195"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692209"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692221"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692242"
+        },
+        "program_descriptions": {
+          "passed": true,
+          "details": ".1%",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692259"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.692269"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.692290"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692344"
+        }
+      },
+      "issues": [
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.692303",
+      "total_checks": 12,
+      "passed_checks": 6
+    },
+    "École Polytechnique Fédérale de Lausanne": {
+      "university_name": "École Polytechnique Fédérale de Lausanne",
+      "university_id": "a9fbe52baf79",
+      "status": "completed",
+      "score": 0.6428571428571429,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692383"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692396"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692408"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692427"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692438"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692490"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692503"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692523"
+        },
+        "program_descriptions": {
+          "passed": true,
+          "details": ".1%",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692541"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.692550"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.692571"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692621"
+        }
+      },
+      "issues": [
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.692584",
+      "total_checks": 12,
+      "passed_checks": 6
+    },
+    "The University of Edinburgh": {
+      "university_name": "The University of Edinburgh",
+      "university_id": "f829b4066671",
+      "status": "completed",
+      "score": 0.6428571428571429,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692664"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692676"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692688"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692713"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692724"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692738"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692749"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692772"
+        },
+        "program_descriptions": {
+          "passed": true,
+          "details": ".1%",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692790"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.692800"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.692822"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692877"
+        }
+      },
+      "issues": [
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.692835",
+      "total_checks": 12,
+      "passed_checks": 6
+    },
+    "The University of Manchester": {
+      "university_name": "The University of Manchester",
+      "university_id": "0ff92db0445f",
+      "status": "completed",
+      "score": 0.5714285714285714,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692915"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692927"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692949"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692970"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692980"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.692994"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693006"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693028"
+        },
+        "program_descriptions": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.693045"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.693057"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.693078"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693130"
+        }
+      },
+      "issues": [
+        "program_descriptions: .1%",
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.693090",
+      "total_checks": 12,
+      "passed_checks": 5
+    },
+    "King's College London": {
+      "university_name": "King's College London",
+      "university_id": "9e24584e609f",
+      "status": "completed",
+      "score": 0.5714285714285714,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693167"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693180"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693191"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693211"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693221"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693235"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693247"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693353"
+        },
+        "program_descriptions": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.693394"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.693422"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.693451"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693516"
+        }
+      },
+      "issues": [
+        "program_descriptions: .1%",
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.693470",
+      "total_checks": 12,
+      "passed_checks": 5
+    },
+    "Delft University of Technology": {
+      "university_name": "Delft University of Technology",
+      "university_id": "0a402f4f1fc0",
+      "status": "completed",
+      "score": 0.5714285714285714,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693584"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693600"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693612"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693645"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693653"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693665"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693672"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693688"
+        },
+        "program_descriptions": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.693704"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.693714"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.693737"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693785"
+        }
+      },
+      "issues": [
+        "program_descriptions: .1%",
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.693751",
+      "total_checks": 12,
+      "passed_checks": 5
+    },
+    "University of Glasgow": {
+      "university_name": "University of Glasgow",
+      "university_id": "8d2f2e20d3df",
+      "status": "completed",
+      "score": 0.5714285714285714,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693818"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693826"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693840"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693856"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693861"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693870"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693877"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693890"
+        },
+        "program_descriptions": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.693901"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.693907"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.693920"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693952"
+        }
+      },
+      "issues": [
+        "program_descriptions: .1%",
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.693928",
+      "total_checks": 12,
+      "passed_checks": 5
+    },
+    "University of Leeds": {
+      "university_name": "University of Leeds",
+      "university_id": "10c5ba7be7a7",
+      "status": "completed",
+      "score": 0.5714285714285714,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693979"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693986"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.693992"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694011"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694017"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694026"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694032"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694045"
+        },
+        "program_descriptions": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694055"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694061"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694079"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694138"
+        }
+      },
+      "issues": [
+        "program_descriptions: .1%",
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.694098",
+      "total_checks": 12,
+      "passed_checks": 5
+    },
+    "University of Amsterdam": {
+      "university_name": "University of Amsterdam",
+      "university_id": "f81343cb7402",
+      "status": "completed",
+      "score": 0.6428571428571429,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694167"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694174"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694180"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694193"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694199"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694206"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694213"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694228"
+        },
+        "program_descriptions": {
+          "passed": true,
+          "details": ".1%",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694238"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694243"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694255"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694285"
+        }
+      },
+      "issues": [
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.694262",
+      "total_checks": 12,
+      "passed_checks": 6
+    },
+    "Ludwig Maximilian University of Munich": {
+      "university_name": "Ludwig Maximilian University of Munich",
+      "university_id": "7f4a6d9ab120",
+      "status": "completed",
+      "score": 0.5714285714285714,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694307"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694321"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694328"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694340"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694346"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694354"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694360"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694372"
+        },
+        "program_descriptions": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694381"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694387"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694399"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694428"
+        }
+      },
+      "issues": [
+        "program_descriptions: .1%",
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.694406",
+      "total_checks": 12,
+      "passed_checks": 5
+    },
+    "University of Warwick": {
+      "university_name": "University of Warwick",
+      "university_id": "b42ebb0a6291",
+      "status": "completed",
+      "score": 0.5714285714285714,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694456"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694463"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694469"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694481"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694487"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694496"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694502"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694515"
+        },
+        "program_descriptions": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694525"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694531"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694543"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694573"
+        }
+      },
+      "issues": [
+        "program_descriptions: .1%",
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.694550",
+      "total_checks": 12,
+      "passed_checks": 5
+    },
+    "Heidelberg University": {
+      "university_name": "Heidelberg University",
+      "university_id": "4227c8329d10",
+      "status": "completed",
+      "score": 0.5714285714285714,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694595"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694602"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694615"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694630"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694640"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694656"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694668"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694688"
+        },
+        "program_descriptions": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694703"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694711"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694725"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694758"
+        }
+      },
+      "issues": [
+        "program_descriptions: .1%",
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.694732",
+      "total_checks": 12,
+      "passed_checks": 5
+    },
+    "Utrecht University": {
+      "university_name": "Utrecht University",
+      "university_id": "43e9946bba74",
+      "status": "completed",
+      "score": 0.5714285714285714,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694796"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694805"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694812"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694825"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694831"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694844"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694850"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694863"
+        },
+        "program_descriptions": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694874"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694880"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.694894"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694950"
+        }
+      },
+      "issues": [
+        "program_descriptions: .1%",
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.694901",
+      "total_checks": 12,
+      "passed_checks": 5
+    },
+    "University of Tartu": {
+      "university_name": "University of Tartu",
+      "university_id": "a7d36af24a22",
+      "status": "completed",
+      "score": 0.6428571428571429,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694974"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694981"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694988"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.694999"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695006"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695014"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695020"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695032"
+        },
+        "program_descriptions": {
+          "passed": true,
+          "details": ".1%",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695043"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.695048"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.695060"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695102"
+        }
+      },
+      "issues": [
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.695077",
+      "total_checks": 12,
+      "passed_checks": 6
+    },
+    "National and Kapodistrian University of Athens": {
+      "university_name": "National and Kapodistrian University of Athens",
+      "university_id": "87a64e40ffa7",
+      "status": "completed",
+      "score": 0.5714285714285714,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695134"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695144"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695152"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695166"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695172"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695187"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695194"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695209"
+        },
+        "program_descriptions": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.695221"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.695228"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.695241"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695279"
+        }
+      },
+      "issues": [
+        "program_descriptions: .1%",
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.695254",
+      "total_checks": 12,
+      "passed_checks": 5
+    },
+    "KU Leuven": {
+      "university_name": "KU Leuven",
+      "university_id": "b9e10e54d776",
+      "status": "completed",
+      "score": 0.5714285714285714,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695302"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695309"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695320"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695332"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695338"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695345"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695351"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695365"
+        },
+        "program_descriptions": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.695375"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.695381"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.695392"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695423"
+        }
+      },
+      "issues": [
+        "program_descriptions: .1%",
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.695400",
+      "total_checks": 12,
+      "passed_checks": 5
+    },
+    "Leiden University": {
+      "university_name": "Leiden University",
+      "university_id": "0f22bc98a5be",
+      "status": "completed",
+      "score": 0.6428571428571429,
+      "checks": {
+        "required_field_name": {
+          "passed": true,
+          "details": "Field 'name' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695447"
+        },
+        "required_field_country": {
+          "passed": true,
+          "details": "Field 'country' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695454"
+        },
+        "required_field_city": {
+          "passed": true,
+          "details": "Field 'city' is present",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695460"
+        },
+        "university_id_format": {
+          "passed": true,
+          "details": "University ID format is valid",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695472"
+        },
+        "website_url_missing": {
+          "passed": false,
+          "details": "Website URL is missing",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695478"
+        },
+        "no_rankings": {
+          "passed": false,
+          "details": "No ranking data available",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695488"
+        },
+        "tier_missing": {
+          "passed": false,
+          "details": "University tier is not classified",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695494"
+        },
+        "programs_count": {
+          "passed": true,
+          "details": "Found 1 programs",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695507"
+        },
+        "program_descriptions": {
+          "passed": true,
+          "details": ".1%",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695517"
+        },
+        "program_fees": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.695522"
+        },
+        "data_completeness": {
+          "passed": false,
+          "details": ".1%",
+          "severity": "warning",
+          "timestamp": "2025-11-29T15:54:30.695534"
+        },
+        "website_accessibility": {
+          "passed": false,
+          "details": "No website URL to test",
+          "severity": "info",
+          "timestamp": "2025-11-29T15:54:30.695563"
+        }
+      },
+      "issues": [
+        "program_fees: .1%",
+        "data_completeness: .1%"
+      ],
+      "recommendations": [
+        "Add university ranking information from QS, THE, or US News",
+        "Improve data completeness by adding missing fields"
+      ],
+      "completed_at": "2025-11-29T15:54:30.695540",
+      "total_checks": 12,
+      "passed_checks": 6
+    }
+  }
+}

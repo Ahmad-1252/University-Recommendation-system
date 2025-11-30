@@ -52,7 +52,7 @@ class Dashboard:
             db_details = f"{stats.get('total_programs', 0)} programs" if stats else "N/A"
 
             status_table.add_row("Database", db_status, db_details)
-            status_table.add_row("Configuration", "✅ Loaded", f"Model: {self.settings.llm.model_name}")
+            status_table.add_row("Configuration", "✅ Loaded", f"Model: {self.settings.llm.model}")
             status_table.add_row("Scraping", "✅ Ready", f"Timeout: {self.settings.scraping.timeout}s")
 
             console.print(status_table)

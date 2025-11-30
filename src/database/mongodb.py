@@ -9,9 +9,9 @@ from pymongo.collection import Collection
 from pymongo.database import Database
 from pymongo.errors import ConnectionFailure, DuplicateKeyError, OperationFailure
 
-from ..core.config import get_settings
-from ..core.exceptions import ConnectionError, DuplicateDataError, QueryError
-from ..models.university import UniversityProgram
+from core.config import get_settings
+from core.exceptions import ConnectionError, DuplicateDataError, QueryError
+from models.university import UniversityProgram
 
 logger = logging.getLogger(__name__)
 
@@ -41,11 +41,19 @@ class MongoDBConnection:
 
     @property
     def collection(self) -> Collection:
-        """Get MongoDB collection."""
+        """Get MongoDB collection for programs."""
         if self._collection is None:
             self._collection = self.database[self.settings.database.collection_name]
-            self._ensure_indexes()
+            self._ensure_program_indexes()
         return self._collection
+
+    @property
+    def universities_collection(self) -> Collection:
+        """Get MongoDB collection for universities."""
+        if not hasattr(self, '_universities_collection') or self._universities_collection is None:
+            self._universities_collection = self.database["universities"]
+            self._ensure_university_indexes()
+        return self._universities_collection
 
     def _connect(self) -> None:
         """Establish connection to MongoDB."""
@@ -63,8 +71,8 @@ class MongoDBConnection:
             logger.error(f"Failed to connect to MongoDB: {e}")
             raise ConnectionError(f"MongoDB connection failed: {e}") from e
 
-    def _ensure_indexes(self) -> None:
-        """Create necessary database indexes for performance."""
+    def _ensure_program_indexes(self) -> None:
+        """Create necessary database indexes for programs collection."""
         try:
             # Unique index on source_url to prevent duplicates
             self._collection.create_index(
@@ -111,7 +119,77 @@ class MongoDBConnection:
 
             logger.info("Database indexes created successfully")
         except OperationFailure as e:
-            logger.warning(f"Failed to create indexes: {e}")
+            logger.warning(f"Failed to create program indexes: {e}")
+
+    def _ensure_university_indexes(self) -> None:
+        """Create necessary database indexes for universities collection."""
+        try:
+            universities_collection = self._universities_collection
+
+            # Unique index on university_id
+            universities_collection.create_index(
+                [("university_id", ASCENDING)],
+                unique=True,
+                name="unique_university_id"
+            )
+
+            # Index on name for searching
+            universities_collection.create_index(
+                [("name", ASCENDING)],
+                name="university_name_index"
+            )
+
+            # Index on country for geographical filtering
+            universities_collection.create_index(
+                [("country", ASCENDING)],
+                name="university_country_index"
+            )
+
+            # Index on QS ranking for ranking queries
+            universities_collection.create_index(
+                [("qs_world_ranking", ASCENDING)],
+                name="qs_ranking_index"
+            )
+
+            # Index on THE ranking
+            universities_collection.create_index(
+                [("the_world_ranking", ASCENDING)],
+                name="the_ranking_index"
+            )
+
+            # Index on US News ranking
+            universities_collection.create_index(
+                [("us_news_ranking", ASCENDING)],
+                name="us_news_ranking_index"
+            )
+
+            # Index on tier for filtering
+            universities_collection.create_index(
+                [("tier", ASCENDING)],
+                name="tier_index"
+            )
+
+            # Index on type (public/private)
+            universities_collection.create_index(
+                [("type", ASCENDING)],
+                name="type_index"
+            )
+
+            # Index on last_updated for freshness queries
+            universities_collection.create_index(
+                [("updated_at", DESCENDING)],
+                name="university_updated_index"
+            )
+
+            # Compound index for country + ranking queries
+            universities_collection.create_index(
+                [("country", ASCENDING), ("qs_world_ranking", ASCENDING)],
+                name="country_qs_ranking_index"
+            )
+
+            logger.info("University database indexes created successfully")
+        except OperationFailure as e:
+            logger.warning(f"Failed to create university indexes: {e}")
 
     def close(self) -> None:
         """Close the MongoDB connection."""
@@ -120,6 +198,8 @@ class MongoDBConnection:
             self._client = None
             self._database = None
             self._collection = None
+            if hasattr(self, '_universities_collection'):
+                self._universities_collection = None
             logger.info("MongoDB connection closed")
 
     def health_check(self) -> bool:

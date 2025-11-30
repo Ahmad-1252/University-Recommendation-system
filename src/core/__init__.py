@@ -14,6 +14,10 @@ from .constants import (
     LLM_PROMPTS
 )
 from .exceptions import (
+    BaseError,
+    ErrorSeverity,
+    ErrorCategory,
+    ErrorContext,
     UniversityScraperError,
     ScrapingError,
     LLMExtractionError,
@@ -25,10 +29,30 @@ from .exceptions import (
     ConfigurationError,
     APIError,
     GroqAPIError,
+    DeepSeekAPIError,
     RateLimitError,
+    NetworkError,
+    TimeoutError,
     ExportError,
     FileOperationError,
-    QualityCheckError
+    QualityCheckError,
+    CacheError,
+    CircuitBreakerError
+)
+from .retry import (
+    RetryStrategy,
+    RetryConfig,
+    RetryPolicy,
+    ExponentialBackoffRetry,
+    CircuitBreakerRetry,
+    retry_with_backoff
+)
+from .circuit_breaker import (
+    CircuitState,
+    CircuitBreakerConfig,
+    CircuitBreaker,
+    CircuitBreakerRegistry,
+    get_circuit_breaker
 )
 
 __all__ = [
@@ -49,7 +73,11 @@ __all__ = [
     "EXPORT_CONFIGS",
     "LLM_PROMPTS",
 
-    # Exceptions
+    # Enhanced Exceptions
+    "BaseError",
+    "ErrorSeverity",
+    "ErrorCategory",
+    "ErrorContext",
     "UniversityScraperError",
     "ScrapingError",
     "LLMExtractionError",
@@ -61,8 +89,28 @@ __all__ = [
     "ConfigurationError",
     "APIError",
     "GroqAPIError",
+    "DeepSeekAPIError",
     "RateLimitError",
+    "NetworkError",
+    "TimeoutError",
     "ExportError",
     "FileOperationError",
-    "QualityCheckError"
+    "QualityCheckError",
+    "CacheError",
+    "CircuitBreakerError",
+
+    # Retry Framework
+    "RetryStrategy",
+    "RetryConfig",
+    "RetryPolicy",
+    "ExponentialBackoffRetry",
+    "CircuitBreakerRetry",
+    "retry_with_backoff",
+
+    # Circuit Breaker
+    "CircuitState",
+    "CircuitBreakerConfig",
+    "CircuitBreaker",
+    "CircuitBreakerRegistry",
+    "get_circuit_breaker"
 ]

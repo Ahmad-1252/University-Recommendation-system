@@ -1,0 +1,733 @@
+Metadata-Version: 2.4
+Name: university-recommendation-system
+Version: 1.0.0
+Summary: AI-powered system for scraping and analyzing computer science programs from global universities
+Home-page: https://github.com/ahmad-1252/university-recommendation-system
+Author: University Recommendation System Team
+Author-email: University Recommendation System Team <team@university-recommendation.dev>
+Maintainer-email: Ahmad Ayyan <ahmad@example.com>
+Project-URL: Homepage, https://github.com/ahmad-1252/university-recommendation-system
+Project-URL: Documentation, https://university-recommendation-system.readthedocs.io/
+Project-URL: Repository, https://github.com/ahmad-1252/university-recommendation-system.git
+Project-URL: Issues, https://github.com/ahmad-1252/university-recommendation-system/issues
+Project-URL: Changelog, https://github.com/ahmad-1252/university-recommendation-system/blob/main/CHANGELOG.md
+Keywords: university,recommendation,computer-science,scraping,ai,llm
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Education
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Education
+Classifier: Topic :: Internet :: WWW/HTTP :: Indexing/Search
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: pydantic>=2.12.4
+Requires-Dist: pydantic-settings>=2.0.3
+Requires-Dist: crawl4ai>=0.7.6
+Requires-Dist: aiohttp>=3.9.1
+Requires-Dist: beautifulsoup4>=4.12.2
+Requires-Dist: groq>=0.33.0
+Requires-Dist: tenacity>=8.2.3
+Requires-Dist: pymongo>=4.15.3
+Requires-Dist: click>=8.1.7
+Requires-Dist: rich>=13.7.0
+Requires-Dist: tqdm>=4.66.1
+Requires-Dist: pandas==2.0.3
+Requires-Dist: openpyxl>=3.1.2
+Requires-Dist: tabulate>=0.9.0
+Requires-Dist: python-dotenv>=1.2.1
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.3; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.1; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: black>=23.12.1; extra == "dev"
+Requires-Dist: ruff>=0.1.11; extra == "dev"
+Requires-Dist: mypy>=1.7.1; extra == "dev"
+Requires-Dist: pre-commit>=3.5.0; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: sphinx>=7.2.6; extra == "docs"
+Requires-Dist: sphinx-rtd-theme>=1.3.0; extra == "docs"
+Provides-Extra: all
+Requires-Dist: university-recommendation-system[dev,docs]; extra == "all"
+Dynamic: author
+Dynamic: home-page
+Dynamic: requires-python
+
+# 🏛️ University Recommendation System
+
+A comprehensive AI-powered system for scraping and analyzing computer science programs from global universities. Built with modern Python architecture, featuring LLM-powered data extraction, MongoDB storage, and interactive CLI tools.
+
+## 🚀 Features
+
+### Core Capabilities
+- **AI-Powered Scraping**: Groq LLM (Llama 3.1) for intelligent data extraction from unstructured web content
+- **Concurrent Processing**: AsyncIO and aiohttp for high-performance web scraping
+- **Data Validation**: Pydantic models with comprehensive field validation
+- **Quality Monitoring**: Automated data quality assessment and gap analysis
+- **Interactive CLI**: Rich terminal interface for data exploration and analysis
+- **Multi-Format Export**: CSV, JSON, and Excel export capabilities
+
+### Advanced Features
+- **25+ Universities**: Comprehensive coverage of top global computer science programs
+- **Confidence Scoring**: 0-100% confidence scores for all extracted data
+- **Repository Pattern**: Clean database abstraction with MongoDB
+- **Error Recovery**: Robust retry logic with exponential backoff
+- **Type Safety**: Full type hints and mypy validation
+- **Testing Framework**: Comprehensive pytest suite with async support
+
+## 📋 System Requirements
+
+- **Python**: 3.8+
+- **Database**: MongoDB (local or Atlas)
+- **API**: Groq API key
+- **Memory**: 4GB+ RAM recommended
+- **Storage**: 2GB+ free space
+
+## 🛠️ Installation
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/ahmad-1252/university-recommendation-system.git
+cd university-recommendation-system
+```
+
+### 2. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Configure Environment
+```bash
+cp .env.example .env
+# Edit .env with your actual values
+```
+
+Required environment variables:
+```env
+MONGO_CONNECTION_STRING=mongodb://localhost:27017
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+### 4. Install for Development (Optional)
+```bash
+pip install -e .[dev]
+```
+
+## 🎯 Quick Start
+
+### 1. Validate URLs
+```bash
+python scripts/validate_urls.py
+```
+
+### 2. Run Full Scraper
+```bash
+python scripts/run_scraper.py
+```
+
+### 3. Monitor Quality
+```bash
+python scripts/monitor_quality.py
+```
+
+### 4. Interactive Dashboard
+```bash
+python -m src.cli.commands dashboard
+```
+
+## 🔄 How the System Works
+
+### Architecture Overview
+
+The University Recommendation System follows a modular, layered architecture designed for scalability and maintainability:
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   CLI Layer     │    │ Service Layer   │    │  Data Layer     │
+│                 │    │                 │    │                 │
+│ • Commands      │◄──►│ • LLM Service   │◄──►│ • MongoDB       │
+│ • Dashboard     │    │ • Validation    │    │ • Repositories  │
+│ • Data Viewer   │    │ • Enrichment    │    │ • Models        │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         ▲                       ▲                       ▲
+         │                       │                       │
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ Scraping Layer  │    │ Analysis Layer  │    │ Config Layer    │
+│                 │    │                 │    │                 │
+│ • Base Scraper  │    │ • Quality       │    │ • Pydantic      │
+│ • Content Ext.  │    │ • Statistics    │    │ • Environment   │
+│ • Link Discovery│    │ • Metrics       │    │ • Constants     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### Data Flow Pipeline
+
+1. **URL Discovery & Validation**
+   - Input: University website URLs
+   - Process: Link discovery using crawl4ai
+   - Output: Valid program page URLs
+
+2. **Content Extraction**
+   - Input: Valid program URLs
+   - Process: LLM-powered extraction with structured prompts
+   - Output: Raw program data with confidence scores
+
+3. **Data Validation & Enrichment**
+   - Input: Raw extracted data
+   - Process: Pydantic validation + business logic enrichment
+   - Output: Validated UniversityProgram objects
+
+4. **Storage & Indexing**
+   - Input: Validated program data
+   - Process: MongoDB storage with indexing
+   - Output: Persistent, queryable data
+
+5. **Analysis & Export**
+   - Input: Stored program data
+   - Process: Quality analysis and multi-format export
+   - Output: Insights and downloadable datasets
+
+### Core Components Deep Dive
+
+#### 1. Data Models (`src/models/university.py`)
+
+The system uses Pydantic v2 for robust data validation and type safety:
+
+```python
+class UniversityProgram(BaseModel):
+    # Core identification
+    university_name: str
+    program_name: str
+    degree_type: DegreeType
+
+    # Academic requirements
+    gpa_requirement_min: Optional[float]
+    language_requirements: LanguageProficiency
+
+    # Financial information
+    tuition_fees: TuitionFees
+
+    # Rankings and metadata
+    rankings: Rankings
+    confidence_score: float  # 0.0-1.0
+    data_completeness: float  # Auto-calculated
+```
+
+**Key Features:**
+- **Enum Validation**: Degree types, university tiers
+- **Field Validators**: GPA ranges, URL formats
+- **Model Validators**: Auto-calculates data completeness
+- **JSON Encoding**: Custom serializers for datetime/URLs
+
+#### 2. Scraping Engine (`src/scrapers/`)
+
+**Base Scraper (`base_scraper.py`)**:
+- Abstract base class with common scraping functionality
+- Rate limiting and retry logic
+- Concurrent processing with semaphores
+- Error handling and logging
+
+**University Scraper (`university_scraper.py`)**:
+```python
+async def scrape_program_data(self, url: str) -> Optional[UniversityProgram]:
+    # 1. URL validation
+    if not await self.validate_url(url):
+        return None
+
+    # 2. Create LLM extraction strategy
+    extraction_strategy = self.content_extractor.create_extraction_strategy()
+
+    # 3. Perform crawl with extraction
+    result = await crawler.arun(url=url, extraction_strategy=extraction_strategy)
+
+    # 4. Process and validate extracted data
+    if result.extracted_content:
+        program = UniversityProgram(**result.extracted_content[0])
+        program = self._enrich_program_data(program)
+        return program
+```
+
+**Content Extractor (`content_extractor.py`)**:
+- Uses Groq LLM with structured prompts
+- Caches responses to reduce API calls
+- Handles extraction failures gracefully
+- Provides confidence scoring
+
+#### 3. LLM Integration (`src/services/llm_service.py`)
+
+**Groq API Integration**:
+```python
+class LLMService:
+    def __init__(self):
+        self.client = Groq(api_key=settings.llm.api_key)
+        self.model = settings.llm.model  # llama3-70b-8192
+        self.temperature = 0.1  # Low for consistent extraction
+
+    async def extract_program_data(self, content: str) -> Dict[str, Any]:
+        prompt = LLM_PROMPTS["program_extraction"].format(content=content)
+        response = await self.client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.temperature
+        )
+        return self._parse_response(response)
+```
+
+**Prompt Engineering**:
+- Structured prompts for consistent extraction
+- Field-specific instructions
+- Confidence scoring guidelines
+- Error handling for malformed responses
+
+#### 4. Database Layer (`src/database/`)
+
+**Repository Pattern**:
+```python
+class ProgramRepository:
+    def save(self, program: UniversityProgram) -> bool:
+        # Convert to dict and save to MongoDB
+        doc = program.model_dump()
+        result = self.collection.insert_one(doc)
+        return result.acknowledged
+
+    def find_by_university(self, university: str) -> List[UniversityProgram]:
+        # Query with indexing support
+        docs = self.collection.find({"university_name": university})
+        return [UniversityProgram(**doc) for doc in docs]
+```
+
+**Indexing Strategy**:
+- Compound indexes on university + program
+- Text indexes for search functionality
+- Geospatial indexes for location queries
+
+#### 5. CLI Interface (`src/cli/`)
+
+**Command Structure**:
+```python
+@click.group()
+def cli():
+    """University Recommendation System CLI"""
+
+@cli.command()
+def scrape():
+    """Scrape program data from URLs"""
+    # Implementation
+
+@cli.command()
+def analyze():
+    """Analyze data quality"""
+    # Implementation
+```
+
+**Interactive Dashboard**:
+- Real-time system monitoring
+- Data visualization with Rich
+- Interactive menus and navigation
+- Live statistics updates
+
+### Configuration Management
+
+**Pydantic Settings** (`src/core/config.py`):
+```python
+class Settings(BaseSettings):
+    # Database configuration
+    database: DatabaseSettings
+
+    # LLM configuration
+    llm: LLMSettings
+
+    # Scraping parameters
+    scraping: ScrapingSettings
+
+    # Application metadata
+    app_name: str = "University Recommendation System"
+    version: str = "1.0.0"
+```
+
+**Environment Variables**:
+- Automatic loading from `.env` files
+- Type validation and conversion
+- Hierarchical configuration structure
+
+### Quality Assurance Pipeline
+
+1. **Data Validation**: Pydantic model validation
+2. **Schema Compliance**: Required field checking
+3. **Confidence Scoring**: LLM-based accuracy assessment
+4. **Completeness Analysis**: Automated gap detection
+5. **Duplicate Detection**: Hash-based deduplication
+
+### Performance Optimizations
+
+- **Async Processing**: Concurrent URL scraping
+- **Response Caching**: LLM API call reduction
+- **Batch Operations**: Bulk database inserts
+- **Rate Limiting**: Respectful web scraping
+- **Connection Pooling**: Efficient database connections
+
+## 📊 Data Structure
+
+### University Program Model
+```python
+{
+    "university_name": "Stanford University",
+    "program_name": "MS in Computer Science",
+    "degree_type": "Master of Science",
+    "country": "United States",
+    "city": "Stanford, CA",
+
+    # Academic Requirements
+    "gpa_requirement_min": 3.5,
+    "language_requirements": {
+        "toefl_min": 100,
+        "ielts_min": 7.0
+    },
+
+    # Financial Information
+    "tuition_fees": {
+        "domestic_per_year": 65000,
+        "international_per_year": 65000,
+        "currency": "USD"
+    },
+
+    # Program Details
+    "duration_years": 2.0,
+    "program_description": "Comprehensive CS program...",
+    "specializations": ["AI", "Systems", "Theory"],
+    "faculty_research_interests": ["Machine Learning", "Computer Vision"],
+
+    # Rankings & Reputation
+    "rankings": {
+        "qs_world_ranking": 3,
+        "the_world_ranking": 4,
+        "us_news_ranking": 3
+    },
+
+    # Metadata
+    "source_url": "https://cs.stanford.edu/",
+    "confidence_score": 0.92,
+    "data_completeness": 0.85,
+    "last_updated": "2025-11-13T10:30:00Z"
+}
+```
+
+## 🏗️ Project Architecture
+
+```
+university-recommendation-system/
+├── src/
+│   ├── core/                 # Configuration & shared utilities
+│   │   ├── config.py        # Pydantic settings management
+│   │   ├── constants.py     # URLs, prompts, enums
+│   │   ├── exceptions.py    # Custom exception classes
+│   │   └── __init__.py
+│   ├── models/              # Data models & validation
+│   │   ├── university.py    # Pydantic program models
+│   │   └── __init__.py
+│   ├── database/            # Data persistence layer
+│   │   ├── mongodb.py       # Connection management
+│   │   ├── repositories.py  # Repository pattern implementation
+│   │   └── __init__.py
+│   ├── scrapers/            # Web scraping components
+│   │   ├── base_scraper.py  # Abstract scraper base class
+│   │   ├── university_scraper.py  # Main scraping logic
+│   │   ├── content_extractor.py   # LLM-powered extraction
+│   │   ├── link_discoverer.py     # Link discovery & validation
+│   │   └── __init__.py
+│   ├── services/            # Business logic services
+│   │   ├── llm_service.py   # Groq API client
+│   │   ├── validation_service.py  # Data validation logic
+│   │   ├── enrichment_service.py  # Data enrichment
+│   │   └── __init__.py
+│   ├── analyzers/           # Data analysis tools
+│   │   ├── quality_analyzer.py    # Quality metrics & reporting
+│   │   └── __init__.py
+│   ├── cli/                 # Command-line interface
+│   │   ├── commands.py      # CLI command definitions
+│   │   ├── dashboard.py     # Interactive dashboard
+│   │   ├── data_viewer.py   # Data browsing interface
+│   │   └── __init__.py
+│   └── __init__.py
+├── scripts/                 # Executable utility scripts
+│   ├── run_scraper.py       # Main scraping execution
+│   ├── validate_urls.py     # URL validation utility
+│   ├── monitor_quality.py   # Quality monitoring script
+│   ├── data_exporter.py     # Data export utilities
+│   └── ...
+├── tests/                   # Test suite
+│   ├── test_core.py         # Core functionality tests
+│   ├── test_database.py     # Database layer tests
+│   ├── test_export.py       # Export functionality tests
+│   ├── test_models.py       # Data model tests
+│   ├── test_scrapers/       # Scraping tests
+│   └── ...
+├── data/                    # Data files and exports
+│   ├── raw/                 # Raw scraped data
+│   ├── processed/           # Processed datasets
+│   └── exports/             # Export files
+├── logs/                    # Application logs
+├── docs/                    # Documentation
+├── .env.example            # Environment configuration template
+├── pyproject.toml          # Project configuration & dependencies
+├── setup.py               # Package setup script
+├── requirements.txt       # Python dependencies
+├── .gitignore            # Git ignore rules
+└── README.md             # This file
+```
+
+## 🎮 CLI Usage
+
+### Interactive Dashboard
+```bash
+urs dashboard
+```
+Features:
+- Real-time system status monitoring
+- Data overview with statistics
+- Recent activity logs
+- Quick action menu navigation
+
+### Data Viewer
+```bash
+urs view
+```
+Capabilities:
+- Search programs by keywords or filters
+- Browse by university or country
+- View detailed program information
+- Export filtered results
+
+### Search Programs
+```bash
+# Search by query
+urs search "machine learning"
+
+# Filter by country
+urs search --country "Germany" "computer science"
+
+# Filter by degree type
+urs search --degree "Master of Science" "AI"
+```
+
+### Scrape Data
+```bash
+# Scrape specific URLs
+urs scrape https://cs.stanford.edu/ https://cs.berkeley.edu/
+
+# Scrape from file
+urs scrape --file urls.txt
+
+# Control concurrency
+urs scrape --concurrent 3 urls.txt
+```
+
+### Validate URLs
+```bash
+urs validate https://cs.stanford.edu/
+urs validate --file university_urls.txt
+```
+
+### Export Data
+```bash
+# Export all data
+urs export
+
+# Export specific formats
+urs export --format csv --format json
+
+# Custom output directory
+urs export --output ./my_exports
+```
+
+### Quality Analysis
+```bash
+urs analyze
+```
+Provides:
+- Data completeness metrics (0-100%)
+- Quality score analysis
+- Coverage statistics by university/country
+- Improvement recommendations
+
+## 🔧 Configuration
+
+### Environment Variables
+```env
+# Database Configuration
+MONGO_CONNECTION_STRING=mongodb://localhost:27017
+DATABASE_NAME=university_db
+COLLECTION_NAME=programs
+
+# LLM Service Configuration
+GROQ_API_KEY=your_key_here
+GROQ_MODEL=llama3-70b-8192
+LLM_TIMEOUT=30
+
+# Scraping Parameters
+SCRAPE_TIMEOUT=30
+MAX_CONCURRENT_REQUESTS=5
+RATE_LIMIT_DELAY=2.0
+
+# Logging Configuration
+LOG_LEVEL=INFO
+LOG_FILE_PATH=logs/app.log
+
+# Export Settings
+EXPORT_DIR=data/exports
+```
+
+### Advanced Configuration
+The system uses Pydantic settings for configuration management. All settings can be overridden via environment variables or configuration files.
+
+## 🧪 Testing
+
+### Run Test Suite
+```bash
+pytest
+```
+
+### Run with Coverage
+```bash
+pytest --cov=src --cov-report=html
+```
+
+### Run Specific Tests
+```bash
+pytest tests/test_scrapers/
+pytest tests/test_services/test_llm_service.py
+```
+
+## 📊 Performance & Quality
+
+### Expected Metrics
+- **Success Rate**: 85-95% URL processing
+- **Data Completeness**: 80%+ field coverage
+- **Confidence Scores**: 75%+ average
+- **Processing Speed**: 50-100 URLs/hour
+
+### Quality Monitoring
+```bash
+# Generate quality report
+urs analyze
+
+# Monitor data freshness
+python scripts/monitor_quality.py
+```
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+#### MongoDB Connection Failed
+```bash
+# Check MongoDB status
+brew services list | grep mongodb
+
+# Or for local installation
+sudo systemctl status mongod
+```
+
+#### Groq API Errors
+```bash
+# Check API key
+echo $GROQ_API_KEY
+
+# Test API connection
+python -c "from groq import Groq; Groq().models.list()"
+```
+
+#### Low Success Rates
+- Verify URLs are accessible
+- Check for anti-bot measures
+- Reduce concurrent requests
+- Increase timeouts
+
+#### Memory Issues
+- Reduce `MAX_CONCURRENT_REQUESTS`
+- Process URLs in smaller batches
+- Monitor system resources
+
+### Debug Mode
+```bash
+export LOG_LEVEL=DEBUG
+urs scrape --verbose
+```
+
+## 🚀 Deployment
+
+### Docker Deployment
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+EXPOSE 8000
+
+CMD ["python", "scripts/run_scraper.py"]
+```
+
+### Production Setup
+```bash
+# Install production dependencies only
+pip install --no-dev -r requirements.txt
+
+# Set production environment
+export DEBUG=false
+export LOG_LEVEL=WARNING
+
+# Use production MongoDB
+export MONGO_CONNECTION_STRING=mongodb+srv://...
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Write tests for new functionality
+4. Ensure code passes linting: `ruff check` and `mypy`
+5. Submit a pull request
+
+### Development Setup
+```bash
+# Install development dependencies
+pip install -e .[dev]
+
+# Run pre-commit hooks
+pre-commit install
+
+# Format code
+black src/
+ruff check --fix src/
+```
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Groq** for providing fast LLM inference
+- **MongoDB** for reliable document storage
+- **Crawl4AI** for web scraping capabilities
+- **Pydantic** for data validation
+- **Rich** for beautiful CLI interfaces
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/ahmad-1252/university-recommendation-system/issues)
+- **Documentation**: [Read the Docs](https://university-recommendation-system.readthedocs.io/)
+- **Discussions**: [GitHub Discussions](https://github.com/ahmad-1252/university-recommendation-system/discussions)
+
+---
+
+**Built with ❤️ for students and researchers worldwide**

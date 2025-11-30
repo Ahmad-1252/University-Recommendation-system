@@ -6,9 +6,9 @@ from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any
 from datetime import datetime
 
-from ..models.university import UniversityProgram
-from ..core.exceptions import ScrapingError
-from ..core.config import get_settings
+from models.university import UniversityProgram
+from core.exceptions import ScrapingError
+from core.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -21,16 +21,17 @@ class BaseScraper(ABC):
         self.settings = get_settings()
         self.timeout = self.settings.scraping.timeout
         self.max_retries = self.settings.scraping.retry_attempts
-        self.rate_limit_delay = self.settings.llm.rate_limit_delay
+        self.rate_limit_delay = self.settings.scraping.retry_backoff_factor
         logger.info(f"Initialized {self.name}")
 
     @abstractmethod
-    async def scrape_program_data(self, url: str) -> Optional[UniversityProgram]:
+    async def scrape_program_data(self, url: str, skip_validation: bool = False) -> Optional[UniversityProgram]:
         """
         Scrape program data from a given URL.
 
         Args:
             url: The URL to scrape
+            skip_validation: Skip URL validation (use for user-provided URLs)
 
         Returns:
             UniversityProgram instance if successful, None otherwise
@@ -53,12 +54,13 @@ class BaseScraper(ABC):
         """
         pass
 
-    async def scrape_multiple(self, urls: list[str]) -> Dict[str, Optional[UniversityProgram]]:
+    async def scrape_multiple(self, urls: list[str], skip_validation: bool = True) -> Dict[str, Optional[UniversityProgram]]:
         """
         Scrape multiple URLs concurrently.
 
         Args:
             urls: List of URLs to scrape
+            skip_validation: Skip URL validation (True for user-provided URLs)
 
         Returns:
             Dictionary mapping URLs to UniversityProgram instances or None
@@ -71,7 +73,7 @@ class BaseScraper(ABC):
         async def scrape_with_semaphore(url: str) -> tuple[str, Optional[UniversityProgram]]:
             async with semaphore:
                 try:
-                    result = await self.scrape_program_data(url)
+                    result = await self.scrape_program_data(url, skip_validation=skip_validation)
                     return url, result
                 except Exception as e:
                     logger.error(f"Failed to scrape {url}: {e}")

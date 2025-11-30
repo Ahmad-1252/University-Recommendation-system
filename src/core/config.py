@@ -29,13 +29,35 @@ class DatabaseSettings(BaseSettings):
 
 
 class LLMSettings(BaseSettings):
-    """Groq LLM API configuration."""
+    """LLM API configuration."""
 
-    api_key: str = Field("", alias="GROQ_API_KEY")
-    model: str = Field("llama3-70b-8192", alias="GROQ_MODEL")
-    timeout: int = Field(30, alias="LLM_TIMEOUT")
+    provider: str = Field("deepseek", alias="LLM_PROVIDER")  # deepseek (primary) or groq (fallback)
     max_retries: int = Field(3)
     temperature: float = Field(0.1)
+
+    # Provider-specific settings
+    groq: 'GroqSettings' = Field(default_factory=lambda: GroqSettings())
+    deepseek: 'DeepSeekSettings' = Field(default_factory=lambda: DeepSeekSettings())
+
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+
+
+class GroqSettings(BaseSettings):
+    """Groq provider configuration."""
+
+    api_key: str = Field("", alias="GROQ_API_KEY")
+    model: str = Field("llama-3.3-70b-versatile", alias="GROQ_MODEL")
+    timeout: int = Field(30, alias="GROQ_TIMEOUT")
+
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+
+
+class DeepSeekSettings(BaseSettings):
+    """DeepSeek provider configuration."""
+
+    api_key: str = Field("", alias="DEEPSEEK_API_KEY")
+    model: str = Field("deepseek-chat", alias="DEEPSEEK_MODEL")
+    timeout: int = Field(30, alias="DEEPSEEK_TIMEOUT")
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
 
@@ -80,6 +102,56 @@ class ExportSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
 
 
+class APISettings(BaseSettings):
+    """FastAPI REST API configuration."""
+
+    host: str = Field("0.0.0.0", alias="API_HOST")
+    port: int = Field(8000, alias="API_PORT")
+    api_key: str = Field("", alias="API_KEY")
+    rate_limit: int = Field(100, alias="API_RATE_LIMIT")  # requests per period
+    rate_limit_period: int = Field(60, alias="API_RATE_LIMIT_PERIOD")  # seconds
+    enable_cors: bool = Field(True)
+    cors_origins: List[str] = Field(["*"])
+
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+
+
+class RedisSettings(BaseSettings):
+    """Redis caching configuration."""
+
+    host: str = Field("localhost", alias="REDIS_HOST")
+    port: int = Field(6379, alias="REDIS_PORT")
+    db: int = Field(0, alias="REDIS_DB")
+    password: Optional[str] = Field(None, alias="REDIS_PASSWORD")
+    ttl: int = Field(3600, alias="REDIS_TTL")  # Default TTL in seconds
+    max_connections: int = Field(10, alias="REDIS_MAX_CONNECTIONS")
+    decode_responses: bool = Field(True)
+
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+
+
+class ErrorHandlingSettings(BaseSettings):
+    """Error handling and resilience configuration."""
+
+    # Retry settings
+    default_max_retries: int = Field(3, alias="DEFAULT_MAX_RETRIES")
+    default_retry_delay: float = Field(1.0, alias="DEFAULT_RETRY_DELAY")
+    default_max_retry_delay: float = Field(60.0, alias="DEFAULT_MAX_RETRY_DELAY")
+    default_backoff_factor: float = Field(2.0, alias="DEFAULT_BACKOFF_FACTOR")
+
+    # Circuit breaker settings
+    circuit_failure_threshold: int = Field(5, alias="CIRCUIT_FAILURE_THRESHOLD")
+    circuit_recovery_timeout: float = Field(60.0, alias="CIRCUIT_RECOVERY_TIMEOUT")
+    circuit_success_threshold: int = Field(3, alias="CIRCUIT_SUCCESS_THRESHOLD")
+    circuit_timeout: float = Field(30.0, alias="CIRCUIT_TIMEOUT")
+
+    # Error handling
+    enable_circuit_breakers: bool = Field(True, alias="ENABLE_CIRCUIT_BREAKERS")
+    enable_retry_logging: bool = Field(True, alias="ENABLE_RETRY_LOGGING")
+
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+
+
 class Settings(BaseSettings):
     """Main application settings."""
 
@@ -89,6 +161,9 @@ class Settings(BaseSettings):
     scraping: ScrapingSettings = ScrapingSettings()
     logging: LoggingSettings = LoggingSettings()
     export: ExportSettings = ExportSettings()
+    redis: RedisSettings = RedisSettings()
+    api: APISettings = APISettings()
+    error_handling: ErrorHandlingSettings = ErrorHandlingSettings()
 
     # Application metadata
     app_name: str = "University Recommendation System"
