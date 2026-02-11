@@ -6,6 +6,7 @@ pydantic-settings==2.0.3
 crawl4ai==0.7.6
 aiohttp>=3.11.11
 beautifulsoup4==4.12.2
+playwright>=1.40.0
 
 # LLM and AI
 groq==0.33.0

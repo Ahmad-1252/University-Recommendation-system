@@ -194,49 +194,65 @@ def main():
     """Main entry point."""
     import argparse
     
-    parser = argparse.ArgumentParser(description='Scrape university program data')
-    parser.add_argument('--urls', nargs='*', help='Specific URLs to scrape')
+    parser = argparse.ArgumentParser(
+        description='Scrape university program data',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python run_scraper.py                           # Discover and scrape 20 programs per university (default)
+  python run_scraper.py --max-programs 50         # Scrape up to 50 programs per university
+  python run_scraper.py --university "University of Oxford"
+  python run_scraper.py --level graduate
+  python run_scraper.py --category "Computer Science"
+  python run_scraper.py --single-url              # Legacy mode: scrape 1 program per university
+        """
+    )
+    parser.add_argument('--urls', nargs='*', help='Specific URLs to scrape (enables single-url mode)')
     parser.add_argument('--concurrent', type=int, default=3, help='Concurrent requests')
-    parser.add_argument('--limit', type=int, help='Limit number of URLs to scrape')
+    parser.add_argument('--limit', type=int, help='Limit number of universities to process')
     
-    # New comprehensive scraping options
-    parser.add_argument('--all-programs', action='store_true', 
-                        help='Scrape ALL programs from university course directories')
+    # Multi-program scraping options (now default behavior)
+    parser.add_argument('--single-url', action='store_true', 
+                        help='Legacy mode: scrape only one program URL per university (from UNIVERSITY_URLS)')
     parser.add_argument('--university', type=str, 
                         help='Filter by university name (partial match)')
-    parser.add_argument('--level', type=str, choices=['undergraduate', 'graduate', 'masters', 'phd'],
-                        help='Filter by degree level')
+    parser.add_argument('--level', type=str, choices=['undergraduate', 'graduate', 'masters', 'phd', 'all'],
+                        default='all',
+                        help='Filter by degree level (default: all)')
     parser.add_argument('--category', type=str,
                         help='Filter by program category (e.g., Business, Medical, Education)')
-    parser.add_argument('--max-programs', type=int, default=50,
-                        help='Maximum programs to scrape per directory (default: 50)')
+    parser.add_argument('--max-programs', type=int, default=20,
+                        help='Maximum programs to scrape per university (default: 20)')
     
     args = parser.parse_args()
     
-    # Comprehensive scraping mode
-    if args.all_programs:
-        asyncio.run(scrape_all_programs(
-            university=args.university,
-            degree_level=args.level,
-            category=args.category,
-            concurrent=args.concurrent,
-            max_programs=args.max_programs
-        ))
+    # Single-URL legacy mode (when --single-url flag is used OR specific URLs provided)
+    if args.single_url or args.urls:
+        if args.urls:
+            urls = args.urls
+        else:
+            urls = list(UNIVERSITY_URLS.values())
+            console.print(f"[cyan]Using {len(urls)} pre-configured university URLs (single-url mode)[/cyan]")
+        
+        if args.limit:
+            urls = urls[:args.limit]
+            console.print(f"[yellow]Limited to first {args.limit} URLs[/yellow]")
+        
+        # Run legacy single-URL scraper
+        asyncio.run(scrape_universities(urls, args.concurrent))
         return
     
-    # Standard URL-based scraping
-    if args.urls:
-        urls = args.urls
-    else:
-        urls = list(UNIVERSITY_URLS.values())
-        console.print(f"[cyan]Using {len(urls)} pre-configured university URLs[/cyan]")
+    # Default: Comprehensive multi-program scraping mode
+    console.print(f"[cyan]🚀 Multi-program discovery mode (default)[/cyan]")
+    console.print(f"[cyan]   Max programs per university: {args.max_programs}[/cyan]")
     
-    if args.limit:
-        urls = urls[:args.limit]
-        console.print(f"[yellow]Limited to first {args.limit} URLs[/yellow]")
-    
-    # Run scraper
-    asyncio.run(scrape_universities(urls, args.concurrent))
+    asyncio.run(scrape_all_programs(
+        university=args.university,
+        degree_level=args.level if args.level != 'all' else None,
+        category=args.category,
+        concurrent=args.concurrent,
+        max_programs=args.max_programs
+    ))
 
 
 if __name__ == '__main__':

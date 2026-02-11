@@ -69,68 +69,78 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "undergraduate": "https://www.ox.ac.uk/admissions/undergraduate/courses/course-listing/",
         "graduate": "https://www.ox.ac.uk/admissions/graduate/courses/courses-a-z-listing/",
         "base_url": "https://www.ox.ac.uk",
-        "program_url_pattern": "/admissions/graduate/courses/(?:msc|ma|mba|dphil|pgdip|pgcert|bm|bcl)-"
+        # Matches: /admissions/graduate/courses/msc-advanced-computer-science
+        "program_url_pattern": "/admissions/(?:undergraduate|graduate)/courses/(?:msc|ma|mba|mst|mth|dphil|pgdip|pgcert|bm|bcl|ba|bsc)-[a-z0-9-]+"
     },
     "University of Cambridge": {
         "undergraduate": "https://www.undergraduate.study.cam.ac.uk/courses/directory",
-        "graduate": "https://www.postgraduate.study.cam.ac.uk/courses/departments",
-        "base_url": "https://www.postgraduate.study.cam.ac.uk",
-        "program_url_pattern": "/courses/directory/[a-z]+"
+        "graduate": "https://www.postgraduate.study.cam.ac.uk/courses/directory",
+        "base_url": "https://www.cam.ac.uk",
+        # Matches: /courses/directory/cscsmpacs (course codes)
+        "program_url_pattern": "/courses/directory/[a-z]{4,}"
     },
     "Imperial College London": {
         "undergraduate": "https://www.imperial.ac.uk/study/courses/undergraduate/",
         "graduate": "https://www.imperial.ac.uk/study/courses/postgraduate-taught/",
         "phd": "https://www.imperial.ac.uk/study/courses/postgraduate-research/",
         "base_url": "https://www.imperial.ac.uk",
-        "program_url_pattern": "/study/courses/(?:undergraduate|postgraduate-taught|postgraduate-research)/\\d{4}/[a-z]"
+        # Matches: /study/courses/postgraduate-taught/2026/advanced-computing/ or /study/courses/postgraduate-taught/computing/
+        "program_url_pattern": "/study/courses/(?:undergraduate|postgraduate-taught|postgraduate-research)/(?:\\d{4}/)?[a-z][a-z0-9-]+/?$"
     },
     "UCL": {
         "undergraduate": "https://www.ucl.ac.uk/prospective-students/undergraduate/degrees",
         "graduate": "https://www.ucl.ac.uk/prospective-students/graduate/taught-degrees",
         "phd": "https://www.ucl.ac.uk/prospective-students/graduate/research-degrees",
         "base_url": "https://www.ucl.ac.uk",
-        "program_url_pattern": "/prospective-students/(?:undergraduate|graduate)/(?:degrees|taught-degrees|research-degrees)/[a-z]"
+        # Matches: /prospective-students/graduate/taught-degrees/computer-science-msc
+        "program_url_pattern": "/prospective-students/(?:undergraduate|graduate)/(?:degrees|taught-degrees|research-degrees)/[a-z][a-z0-9-]+-(?:msc|ma|mba|phd|mres|bsc|ba|beng)$"
     },
     "University of Edinburgh": {
         "undergraduate": "https://study.ed.ac.uk/programmes/undergraduate-a-z",
         "graduate": "https://study.ed.ac.uk/programmes/postgraduate-taught-a-z",
         "phd": "https://study.ed.ac.uk/programmes/postgraduate-research-a-z",
         "base_url": "https://study.ed.ac.uk",
-        "program_url_pattern": "/programmes/postgraduate-taught/\\d+-"
+        # Matches: /programmes/postgraduate-taught/12345-computer-science-msc
+        "program_url_pattern": "/programmes/(?:undergraduate|postgraduate-taught|postgraduate-research)/[0-9]+-[a-z0-9-]+"
     },
     "University of Manchester": {
         "undergraduate": "https://www.manchester.ac.uk/study/undergraduate/courses/list/",
         "graduate": "https://www.manchester.ac.uk/study/masters/courses/list/",
         "phd": "https://www.manchester.ac.uk/study/postgraduate-research/programmes/",
         "base_url": "https://www.manchester.ac.uk",
-        "program_url_pattern": "/study/masters/courses/list/\\d+/[a-z]"
+        # Matches: /study/masters/courses/list/02674/msc-advanced-computer-science/
+        "program_url_pattern": "/study/(?:undergraduate|masters|postgraduate-research)/(?:courses/list|programmes)/\\d+/[a-z][a-z0-9-]+/?$"
     },
     "King's College London": {
         "undergraduate": "https://www.kcl.ac.uk/study/undergraduate/courses",
         "graduate": "https://www.kcl.ac.uk/study/postgraduate-taught/courses",
         "phd": "https://www.kcl.ac.uk/study/postgraduate-research/courses",
         "base_url": "https://www.kcl.ac.uk",
-        "program_url_pattern": "/study/(?:undergraduate|postgraduate-taught|postgraduate-research)/courses/[a-z]"
+        # Matches: /study/postgraduate-taught/courses/computer-science-msc
+        "program_url_pattern": "/study/(?:undergraduate|postgraduate-taught|postgraduate-research)/courses/[a-z][a-z0-9-]+-(?:msc|ma|phd|bsc|ba|llm|llb|pg|mres)$"
     },
     "University of Glasgow": {
         "undergraduate": "https://www.gla.ac.uk/undergraduate/degrees/",
         "graduate": "https://www.gla.ac.uk/postgraduate/taught/",
         "phd": "https://www.gla.ac.uk/postgraduate/research/",
         "base_url": "https://www.gla.ac.uk",
-        "program_url_pattern": "/(?:undergraduate/degrees|postgraduate/(?:taught|research))/[a-z]"
+        # Matches: /postgraduate/taught/computing-science/ or /undergraduate/degrees/computing-science/
+        "program_url_pattern": "/(?:undergraduate/degrees|postgraduate/(?:taught|research))/[a-z][a-z0-9-]+/?$"
     },
     "University of Leeds": {
         "undergraduate": "https://courses.leeds.ac.uk/course-search/undergraduate-courses",
         "graduate": "https://courses.leeds.ac.uk/course-search/masters-courses",
         "phd": "https://courses.leeds.ac.uk/course-search/research-degrees",
-        "base_url": "https://www.leeds.ac.uk",
-        "program_url_pattern": "/[a-z]\\d+/"
+        "base_url": "https://courses.leeds.ac.uk",
+        # Matches: /j702/advanced-computer-science-msc (course code pattern)
+        "program_url_pattern": "/[a-z]\\d+/[a-z][a-z0-9-]+$"
     },
     "University of Warwick": {
         "undergraduate": "https://warwick.ac.uk/study/undergraduate/courses/",
         "graduate": "https://warwick.ac.uk/study/postgraduate/courses/",
         "base_url": "https://warwick.ac.uk",
-        "program_url_pattern": "/study/(?:undergraduate|postgraduate)/courses/[a-z]"
+        # Matches: /study/postgraduate/courses/csmscdcs/
+        "program_url_pattern": "/study/(?:undergraduate|postgraduate)/courses/[a-z][a-z0-9]+/?$"
     },
     "ETH Zurich": {
         "undergraduate": "https://ethz.ch/en/studies/bachelor/degree-programmes.html",
@@ -140,19 +150,22 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "graduate_mgmt": "https://ethz.ch/en/studies/master/degree-programmes/management-and-social-sciences.html",
         "phd": "https://ethz.ch/en/doctorate.html",
         "base_url": "https://ethz.ch",
-        "program_url_pattern": "/studies/(?:master|bachelor)/degree-programmes/[^/]+/[a-z][^/]+\\.html$"
+        # Matches: /studies/master/degree-programmes/engineering-sciences/computer-science.html
+        "program_url_pattern": "/studies/(?:master|bachelor)/degree-programmes/[a-z-]+/[a-z][a-z0-9-]+\\.html$"
     },
     "EPFL": {
         "undergraduate": "https://www.epfl.ch/education/bachelor/programs/",
         "graduate": "https://www.epfl.ch/education/master/programs/",
         "phd": "https://www.epfl.ch/education/phd/programs/",
         "base_url": "https://www.epfl.ch",
-        "program_url_pattern": "/education/(?:bachelor|master|phd)/programs/[a-z]"
+        # Matches: /education/master/programs/computer-science/
+        "program_url_pattern": "/education/(?:bachelor|master|phd)/programs/[a-z][a-z0-9-]+/?$"
     },
     "Technical University of Munich": {
         "all": "https://www.tum.de/en/studies/degree-programs/",
         "base_url": "https://www.tum.de",
-        "program_url_pattern": "/studies/degree-programs/detail/[a-z]",
+        # Matches: /studies/degree-programs/detail/informatics-master-of-science-msc
+        "program_url_pattern": "/studies/degree-programs/detail/[a-z][a-z0-9-]+$",
         "pagination": {
             "type": "hash",
             "pattern": "#page={page}",
@@ -162,59 +175,70 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
     "LMU Munich": {
         "all": "https://www.lmu.de/en/study/all-degrees-and-programs/international-degree-programs/",
         "base_url": "https://www.lmu.de",
-        "program_url_pattern": "uni-muenchen\\.de/.*(?:studium|study|master|index)\\.html"
+        # Matches: LMU Munich program pages (often redirects to uni-muenchen.de)
+        "program_url_pattern": "(?:uni-muenchen\\.de|lmu\\.de)/.*(?:studium|study|degree-program|master|bachelor)[^/]*/?$"
     },
     "Heidelberg University": {
         "all": "https://www.uni-heidelberg.de/en/study/all-subjects",
         "base_url": "https://www.uni-heidelberg.de",
-        "program_url_pattern": "/study/all-subjects/[a-z]"
+        # Matches: /study/all-subjects/computer-science/
+        "program_url_pattern": "/study/all-subjects/[a-z][a-z0-9-]+/?$"
     },
     "University of Amsterdam": {
         "undergraduate": "https://www.uva.nl/en/programmes/bachelors/bachelors.html",
         "graduate": "https://www.uva.nl/en/programmes/masters/masters.html",
         "base_url": "https://www.uva.nl",
-        "program_url_pattern": "/programmes/(?:bachelors|masters)/[a-z][^/]+/[a-z]"
+        # Matches: /programmes/masters/computer-science/computer-science.html
+        "program_url_pattern": "/programmes/(?:bachelors|masters)/[a-z][a-z0-9-]+/[a-z][a-z0-9-]+\\.html$"
     },
     "Delft University of Technology": {
         "undergraduate": "https://www.tudelft.nl/en/education/programmes/bachelors",
         "graduate": "https://www.tudelft.nl/en/education/programmes/masters",
         "base_url": "https://www.tudelft.nl",
-        "program_url_pattern": "/education/programmes/(?:bachelors|masters)/[a-z]"
+        # Matches: /education/programmes/masters/computer-science
+        "program_url_pattern": "/education/programmes/(?:bachelors|masters)/[a-z][a-z0-9-]+/?$"
     },
     "KU Leuven": {
         "undergraduate": "https://www.kuleuven.be/programmes/bachelors",
         "graduate": "https://www.kuleuven.be/programmes/masters",
         "base_url": "https://www.kuleuven.be",
-        "program_url_pattern": "/programmes/(?:bachelor|master)-[a-z]"
+        # Matches: /programmes/master-computer-science
+        "program_url_pattern": "/programmes/(?:bachelor|master)-[a-z][a-z0-9-]+$"
     },
     "Leiden University": {
-        "undergraduate": "https://www.universiteitleiden.nl/en/education/study-programmes/bachelor",
-        "graduate": "https://www.universiteitleiden.nl/en/education/study-programmes/master",
+        "undergraduate": "https://www.universiteitleiden.nl/en/education/study-programmes",
+        "graduate": "https://www.universiteitleiden.nl/en/education/study-programmes",
+        "studiegids": "https://studiegids.universiteitleiden.nl/en/studies",
         "base_url": "https://www.universiteitleiden.nl",
-        "program_url_pattern": "/education/study-programmes/(?:bachelor|master)/[a-z]"
+        # Matches: /education/study-programmes/master/computer-science or /education/study-programmes/bachelor/archaeology
+        "program_url_pattern": "/education/study-programmes/(?:bachelor|master)/[a-z][a-z0-9-]+(?:/[a-z][a-z0-9-]+)?$"
     },
     "Utrecht University": {
         "undergraduate": "https://www.uu.nl/en/bachelors/bachelors-programmes",
         "graduate": "https://www.uu.nl/en/masters/masters-programmes",
         "base_url": "https://www.uu.nl",
+        # Matches: /masters/computer-science
         "program_url_pattern": "/(?:masters|bachelors)/[a-z][a-z0-9-]+$"
     },
     "Université PSL": {
         "graduate": "https://www.psl.eu/en/education",
         "base_url": "https://www.psl.eu",
-        "program_url_pattern": "/education/[a-z]"
+        # Matches: /education/master-computer-science
+        "program_url_pattern": "/education/(?:master|bachelor|phd)-[a-z][a-z0-9-]+$"
     },
     "University of Tartu": {
         "undergraduate": "https://ut.ee/en/bachelors-programmes",
         "graduate": "https://ut.ee/en/masters-programmes",
         "phd": "https://ut.ee/en/doctoral-programmes",
         "base_url": "https://ut.ee",
-        "program_url_pattern": "/curriculum/[a-z]"
+        # Matches: /curriculum/computer-science or /en/curriculum/...
+        "program_url_pattern": "/(?:en/)?curriculum/[a-z][a-z0-9-]+$"
     },
     "National and Kapodistrian University of Athens": {
         "all": "https://en.uoa.gr/studies/",
         "base_url": "https://en.uoa.gr",
-        "program_url_pattern": "/studies/(?:undergraduate|postgraduate)/[a-z]"
+        # Matches: /studies/undergraduate/computer-science/ or /studies/postgraduate/...
+        "program_url_pattern": "/studies/(?:undergraduate|postgraduate)/[a-z][a-z0-9-]+/?$"
     }
 }
 
@@ -733,4 +757,80 @@ Assess the quality and completeness of the extracted program data.
 Rate each field on a scale of 0-1 for confidence in accuracy.
 Calculate overall completeness percentage.
 """
+}
+
+
+# TopUniversities.com Configuration
+TOPUNIVERSITIES_CONFIG = {
+    "base_url": "https://www.topuniversities.com",
+    "urls": {
+        "world_rankings": "https://www.topuniversities.com/world-university-rankings",
+        "subject_rankings": "https://www.topuniversities.com/university-rankings/university-subject-rankings",
+        "by_country": "https://www.topuniversities.com/where-to-study",
+        "find_university": "https://www.topuniversities.com/find-your-university"
+    },
+    "selectors": {
+        # Primary selectors (2026 page structure)
+        "ranking_list": ".ranking-result-table",
+        "ranking_item": "._qs-ranking-data-row.row",
+        "ranking_item_card": ".ind-item",  # Quick View cards
+        "ranking_position": "._univ-rank .td-wrap-in",
+        "ranking_position_card": ".overall-rank-value",  # Quick View
+        "university_name": "a.uni-link",
+        "location": ".location",
+        "overall_score": ".overall-score-span",
+        "score_indicator": ".td-wrap-in",
+        "pagination": ".pagination",
+        "next_page_button": ".page-link.next",
+        # Fallback selectors
+        "fallback_ranking_item": "[class*='ranking'][class*='row']",
+        "fallback_university_name": "a[href*='/universities/']",
+        "fallback_score": "[class*='score']",
+        # Legacy selectors (for backwards compatibility)
+        "load_more_button": "button:has-text('Load More')"
+    },
+    "rate_limiting": {
+        "delay_seconds": 2,
+        "max_retries": 3,
+        "timeout_seconds": 30
+    },
+    "subjects": {
+        "computer-science": "Computer Science & Information Systems",
+        "business": "Business & Management Studies",
+        "engineering": "Engineering",
+        "medicine": "Medicine",
+        "law": "Law & Legal Studies",
+        "education": "Education & Training",
+        "arts": "Arts & Humanities",
+        "sciences": "Natural Sciences"
+    }
+}
+
+
+# University Name Mapping for TopUniversities.com
+# Maps our internal university names to TopUniversities.com names
+UNIVERSITY_NAME_MAPPING = {
+    "University of Oxford": "University of Oxford",
+    "University of Cambridge": "University of Cambridge",
+    "Imperial College London": "Imperial College London",
+    "UCL": "UCL (University College London)",
+    "University of Edinburgh": "The University of Edinburgh",
+    "University of Manchester": "The University of Manchester",
+    "King's College London": "King's College London",
+    "University of Glasgow": "University of Glasgow",
+    "University of Leeds": "University of Leeds",
+    "University of Warwick": "University of Warwick",
+    "ETH Zurich": "ETH Zurich - Swiss Federal Institute of Technology",
+    "EPFL": "EPFL",
+    "Technical University of Munich": "Technical University of Munich",
+    "LMU Munich": "Ludwig-Maximilians-Universität München",
+    "Heidelberg University": "Heidelberg University",
+    "University of Amsterdam": "University of Amsterdam",
+    "TU Delft": "Delft University of Technology",
+    "Utrecht University": "Utrecht University",
+    "Leiden University": "Leiden University",
+    "KU Leuven": "KU Leuven",
+    "Université PSL": "Université PSL",
+    "University of Tartu": "University of Tartu",
+    "National and Kapodistrian University of Athens": "National and Kapodistrian University of Athens"
 }

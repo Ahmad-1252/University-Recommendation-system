@@ -55,6 +55,54 @@ class MongoDBConnection:
             self._ensure_university_indexes()
         return self._universities_collection
 
+    @property
+    def qs_rankings_collection(self) -> Collection:
+        """Get MongoDB collection for QS rankings."""
+        if not hasattr(self, '_qs_rankings_collection') or self._qs_rankings_collection is None:
+            self._qs_rankings_collection = self.database["qs_rankings"]
+            self._ensure_qs_rankings_indexes()
+        return self._qs_rankings_collection
+
+    def _ensure_qs_rankings_indexes(self) -> None:
+        """Create necessary database indexes for QS rankings collection."""
+        try:
+            collection = self._qs_rankings_collection
+
+            # Compound unique index on year + institution name
+            collection.create_index(
+                [("ranking_year", ASCENDING), ("institution_name_normalized", ASCENDING)],
+                unique=True,
+                name="unique_year_institution"
+            )
+
+            # Index on rank for ranking queries
+            collection.create_index(
+                [("rank", ASCENDING)],
+                name="rank_index"
+            )
+
+            # Index on country for geographic filtering
+            collection.create_index(
+                [("country", ASCENDING)],
+                name="country_index"
+            )
+
+            # Index on region for regional queries
+            collection.create_index(
+                [("region", ASCENDING)],
+                name="region_index"
+            )
+
+            # Index on overall score
+            collection.create_index(
+                [("overall_score", DESCENDING)],
+                name="overall_score_index"
+            )
+
+            logger.info("QS Rankings database indexes created successfully")
+        except OperationFailure as e:
+            logger.warning(f"Failed to create QS rankings indexes: {e}")
+
     def _connect(self) -> None:
         """Establish connection to MongoDB."""
         try:

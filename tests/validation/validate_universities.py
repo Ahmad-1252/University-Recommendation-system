@@ -1,5 +1,5 @@
-"""Deprecated. This file has been moved to `tests/validation/validate_universities.py`.
-Run the new location or use pytest to run the validation tests.
+"""University Validation and Milestone Tracker - Moved to tests/validation.
+This file is the same as root validate_universities.py but updated to detect project root and not change working dir.
 """
 
 import os
@@ -13,19 +13,21 @@ from pathlib import Path
 import requests
 from urllib.parse import urlparse
 
-# Setup path FIRST - before any src imports
-script_dir = os.path.dirname(os.path.abspath(__file__))
-src_dir = os.path.join(script_dir, 'src')
-sys.path.insert(0, src_dir)
+# Setup path: compute project root instead of being relative to current script
+script_dir = Path(__file__).resolve().parent
+project_root = script_dir
+while project_root != project_root.parent:
+    if (project_root / 'pyproject.toml').exists() or (project_root / 'setup.py').exists() or (project_root / 'src').exists():
+        break
+    project_root = project_root.parent
+src_dir = project_root / 'src'
+sys.path.insert(0, str(src_dir))
 
-# Load environment variables
 from dotenv import load_dotenv
-load_dotenv(os.path.join(script_dir, '.env'))
+load_dotenv(str(project_root / '.env'))
 
-# Change working directory to src for relative file paths
-os.chdir(src_dir)
+# Do not change current working dir; rely on explicit paths
 
-# Now imports work normally (path is already set up)
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
@@ -44,7 +46,7 @@ console = Console()
 
 class ValidationMilestone:
     """Represents a validation milestone for a university."""
-
+    
     def __init__(self, university_name: str, university_id: str = None):
         self.university_name = university_name
         self.university_id = university_id
@@ -128,7 +130,7 @@ class ValidationMilestone:
             "recommendations": self.recommendations,
             "completed_at": self.completed_at,
             "total_checks": len(self.checks),
-            "passed_checks": sum(1 for check in self.checks.values() if check["passed"])
+            "passed_checks": sum(1 for check in self.checks.values() if check["passed"]) 
         }
 
 
@@ -280,7 +282,6 @@ class UniversityValidator:
             milestone.add_check("no_rankings", False, "No ranking data available", "info")
             milestone.add_recommendation("Add university ranking information from QS, THE, or US News")
 
-        # Check tier classification
         tier = university.get('tier')
         if tier:
             valid_tiers = ['top', 'good', 'standard']
@@ -359,7 +360,6 @@ class UniversityValidator:
 
         milestone = self.milestones[name]
 
-        # Define important fields for completeness check
         important_fields = [
             'description', 'website', 'founding_year', 'total_students',
             'qs_world_ranking', 'type', 'tier'
@@ -392,7 +392,6 @@ class UniversityValidator:
             return
 
         try:
-            # Simple HEAD request to check if website is accessible
             response = requests.head(website, timeout=10, allow_redirects=True)
             passed = response.status_code == 200
             milestone.add_check(
@@ -413,7 +412,6 @@ class UniversityValidator:
         """Run all validation checks for a university."""
         name = university.get('name', 'Unknown University')
 
-        # Get or create milestone
         if name in self.milestones:
             milestone = self.milestones[name]
         else:
@@ -422,12 +420,10 @@ class UniversityValidator:
 
         milestone.status = "in_progress"
 
-        # Run all validation checks
         self.validate_university_rankings(university)
         self.validate_university_programs(university)
         self.validate_university_completeness(university)
 
-        # Mark as completed
         milestone.complete("completed")
 
         return milestone
@@ -440,7 +436,6 @@ class UniversityValidator:
 
         console.print(f"\n[bold blue]🔍 Starting validation of {len(self.universities_data)} universities[/bold blue]")
 
-        # Load existing milestones
         self.milestones = self.load_existing_milestones()
 
         with Progress(
@@ -456,19 +451,15 @@ class UniversityValidator:
             for i, university in enumerate(self.universities_data):
                 name = university.get('name', f'University {i+1}')
 
-                # Update progress
                 progress.update(main_task, description=f"Validating: {name[:50]}...")
 
-                # Validate university
                 milestone = self.validate_university_data_quality(university)
 
-                # Check website if requested
                 if check_websites:
                     await self.validate_university_website(university)
 
                 progress.advance(main_task)
 
-        # Save milestones
         self.save_milestones()
 
         return self.milestones
@@ -482,7 +473,6 @@ class UniversityValidator:
         completed_validations = sum(1 for m in self.milestones.values() if m.status == "completed")
         average_score = sum(m.score for m in self.milestones.values()) / total_universities if total_universities > 0 else 0
 
-        # Categorize by score
         score_categories = {
             "excellent": sum(1 for m in self.milestones.values() if m.score >= 0.9),
             "good": sum(1 for m in self.milestones.values() if 0.7 <= m.score < 0.9),
@@ -490,7 +480,6 @@ class UniversityValidator:
             "critical_issues": sum(1 for m in self.milestones.values() if m.score < 0.5)
         }
 
-        # Collect all issues and recommendations
         all_issues = []
         all_recommendations = []
 
@@ -498,7 +487,6 @@ class UniversityValidator:
             all_issues.extend(milestone.issues)
             all_recommendations.extend(milestone.recommendations)
 
-        # Group issues by type
         issue_summary = {}
         for issue in all_issues:
             category = issue.split(':')[0] if ':' in issue else 'other'
@@ -514,9 +502,9 @@ class UniversityValidator:
             "issues": {
                 "total_issues": len(all_issues),
                 "by_category": issue_summary,
-                "top_issues": all_issues[:20]  # Top 20 issues
+                "top_issues": all_issues[:20]
             },
-            "recommendations": list(set(all_recommendations)),  # Unique recommendations
+            "recommendations": list(set(all_recommendations)),
             "milestones": {name: m.to_dict() for name, m in self.milestones.items()}
         }
 
@@ -528,19 +516,17 @@ class UniversityValidator:
 
         summary = report["summary"]
 
-        # Overall summary
         console.print("\n[bold green]📊 Validation Summary[/bold green]")
         console.print(f"Total Universities: {summary['total_universities']}")
         console.print(f"Completed Validations: {summary['completed_validations']}")
         console.print(f"Average Score: {summary['average_score']:.3f}")
-        # Score distribution
+
         console.print("\n[bold blue]📈 Score Distribution[/bold blue]")
         distribution = summary['score_distribution']
         for category, count in distribution.items():
             emoji = {"excellent": "🌟", "good": "✅", "needs_improvement": "⚠️", "critical_issues": "❌"}.get(category, "❓")
             console.print(f"  {emoji} {category.replace('_', ' ').title()}: {count}")
 
-        # Issues summary
         issues = report["issues"]
         if issues["total_issues"] > 0:
             console.print(f"\n[bold yellow]⚠️ Issues Found: {issues['total_issues']}[/bold yellow]")
@@ -548,11 +534,10 @@ class UniversityValidator:
             for category, count in sorted(issues["by_category"].items(), key=lambda x: x[1], reverse=True)[:10]:
                 console.print(f"  • {category}: {count}")
 
-        # Recommendations
         recommendations = report["recommendations"]
         if recommendations:
             console.print(f"\n[bold cyan]💡 Recommendations ({len(recommendations)})[/bold cyan]")
-            for rec in recommendations[:10]:  # Show top 10
+            for rec in recommendations[:10]:
                 console.print(f"  • {rec}")
 
     def export_validation_report(self, report: Dict[str, Any], format_type: str = "json"):
@@ -581,7 +566,6 @@ class UniversityValidator:
 
 
 async def main():
-    """Main function to run university validation."""
     console.print(Panel.fit(
         "[bold blue]🏫 University Validation & Milestone Tracker[/bold blue]\n"
         "Systematically validate each university and track progress",
@@ -590,12 +574,10 @@ async def main():
 
     validator = UniversityValidator()
 
-    # Connect to database
     if not validator.connect_database():
         console.print("[red]❌ Cannot proceed without database connection[/red]")
         return
 
-    # Ask user what to do
     console.print("\n[bold cyan]Choose validation action:[/bold cyan]")
     console.print("  [1] Validate all universities")
     console.print("  [2] Show existing validation results")
@@ -604,23 +586,18 @@ async def main():
     choice = Prompt.ask("Enter your choice", choices=['1', '2', '3'])
 
     if choice == '1':
-        # Ask about website checking
         check_websites = Confirm.ask("Check website accessibility? (may take longer)")
 
-        # Run validation
         console.print("\n[bold blue]🔄 Starting comprehensive validation...[/bold blue]")
         milestones = await validator.validate_all_universities(check_websites=check_websites)
 
-        # Generate and display report
         report = validator.generate_validation_report()
         validator.display_validation_results(report)
 
-        # Ask to export
         if Confirm.ask("Export validation report?"):
             validator.export_validation_report(report)
 
     elif choice == '2':
-        # Load and display existing results
         milestones = validator.load_existing_milestones()
         if milestones:
             report = validator.generate_validation_report()
@@ -629,7 +606,6 @@ async def main():
             console.print("[yellow]⚠️ No existing validation results found[/yellow]")
 
     elif choice == '3':
-        # Export existing report
         milestones = validator.load_existing_milestones()
         if milestones:
             report = validator.generate_validation_report()
@@ -638,6 +614,5 @@ async def main():
             console.print("[yellow]⚠️ No validation data to export[/yellow]")
 
 
-from pathlib import Path
-script = Path(__file__).resolve().parent / 'tests' / 'validation' / 'validate_universities.py'
-print(f"This validation script has been moved to: {script}\nRun it using: python {script}")
+if __name__ == '__main__':
+    asyncio.run(main())

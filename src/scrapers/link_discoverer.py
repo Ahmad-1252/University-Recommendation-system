@@ -89,58 +89,163 @@ class LinkDiscoverer:
         try:
             async with AsyncWebCrawler() as crawler:
                 # Handle pagination if configured
-                if pagination and pagination.get('type') == 'hash':
+                if pagination:
+                    pagination_type = pagination.get('type', 'query')
                     max_pages = pagination.get('max_pages', 10)
-                    pattern = pagination.get('pattern', '#page={page}')
+                    pattern = pagination.get('pattern', '?page={page}')
                     
-                    for page_num in range(1, max_pages + 1):
-                        if page_num == 1:
-                            page_url = directory_url
-                        else:
-                            page_url = directory_url.rstrip('/') + pattern.format(page=page_num)
+                    if pagination_type == 'hash':
+                        # Hash-based pagination (e.g., #page=1)
+                        for page_num in range(1, max_pages + 1):
+                            if page_num == 1:
+                                page_url = directory_url
+                            else:
+                                page_url = directory_url.rstrip('/') + pattern.format(page=page_num)
+                            
+                            logger.info(f"Fetching page {page_num}: {page_url}")
+                            
+                            # Use JavaScript to trigger hash-based pagination
+                            js_code = ""
+                            if page_num > 1:
+                                js_code = f"""
+                                if (window.location.hash !== '{pattern.format(page=page_num)}') {{
+                                    window.location.hash = 'page={page_num}';
+                                }}
+                                await new Promise(r => setTimeout(r, 2000));
+                                """
+                            
+                            from crawl4ai import CrawlerRunConfig
+                            run_config = CrawlerRunConfig(
+                                js_code=js_code,
+                                delay_before_return_html=3
+                            )
+                            
+                            result = await crawler.arun(url=page_url, config=run_config, timeout=self.timeout)
+                            
+                            if not result.success:
+                                logger.warning(f"Failed to fetch page {page_num}")
+                                break
+                            
+                            html_content = result.html if hasattr(result, 'html') else ""
+                            soup = BeautifulSoup(html_content, 'html.parser')
+                            
+                            page_programs = self._extract_programs_from_soup(
+                                soup, base_url, compiled_pattern, category_filter, discovered_programs
+                            )
+                            
+                            new_programs = [p for p in page_programs if not any(
+                                ep['program_url'] == p['program_url'] for ep in discovered_programs
+                            )]
+                            
+                            logger.info(f"Page {page_num}: Found {len(page_programs)} programs ({len(new_programs)} new)")
+                            
+                            if not new_programs and page_num > 1:
+                                logger.info(f"No new programs on page {page_num}, stopping pagination")
+                                break
+                            
+                            discovered_programs.extend(new_programs)
+                    
+                    elif pagination_type == 'query':
+                        # Query-string pagination (e.g., ?page=1 or ?offset=20)
+                        for page_num in range(1, max_pages + 1):
+                            if page_num == 1:
+                                page_url = directory_url
+                            else:
+                                # Handle pattern with {page} or {offset}
+                                if '{offset}' in pattern:
+                                    # Offset-based pagination (e.g., ?offset=20)
+                                    page_size = pagination.get('page_size', 20)
+                                    offset = (page_num - 1) * page_size
+                                    page_suffix = pattern.format(offset=offset)
+                                else:
+                                    page_suffix = pattern.format(page=page_num)
+                                
+                                # Append to URL correctly
+                                if '?' in directory_url:
+                                    page_url = directory_url + '&' + page_suffix.lstrip('?&')
+                                else:
+                                    page_url = directory_url + page_suffix
+                            
+                            logger.info(f"Fetching page {page_num}: {page_url}")
+                            
+                            result = await crawler.arun(url=page_url, timeout=self.timeout)
+                            
+                            if not result.success:
+                                logger.warning(f"Failed to fetch page {page_num}")
+                                break
+                            
+                            html_content = result.html if hasattr(result, 'html') else ""
+                            soup = BeautifulSoup(html_content, 'html.parser')
+                            
+                            page_programs = self._extract_programs_from_soup(
+                                soup, base_url, compiled_pattern, category_filter, discovered_programs
+                            )
+                            
+                            new_programs = [p for p in page_programs if not any(
+                                ep['program_url'] == p['program_url'] for ep in discovered_programs
+                            )]
+                            
+                            logger.info(f"Page {page_num}: Found {len(page_programs)} programs ({len(new_programs)} new)")
+                            
+                            if not new_programs and page_num > 1:
+                                logger.info(f"No new programs on page {page_num}, stopping pagination")
+                                break
+                            
+                            discovered_programs.extend(new_programs)
+                            
+                            # Rate limiting between pages
+                            await asyncio.sleep(1)
+                    
+                    elif pagination_type == 'next_button':
+                        # JavaScript click-based pagination (for "Next" buttons)
+                        next_selector = pagination.get('next_selector', 'a.next, button.next, [aria-label="Next"]')
                         
-                        logger.info(f"Fetching page {page_num}: {page_url}")
-                        
-                        # Use JavaScript to trigger hash-based pagination
-                        js_code = ""
-                        if page_num > 1:
-                            js_code = f"""
-                            if (window.location.hash !== '{pattern.format(page=page_num)}') {{
-                                window.location.hash = 'page={page_num}';
-                            }}
-                            await new Promise(r => setTimeout(r, 2000));
-                            """
-                        
-                        from crawl4ai import CrawlerRunConfig
-                        run_config = CrawlerRunConfig(
-                            js_code=js_code,
-                            delay_before_return_html=3
-                        )
-                        
-                        result = await crawler.arun(url=page_url, config=run_config, timeout=self.timeout)
-                        
-                        if not result.success:
-                            logger.warning(f"Failed to fetch page {page_num}")
-                            break
-                        
-                        html_content = result.html if hasattr(result, 'html') else ""
-                        soup = BeautifulSoup(html_content, 'html.parser')
-                        
-                        page_programs = self._extract_programs_from_soup(
-                            soup, base_url, compiled_pattern, category_filter, discovered_programs
-                        )
-                        
-                        new_programs = [p for p in page_programs if not any(
-                            ep['program_url'] == p['program_url'] for ep in discovered_programs
-                        )]
-                        
-                        logger.info(f"Page {page_num}: Found {len(page_programs)} programs ({len(new_programs)} new)")
-                        
-                        if not new_programs and page_num > 1:
-                            logger.info(f"No new programs on page {page_num}, stopping pagination")
-                            break
-                        
-                        discovered_programs.extend(new_programs)
+                        for page_num in range(1, max_pages + 1):
+                            if page_num == 1:
+                                page_url = directory_url
+                                js_code = ""
+                            else:
+                                page_url = directory_url
+                                js_code = f"""
+                                const nextBtn = document.querySelector('{next_selector}');
+                                if (nextBtn) {{
+                                    nextBtn.click();
+                                    await new Promise(r => setTimeout(r, 2000));
+                                }}
+                                """
+                            
+                            logger.info(f"Fetching page {page_num}")
+                            
+                            from crawl4ai import CrawlerRunConfig
+                            run_config = CrawlerRunConfig(
+                                js_code=js_code,
+                                delay_before_return_html=3
+                            )
+                            
+                            result = await crawler.arun(url=page_url, config=run_config, timeout=self.timeout)
+                            
+                            if not result.success:
+                                logger.warning(f"Failed to fetch page {page_num}")
+                                break
+                            
+                            html_content = result.html if hasattr(result, 'html') else ""
+                            soup = BeautifulSoup(html_content, 'html.parser')
+                            
+                            page_programs = self._extract_programs_from_soup(
+                                soup, base_url, compiled_pattern, category_filter, discovered_programs
+                            )
+                            
+                            new_programs = [p for p in page_programs if not any(
+                                ep['program_url'] == p['program_url'] for ep in discovered_programs
+                            )]
+                            
+                            logger.info(f"Page {page_num}: Found {len(page_programs)} programs ({len(new_programs)} new)")
+                            
+                            if not new_programs and page_num > 1:
+                                logger.info(f"No new programs on page {page_num}, stopping pagination")
+                                break
+                            
+                            discovered_programs.extend(new_programs)
                 else:
                     # Single page scraping (original behavior)
                     result = await crawler.arun(url=directory_url, timeout=self.timeout)

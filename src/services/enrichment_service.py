@@ -6,7 +6,7 @@ from datetime import datetime
 
 from ..core.config import get_settings
 from ..core.constants import UNIVERSITY_METADATA
-from ..models.university import UniversityProgram
+from ..models.university import UniversityProgram, University
 from ..services.llm_service import LLMService
 
 logger = logging.getLogger(__name__)
@@ -15,11 +15,12 @@ logger = logging.getLogger(__name__)
 class EnrichmentService:
     """Service for enriching and improving program data."""
 
-    def __init__(self, llm_service: Optional[LLMService] = None):
+    def __init__(self, llm_service: Optional[LLMService] = None, ranking_service=None):
         self.settings = get_settings()
         self.llm_service = llm_service or LLMService()
+        self.ranking_service = ranking_service  # Lazy import to avoid circular dependency
 
-    def enrich_program_data(self, program: UniversityProgram) -> UniversityProgram:
+    async def enrich_program_data(self, program: UniversityProgram) -> UniversityProgram:
         """
         Enrich program data with additional information.
 
@@ -29,8 +30,12 @@ class EnrichmentService:
         Returns:
             Enriched UniversityProgram instance
         """
-        # Enrich with university metadata
+        # Enrich with university metadata (static first)
         program = self._enrich_university_metadata(program)
+        
+        # Enrich with TopUniversities rankings (if available)
+        if self.ranking_service:
+            program = await self._enrich_with_topuniversities(program)
 
         # Fill missing fields with defaults or inferences
         program = self._fill_missing_fields(program)
@@ -41,6 +46,49 @@ class EnrichmentService:
         # Update completeness score
         program.data_completeness = self._calculate_completeness(program)
 
+        return program
+    
+    async def enrich_university_data(self, university: University) -> University:
+        """
+        Enrich university data with rankings from TopUniversities.com.
+        
+        Args:
+            university: University instance to enrich
+            
+        Returns:
+            Enriched University instance
+        """
+        # Enrich with TopUniversities rankings
+        if self.ranking_service:
+            try:
+                university = await self.ranking_service.update_university_rankings(university)
+                logger.info(f"Enriched {university.name} with TopUniversities rankings")
+            except Exception as e:
+                logger.error(f"Failed to enrich {university.name} with TopUniversities: {e}")
+        
+        return university
+    
+    async def _enrich_with_topuniversities(self, program: UniversityProgram) -> UniversityProgram:
+        """Enrich program with rankings from TopUniversities.com."""
+        try:
+            # Get ranking for this university
+            ranking_data = await self.ranking_service.get_university_ranking(program.university_name)
+            
+            if ranking_data:
+                # Update QS ranking (TopUniversities is QS rankings)
+                if ranking_data.get('rank') and not program.rankings.qs_world_ranking:
+                    program.rankings.qs_world_ranking = ranking_data['rank']
+                    logger.info(f"Updated QS ranking for {program.university_name}: {ranking_data['rank']}")
+                
+                # Update location if not set
+                if not program.country and ranking_data.get('country'):
+                    program.country = ranking_data['country']
+                if not program.city and ranking_data.get('city'):
+                    program.city = ranking_data['city']
+        
+        except Exception as e:
+            logger.error(f"Error enriching with TopUniversities: {e}")
+        
         return program
 
     def _enrich_university_metadata(self, program: UniversityProgram) -> UniversityProgram:
