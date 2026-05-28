@@ -3,12 +3,11 @@
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, Optional
 
-from models.university import UniversityProgram
-from core.exceptions import ScrapingError
-from core.config import get_settings
+from src.core.config import get_settings
+from src.models.university import UniversityProgram
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +24,9 @@ class BaseScraper(ABC):
         logger.info(f"Initialized {self.name}")
 
     @abstractmethod
-    async def scrape_program_data(self, url: str, skip_validation: bool = False) -> Optional[UniversityProgram]:
+    async def scrape_program_data(
+        self, url: str, skip_validation: bool = False
+    ) -> Optional[UniversityProgram]:
         """
         Scrape program data from a given URL.
 
@@ -54,7 +55,9 @@ class BaseScraper(ABC):
         """
         pass
 
-    async def scrape_multiple(self, urls: list[str], skip_validation: bool = True) -> Dict[str, Optional[UniversityProgram]]:
+    async def scrape_multiple(
+        self, urls: list[str], skip_validation: bool = True
+    ) -> Dict[str, Optional[UniversityProgram]]:
         """
         Scrape multiple URLs concurrently.
 
@@ -70,10 +73,14 @@ class BaseScraper(ABC):
         # Limit concurrent requests
         semaphore = asyncio.Semaphore(self.settings.scraping.max_concurrent_requests)
 
-        async def scrape_with_semaphore(url: str) -> tuple[str, Optional[UniversityProgram]]:
+        async def scrape_with_semaphore(
+            url: str,
+        ) -> tuple[str, Optional[UniversityProgram]]:
             async with semaphore:
                 try:
-                    result = await self.scrape_program_data(url, skip_validation=skip_validation)
+                    result = await self.scrape_program_data(
+                        url, skip_validation=skip_validation
+                    )
                     return url, result
                 except Exception as e:
                     logger.error(f"Failed to scrape {url}: {e}")
@@ -125,16 +132,18 @@ class BaseScraper(ABC):
             program.program_name,
             program.university_name,
             program.country,
-            program.program_description
+            program.program_description,
         ]
         if all(critical_fields):
             bonuses += 0.1
 
         # Academic requirements bonus
-        if program.gpa_requirement_min is not None or any([
-            program.language_requirements.toefl_min,
-            program.language_requirements.ielts_min
-        ]):
+        if program.gpa_requirement_min is not None or any(
+            [
+                program.language_requirements.toefl_min,
+                program.language_requirements.ielts_min,
+            ]
+        ):
             bonuses += 0.1
 
         # Financial information bonus
@@ -142,11 +151,13 @@ class BaseScraper(ABC):
             bonuses += 0.1
 
         # Rankings bonus
-        if any([
-            program.rankings.qs_world_ranking,
-            program.rankings.the_world_ranking,
-            program.rankings.us_news_ranking
-        ]):
+        if any(
+            [
+                program.rankings.qs_world_ranking,
+                program.rankings.the_world_ranking,
+                program.rankings.us_news_ranking,
+            ]
+        ):
             bonuses += 0.05
 
         # Cap bonuses at 0.3
@@ -169,7 +180,7 @@ class BaseScraper(ABC):
         program.confidence_score = self._calculate_confidence_score(program)
 
         # Set last updated timestamp
-        program.last_updated = datetime.utcnow()
+        program.last_updated = datetime.now(datetime.UTC)
 
         # Add any additional enrichment logic here
         # (e.g., currency conversion, ranking lookups, etc.)
@@ -178,33 +189,19 @@ class BaseScraper(ABC):
 
     async def _retry_with_backoff(self, func, *args, **kwargs):
         """
-        Retry a function with exponential backoff.
-
-        Args:
-            func: Async function to retry
-            *args: Positional arguments for the function
-            **kwargs: Keyword arguments for the function
-
-        Returns:
-            Result of the function call
-
-        Raises:
-            ScrapingError: If all retries fail
+        Retry a function using the centralized retry framework.
         """
-        import random
+        from src.core.retry import retry_with_backoff
 
-        for attempt in range(self.max_retries + 1):
-            try:
-                return await func(*args, **kwargs)
-            except Exception as e:
-                if attempt == self.max_retries:
-                    logger.error(f"All {self.max_retries + 1} attempts failed: {e}")
-                    raise ScrapingError(f"Operation failed after {self.max_retries + 1} attempts: {e}") from e
-
-                # Exponential backoff with jitter
-                delay = (2 ** attempt) + random.uniform(0, 1)
-                logger.warning(f"Attempt {attempt + 1} failed: {e}. Retrying in {delay:.2f}s")
-                await asyncio.sleep(delay)
+        return await retry_with_backoff(
+            func,
+            max_attempts=self.max_retries + 1,
+            initial_delay=1.0,
+            backoff_factor=2.0,
+            jitter=True,
+            *args,
+            **kwargs,
+        )
 
     def get_scraper_info(self) -> Dict[str, Any]:
         """
@@ -218,5 +215,5 @@ class BaseScraper(ABC):
             "timeout": self.timeout,
             "max_retries": self.max_retries,
             "rate_limit_delay": self.rate_limit_delay,
-            "max_concurrent_requests": self.settings.scraping.max_concurrent_requests
+            "max_concurrent_requests": self.settings.scraping.max_concurrent_requests,
         }

@@ -1,0 +1,61 @@
+# ML Pipeline CI/CD Quality Gate
+#
+# Runs on every push that touches ML code.
+# Checks model artifacts, runs leakage detection, and validates quality metrics.
+
+name: ML Quality Gate
+
+on:
+  push:
+    paths:
+      - "scripts/**"
+      - "pipeline/**"
+      - "mlops/**"
+      - "evaluation/**"
+      - "inference/**"
+      - "model_artifacts/**"
+      - "requirements.txt"
+  pull_request:
+    paths:
+      - "scripts/**"
+      - "pipeline/**"
+      - "mlops/**"
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run ML Quality Gate
+        run: |
+          python -m mlops.ci_quality_gate --json
+
+      - name: Run Leakage Checks (standalone)
+        run: |
+          if [ -f "data/exports/training_dataset_latest.csv" ]; then
+            python -m pipeline.leakage_checks --csv data/exports/training_dataset_latest.csv
+          else
+            echo "No training data found — skipping leakage check"
+          fi
+
+      - name: Validate model artifacts
+        run: |
+          python -c "
+          import joblib
+          from pathlib import Path
+
+          artifacts = Path('model_artifacts')
+          pipeline = joblib.load(artifacts / 'model_pipeline.joblib')
+          print(f'Pipeline loaded: {type(pipeline).__name__}')
+          print(f'Steps: {[name for name, _ in pipeline.steps]}')
+          "

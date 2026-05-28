@@ -1,18 +1,18 @@
 """Unit tests for database layer."""
-import pytest
 from unittest.mock import MagicMock, patch
-from datetime import datetime
+
+import pytest
 
 from src.database.mongodb import MongoDBConnection
 from src.database.repositories import ProgramRepository
-from src.models.university import UniversityProgram, DegreeType
+from src.models.university import DegreeType, UniversityProgram
 
 
 class TestMongoDBConnection:
     """Test MongoDB connection management."""
 
-    @patch('src.database.mongodb.MongoClient')
-    @patch('src.database.mongodb.get_settings')
+    @patch("src.database.mongodb.MongoClient")
+    @patch("src.database.mongodb.get_settings")
     def test_connection_initialization(self, mock_settings, mock_client):
         """Test MongoDB connection initialization."""
         mock_db_instance = MagicMock()
@@ -22,12 +22,12 @@ class TestMongoDBConnection:
         mock_settings.return_value.database.connection_string = "mongodb://test:27017"
         mock_settings.return_value.database.database_name = "test_db"
         mock_settings.return_value.database.collection_name = "test_collection"
-            
+
         connection = MongoDBConnection()
         connection._connect()  # Should not raise an exception
 
-    @patch('src.database.mongodb.MongoClient')
-    @patch('src.database.mongodb.get_settings')
+    @patch("src.database.mongodb.MongoClient")
+    @patch("src.database.mongodb.get_settings")
     def test_connection_health_check_success(self, mock_settings, mock_client):
         """Test successful health check."""
         mock_db_instance = MagicMock()
@@ -37,13 +37,13 @@ class TestMongoDBConnection:
         mock_settings.return_value.database.connection_string = "mongodb://test:27017"
         mock_settings.return_value.database.database_name = "test_db"
         mock_settings.return_value.database.collection_name = "test_collection"
-            
+
         connection = MongoDBConnection()
         result = connection.health_check()
         assert result is True
 
-    @patch('src.database.mongodb.MongoClient')
-    @patch('src.database.mongodb.get_settings')
+    @patch("src.database.mongodb.MongoClient")
+    @patch("src.database.mongodb.get_settings")
     def test_connection_health_check_failure(self, mock_settings, mock_client):
         """Test failed health check."""
         mock_client.side_effect = Exception("Connection failed")
@@ -51,13 +51,13 @@ class TestMongoDBConnection:
         mock_settings.return_value.database.connection_string = "mongodb://test:27017"
         mock_settings.return_value.database.database_name = "test_db"
         mock_settings.return_value.database.collection_name = "test_collection"
-            
+
         connection = MongoDBConnection()
         result = connection.health_check()
         assert result is False
 
-    @patch('src.database.mongodb.MongoClient')
-    @patch('src.database.mongodb.get_settings')
+    @patch("src.database.mongodb.MongoClient")
+    @patch("src.database.mongodb.get_settings")
     def test_close_connection(self, mock_settings, mock_client):
         """Test connection closing."""
         mock_db_instance = MagicMock()
@@ -66,7 +66,7 @@ class TestMongoDBConnection:
         mock_settings.return_value.database.connection_string = "mongodb://test:27017"
         mock_settings.return_value.database.database_name = "test_db"
         mock_settings.return_value.database.collection_name = "test_collection"
-            
+
         connection = MongoDBConnection()
         connection.close()  # Should not raise an exception
 
@@ -84,7 +84,7 @@ class TestProgramRepository:
             country="Test Country",
             city="Test City",
             source_url="https://test.edu",
-            confidence_score=0.85
+            confidence_score=0.85,
         )
 
     @pytest.fixture
@@ -97,7 +97,7 @@ class TestProgramRepository:
     @pytest.fixture
     def repository(self, mock_connection):
         """Create program repository."""
-        with patch('src.database.repositories.mongo_session') as mock_session:
+        with patch("src.database.repositories.mongo_session") as mock_session:
             mock_session.return_value.__enter__.return_value = mock_connection
             mock_session.return_value.__exit__.return_value = None
             return ProgramRepository()
@@ -109,7 +109,7 @@ class TestProgramRepository:
         mock_result.modified_count = 0
         mock_connection.collection.replace_one.return_value = mock_result
 
-        with patch('src.database.repositories.mongo_session') as mock_session:
+        with patch("src.database.repositories.mongo_session") as mock_session:
             mock_session.return_value.__enter__.return_value = mock_connection
             mock_session.return_value.__exit__.return_value = None
             repository = ProgramRepository()
@@ -121,7 +121,7 @@ class TestProgramRepository:
         """Test getting program by URL."""
         mock_connection.collection.find_one.return_value = sample_program.model_dump()
 
-        with patch('src.database.repositories.mongo_session') as mock_session:
+        with patch("src.database.repositories.mongo_session") as mock_session:
             mock_session.return_value.__enter__.return_value = mock_connection
             mock_session.return_value.__exit__.return_value = None
             repository = ProgramRepository()
@@ -136,7 +136,7 @@ class TestProgramRepository:
         mock_cursor.__iter__.return_value = [sample_program.model_dump()]
         mock_connection.collection.find.return_value = mock_cursor
 
-        with patch('src.database.repositories.mongo_session') as mock_session:
+        with patch("src.database.repositories.mongo_session") as mock_session:
             mock_session.return_value.__enter__.return_value = mock_connection
             mock_session.return_value.__exit__.return_value = None
             repository = ProgramRepository()
@@ -152,7 +152,7 @@ class TestProgramRepository:
         mock_cursor.__iter__.return_value = [sample_program.model_dump()]
         mock_connection.collection.find.return_value = mock_cursor
 
-        with patch('src.database.repositories.mongo_session') as mock_session:
+        with patch("src.database.repositories.mongo_session") as mock_session:
             mock_session.return_value.__enter__.return_value = mock_connection
             mock_session.return_value.__exit__.return_value = None
             repository = ProgramRepository()
@@ -168,7 +168,7 @@ class TestProgramRepository:
         mock_cursor.__iter__.return_value = [sample_program.model_dump()]
         mock_connection.collection.find.return_value = mock_cursor
 
-        with patch('src.database.repositories.mongo_session') as mock_session:
+        with patch("src.database.repositories.mongo_session") as mock_session:
             mock_session.return_value.__enter__.return_value = mock_connection
             mock_session.return_value.__exit__.return_value = None
             repository = ProgramRepository()
@@ -182,7 +182,7 @@ class TestProgramRepository:
         mock_result.deleted_count = 1
         mock_connection.collection.delete_one.return_value = mock_result
 
-        with patch('src.database.repositories.mongo_session') as mock_session:
+        with patch("src.database.repositories.mongo_session") as mock_session:
             mock_session.return_value.__enter__.return_value = mock_connection
             mock_session.return_value.__exit__.return_value = None
             repository = ProgramRepository()
@@ -198,20 +198,26 @@ class TestProgramRepository:
         # Mock aggregate results - need to return cursors
         mock_countries_cursor = MagicMock()
         mock_countries_cursor.__iter__.return_value = [{"_id": "USA", "count": 10}]
-        
+
         mock_degree_types_cursor = MagicMock()
         mock_degree_types_cursor.__iter__.return_value = [{"_id": "MS", "count": 20}]
-        
+
         mock_stats_cursor = MagicMock()
-        mock_stats_cursor.next.return_value = {"avg_completeness": 0.8, "avg_confidence": 0.9, "min_tuition": 10000, "max_tuition": 50000, "avg_tuition": 30000}
-        
+        mock_stats_cursor.next.return_value = {
+            "avg_completeness": 0.8,
+            "avg_confidence": 0.9,
+            "min_tuition": 10000,
+            "max_tuition": 50000,
+            "avg_tuition": 30000,
+        }
+
         mock_connection.collection.aggregate.side_effect = [
             mock_countries_cursor,  # countries
-            mock_degree_types_cursor,   # degree_types
-            mock_stats_cursor  # stats
+            mock_degree_types_cursor,  # degree_types
+            mock_stats_cursor,  # stats
         ]
 
-        with patch('src.database.repositories.mongo_session') as mock_session:
+        with patch("src.database.repositories.mongo_session") as mock_session:
             mock_session.return_value.__enter__.return_value = mock_connection
             mock_session.return_value.__exit__.return_value = None
             repository = ProgramRepository()
@@ -228,7 +234,7 @@ class TestProgramRepository:
         mock_result.deleted_count = 10
         mock_connection.collection.delete_many.return_value = mock_result
 
-        with patch('src.database.repositories.mongo_session') as mock_session:
+        with patch("src.database.repositories.mongo_session") as mock_session:
             mock_session.return_value.__enter__.return_value = mock_connection
             mock_session.return_value.__exit__.return_value = None
             repository = ProgramRepository()

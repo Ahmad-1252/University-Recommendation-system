@@ -5,8 +5,7 @@ import json
 import logging
 import time
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional, Union
-import hashlib
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -42,11 +41,11 @@ class CacheEntry:
             "created_at": self.created_at,
             "ttl": self.ttl,
             "access_count": self.access_count,
-            "last_accessed": self.last_accessed
+            "last_accessed": self.last_accessed,
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'CacheEntry':
+    def from_dict(cls, data: Dict[str, Any]) -> "CacheEntry":
         """Create cache entry from dictionary."""
         entry = cls(data["key"], data["value"], data["ttl"])
         entry.created_at = data["created_at"]
@@ -121,8 +120,9 @@ class MemoryCacheBackend(CacheBackend):
             # Evict oldest entries if at capacity
             if len(self._cache) >= self.max_size and key not in self._cache:
                 # Find oldest entry
-                oldest_key = min(self._cache.keys(),
-                               key=lambda k: self._cache[k].last_accessed)
+                oldest_key = min(
+                    self._cache.keys(), key=lambda k: self._cache[k].last_accessed
+                )
                 del self._cache[oldest_key]
                 logger.debug(f"Evicted cache entry: {oldest_key}")
 
@@ -157,11 +157,17 @@ class MemoryCacheBackend(CacheBackend):
         """Get memory cache statistics."""
         async with self._lock:
             total_entries = len(self._cache)
-            expired_entries = sum(1 for entry in self._cache.values() if entry.is_expired)
+            expired_entries = sum(
+                1 for entry in self._cache.values() if entry.is_expired
+            )
 
             if total_entries > 0:
-                avg_age = sum(entry.age for entry in self._cache.values()) / total_entries
-                total_accesses = sum(entry.access_count for entry in self._cache.values())
+                avg_age = (
+                    sum(entry.age for entry in self._cache.values()) / total_entries
+                )
+                total_accesses = sum(
+                    entry.access_count for entry in self._cache.values()
+                )
             else:
                 avg_age = 0
                 total_accesses = 0
@@ -173,7 +179,7 @@ class MemoryCacheBackend(CacheBackend):
                 "max_size": self.max_size,
                 "utilization_percent": (total_entries / self.max_size) * 100,
                 "average_age_seconds": avg_age,
-                "total_accesses": total_accesses
+                "total_accesses": total_accesses,
             }
 
     async def close(self) -> None:
@@ -184,13 +190,15 @@ class MemoryCacheBackend(CacheBackend):
 class RedisCacheBackend(CacheBackend):
     """Redis cache backend."""
 
-    def __init__(self,
-                 host: str = "localhost",
-                 port: int = 6379,
-                 db: int = 0,
-                 password: Optional[str] = None,
-                 max_connections: int = 10,
-                 decode_responses: bool = True):
+    def __init__(
+        self,
+        host: str = "localhost",
+        port: int = 6379,
+        db: int = 0,
+        password: Optional[str] = None,
+        max_connections: int = 10,
+        decode_responses: bool = True,
+    ):
         try:
             import redis.asyncio as redis
         except ImportError:
@@ -203,7 +211,7 @@ class RedisCacheBackend(CacheBackend):
             password=password,
             max_connections=max_connections,
             decode_responses=decode_responses,
-            retry_on_timeout=True
+            retry_on_timeout=True,
         )
         self._connected = False
 
@@ -301,17 +309,13 @@ class RedisCacheBackend(CacheBackend):
                 "used_memory": info.get("used_memory_human", "unknown"),
                 "connected_clients": info.get("connected_clients", 0),
                 "uptime_days": info.get("uptime_in_days", 0),
-                "hit_rate": info.get("keyspace_hits", 0) / max(
-                    info.get("keyspace_hits", 0) + info.get("keyspace_misses", 0), 1
-                ) * 100
+                "hit_rate": info.get("keyspace_hits", 0)
+                / max(info.get("keyspace_hits", 0) + info.get("keyspace_misses", 0), 1)
+                * 100,
             }
         except Exception as e:
             logger.warning(f"Redis stats failed: {e}")
-            return {
-                "backend": "redis",
-                "connected": False,
-                "error": str(e)
-            }
+            return {"backend": "redis", "connected": False, "error": str(e)}
 
     async def close(self) -> None:
         """Close Redis connections."""
@@ -325,7 +329,11 @@ class RedisCacheBackend(CacheBackend):
 class Cache:
     """Unified cache interface with automatic backend selection and fallback."""
 
-    def __init__(self, primary_backend: CacheBackend, fallback_backend: Optional[CacheBackend] = None):
+    def __init__(
+        self,
+        primary_backend: CacheBackend,
+        fallback_backend: Optional[CacheBackend] = None,
+    ):
         self.primary = primary_backend
         self.fallback = fallback_backend or MemoryCacheBackend()
         self._stats = {"hits": 0, "misses": 0, "errors": 0}
@@ -369,7 +377,9 @@ class Cache:
         self._stats["misses"] += 1
         return None
 
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None, namespace: str = "") -> bool:
+    async def set(
+        self, key: str, value: Any, ttl: Optional[int] = None, namespace: str = ""
+    ) -> bool:
         """Store a value in cache with fallback."""
         cache_key = self._make_key(key, namespace)
 
@@ -468,7 +478,9 @@ class Cache:
             "overall": self._stats,
             "primary": primary_stats,
             "fallback": fallback_stats,
-            "hit_rate": self._stats["hits"] / max(self._stats["hits"] + self._stats["misses"], 1) * 100
+            "hit_rate": self._stats["hits"]
+            / max(self._stats["hits"] + self._stats["misses"], 1)
+            * 100,
         }
 
     async def close(self) -> None:
@@ -504,7 +516,7 @@ class CacheFactory:
                 db=settings.redis.db,
                 password=settings.redis.password,
                 max_connections=settings.redis.max_connections,
-                decode_responses=settings.redis.decode_responses
+                decode_responses=settings.redis.decode_responses,
             )
             logger.info("Using Redis cache backend")
         except Exception as e:

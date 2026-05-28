@@ -4,13 +4,13 @@ import asyncio
 import logging
 import re
 from concurrent.futures import ThreadPoolExecutor
-from functools import partial
-from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
+from functools import partial
+from typing import Any, Dict, List, Optional
 
-from database.mongodb import get_mongo_connection, mongo_session
-from models.university import UniversityProgram, University
-from core.exceptions import DuplicateDataError, QueryError
+from src.core.exceptions import QueryError
+from src.database.mongodb import get_mongo_connection, mongo_session
+from src.models.university import University, UniversityProgram
 
 logger = logging.getLogger(__name__)
 
@@ -21,14 +21,14 @@ _db_executor = ThreadPoolExecutor(max_workers=10, thread_name_prefix="db_worker"
 async def run_in_executor(func, *args, **kwargs):
     """
     Run a synchronous function in a thread pool executor.
-    
+
     This prevents blocking the async event loop when calling sync DB operations.
-    
+
     Args:
         func: The synchronous function to run
         *args: Positional arguments to pass to the function
         **kwargs: Keyword arguments to pass to the function
-        
+
     Returns:
         The result of the function call
     """
@@ -41,12 +41,12 @@ async def run_in_executor(func, *args, **kwargs):
 def safe_regex(value: str) -> dict:
     """
     Create a safe MongoDB regex filter by escaping special characters.
-    
+
     This prevents NoSQL injection via regex patterns like ReDoS attacks.
-    
+
     Args:
         value: The string to search for
-        
+
     Returns:
         MongoDB regex query dict with escaped value
     """
@@ -78,13 +78,13 @@ class ProgramRepository:
         try:
             with mongo_session() as conn:
                 program_dict = program.model_dump()
-                program_dict["last_updated"] = datetime.utcnow()
+                program_dict["last_updated"] = datetime.now(
+                    tz=__import__("datetime").timezone.utc
+                )
 
                 # Use upsert to update if exists, insert if not
                 result = conn.collection.replace_one(
-                    {"source_url": program.source_url},
-                    program_dict,
-                    upsert=True
+                    {"source_url": program.source_url}, program_dict, upsert=True
                 )
 
                 success = result.acknowledged
@@ -112,7 +112,7 @@ class ProgramRepository:
 
         # First, extract and save universities, get mapping of names to IDs
         university_id_map = self._create_universities_from_programs(programs)
-        
+
         # Update programs with correct university_ids
         for program in programs:
             if program.university_name in university_id_map:
@@ -122,12 +122,12 @@ class ProgramRepository:
             try:
                 with mongo_session() as conn:
                     program_dict = program.model_dump()
-                    program_dict["last_updated"] = datetime.utcnow()
+                    program_dict["last_updated"] = datetime.now(
+                        tz=__import__("datetime").timezone.utc
+                    )
 
                     result = conn.collection.replace_one(
-                        {"source_url": program.source_url},
-                        program_dict,
-                        upsert=True
+                        {"source_url": program.source_url}, program_dict, upsert=True
                     )
 
                     if result.acknowledged:
@@ -145,7 +145,9 @@ class ProgramRepository:
         logger.info(f"Batch save completed: {results}")
         return results
 
-    def _create_universities_from_programs(self, programs: List[UniversityProgram]) -> Dict[str, str]:
+    def _create_universities_from_programs(
+        self, programs: List[UniversityProgram]
+    ) -> Dict[str, str]:
         """
         Extract university information from programs and create university records.
 
@@ -180,8 +182,10 @@ class ProgramRepository:
         if universities:
             university_repo = UniversityRepository()
             results = university_repo.save_many(universities)
-            logger.info(f"Created/updated {results['inserted'] + results['updated']} universities from programs")
-            
+            logger.info(
+                f"Created/updated {results['inserted'] + results['updated']} universities from programs"
+            )
+
             # Build mapping of names to IDs
             for university in universities:
                 university_id_map[university.name] = university.university_id
@@ -221,16 +225,20 @@ class ProgramRepository:
                 cursor = conn.collection.find({"university_name": university_name})
                 return [UniversityProgram(**doc) for doc in cursor]
         except Exception as e:
-            logger.error(f"Failed to get programs for university {university_name}: {e}")
+            logger.error(
+                f"Failed to get programs for university {university_name}: {e}"
+            )
             raise QueryError(f"Query failed: {e}") from e
 
-    def search(self,
-               query: Optional[str] = None,
-               country: Optional[str] = None,
-               degree_type: Optional[str] = None,
-               min_gpa: Optional[float] = None,
-               max_tuition: Optional[int] = None,
-               limit: int = 50) -> List[UniversityProgram]:
+    def search(
+        self,
+        query: Optional[str] = None,
+        country: Optional[str] = None,
+        degree_type: Optional[str] = None,
+        min_gpa: Optional[float] = None,
+        max_tuition: Optional[int] = None,
+        limit: int = 50,
+    ) -> List[UniversityProgram]:
         """
         Search programs with various filters.
 
@@ -267,7 +275,9 @@ class ProgramRepository:
 
                 # Tuition filter
                 if max_tuition is not None:
-                    mongo_query["tuition_fees.international_per_year"] = {"$lte": max_tuition}
+                    mongo_query["tuition_fees.international_per_year"] = {
+                        "$lte": max_tuition
+                    }
 
                 cursor = conn.collection.find(mongo_query).limit(limit)
                 return [UniversityProgram(**doc) for doc in cursor]
@@ -307,7 +317,9 @@ class ProgramRepository:
             List of recently updated programs
         """
         try:
-            cutoff_date = datetime.utcnow() - timedelta(days=days)
+            cutoff_date = datetime.now(
+                tz=__import__("datetime").timezone.utc
+            ) - timedelta(days=days)
             with mongo_session() as conn:
                 cursor = conn.collection.find({"last_updated": {"$gte": cutoff_date}})
                 return [UniversityProgram(**doc) for doc in cursor]
@@ -336,6 +348,24 @@ class ProgramRepository:
             logger.error(f"Failed to delete program {url}: {e}")
             return False
 
+    def clear_all(self) -> bool:
+        """
+        Delete all programs from the database.
+
+        Returns:
+            bool: True if deleted successfully
+        """
+        try:
+            with mongo_session() as conn:
+                result = conn.collection.delete_many({})
+                success = result.acknowledged
+                if success:
+                    logger.info("Cleared all programs from database")
+                return success
+        except Exception as e:
+            logger.error(f"Failed to clear all programs: {e}")
+            return False
+
     def get_statistics(self) -> Dict[str, Any]:
         """
         Get database statistics.
@@ -348,28 +378,46 @@ class ProgramRepository:
                 total_count = conn.collection.count_documents({})
 
                 # Count by country
-                countries = list(conn.collection.aggregate([
-                    {"$group": {"_id": "$country", "count": {"$sum": 1}}},
-                    {"$sort": {"count": -1}}
-                ]))
+                countries = list(
+                    conn.collection.aggregate(
+                        [
+                            {"$group": {"_id": "$country", "count": {"$sum": 1}}},
+                            {"$sort": {"count": -1}},
+                        ]
+                    )
+                )
 
                 # Count by degree type
-                degree_types = list(conn.collection.aggregate([
-                    {"$group": {"_id": "$degree_type", "count": {"$sum": 1}}},
-                    {"$sort": {"count": -1}}
-                ]))
+                degree_types = list(
+                    conn.collection.aggregate(
+                        [
+                            {"$group": {"_id": "$degree_type", "count": {"$sum": 1}}},
+                            {"$sort": {"count": -1}},
+                        ]
+                    )
+                )
 
                 # Average completeness and confidence
-                stats = conn.collection.aggregate([
-                    {"$group": {
-                        "_id": None,
-                        "avg_completeness": {"$avg": "$data_completeness"},
-                        "avg_confidence": {"$avg": "$confidence_score"},
-                        "min_tuition": {"$min": "$tuition_fees.international_per_year"},
-                        "max_tuition": {"$max": "$tuition_fees.international_per_year"},
-                        "avg_tuition": {"$avg": "$tuition_fees.international_per_year"}
-                    }}
-                ]).next()
+                stats = conn.collection.aggregate(
+                    [
+                        {
+                            "$group": {
+                                "_id": None,
+                                "avg_completeness": {"$avg": "$data_completeness"},
+                                "avg_confidence": {"$avg": "$confidence_score"},
+                                "min_tuition": {
+                                    "$min": "$tuition_fees.international_per_year"
+                                },
+                                "max_tuition": {
+                                    "$max": "$tuition_fees.international_per_year"
+                                },
+                                "avg_tuition": {
+                                    "$avg": "$tuition_fees.international_per_year"
+                                },
+                            }
+                        }
+                    ]
+                ).next()
 
                 return {
                     "total_programs": total_count,
@@ -380,8 +428,8 @@ class ProgramRepository:
                     "tuition_range": {
                         "min": stats.get("min_tuition"),
                         "max": stats.get("max_tuition"),
-                        "avg": stats.get("avg_tuition")
-                    }
+                        "avg": stats.get("avg_tuition"),
+                    },
                 }
 
         except Exception as e:
@@ -437,10 +485,7 @@ class ProgramRepository:
         """Synchronous implementation of get_last_updated."""
         try:
             with mongo_session() as conn:
-                result = conn.collection.find_one(
-                    {},
-                    sort=[("last_updated", -1)]
-                )
+                result = conn.collection.find_one({}, sort=[("last_updated", -1)])
                 return result.get("last_updated") if result else None
         except Exception as e:
             logger.error(f"Failed to get last updated: {e}")
@@ -468,14 +513,16 @@ class ProgramRepository:
             logger.error(f"Failed to get program by ID {program_id}: {e}")
             return None
 
-    async def search_programs(self,
-                            university_name: Optional[str] = None,
-                            program_name: Optional[str] = None,
-                            degree_level: Optional[str] = None,
-                            field_of_study: Optional[str] = None,
-                            country: Optional[str] = None,
-                            limit: int = 20,
-                            offset: int = 0) -> List[UniversityProgram]:
+    async def search_programs(
+        self,
+        university_name: Optional[str] = None,
+        program_name: Optional[str] = None,
+        degree_level: Optional[str] = None,
+        field_of_study: Optional[str] = None,
+        country: Optional[str] = None,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> List[UniversityProgram]:
         """
         Search programs with filters.
 
@@ -493,17 +540,25 @@ class ProgramRepository:
         """
         return await run_in_executor(
             self._search_programs_sync,
-            university_name, program_name, degree_level, field_of_study, country, limit, offset
+            university_name,
+            program_name,
+            degree_level,
+            field_of_study,
+            country,
+            limit,
+            offset,
         )
 
-    def _search_programs_sync(self,
-                             university_name: Optional[str] = None,
-                             program_name: Optional[str] = None,
-                             degree_level: Optional[str] = None,
-                             field_of_study: Optional[str] = None,
-                             country: Optional[str] = None,
-                             limit: int = 20,
-                             offset: int = 0) -> List[UniversityProgram]:
+    def _search_programs_sync(
+        self,
+        university_name: Optional[str] = None,
+        program_name: Optional[str] = None,
+        degree_level: Optional[str] = None,
+        field_of_study: Optional[str] = None,
+        country: Optional[str] = None,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> List[UniversityProgram]:
         """Synchronous implementation of search_programs."""
         try:
             with mongo_session() as conn:
@@ -546,12 +601,14 @@ class ProgramRepository:
             logger.error(f"Failed to get distinct countries: {e}")
             return []
 
-    async def search_universities(self,
-                                query: Optional[str] = None,
-                                country: Optional[str] = None,
-                                program_type: Optional[str] = None,
-                                limit: int = 20,
-                                offset: int = 0) -> List[Dict[str, Any]]:
+    async def search_universities(
+        self,
+        query: Optional[str] = None,
+        country: Optional[str] = None,
+        program_type: Optional[str] = None,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> List[Dict[str, Any]]:
         """
         Search universities with filters.
 
@@ -566,16 +623,17 @@ class ProgramRepository:
             List of university info dictionaries
         """
         return await run_in_executor(
-            self._search_universities_sync,
-            query, country, program_type, limit, offset
+            self._search_universities_sync, query, country, program_type, limit, offset
         )
 
-    def _search_universities_sync(self,
-                                 query: Optional[str] = None,
-                                 country: Optional[str] = None,
-                                 program_type: Optional[str] = None,
-                                 limit: int = 20,
-                                 offset: int = 0) -> List[Dict[str, Any]]:
+    def _search_universities_sync(
+        self,
+        query: Optional[str] = None,
+        country: Optional[str] = None,
+        program_type: Optional[str] = None,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> List[Dict[str, Any]]:
         """Synchronous implementation of search_universities."""
         try:
             with mongo_session() as conn:
@@ -595,30 +653,36 @@ class ProgramRepository:
                     pipeline.append({"$match": match_conditions})
 
                 # Group by university
-                pipeline.extend([
-                    {"$group": {
-                        "_id": {
-                            "name": "$university_name",
-                            "country": "$country",
-                            "website": "$university_website"
+                pipeline.extend(
+                    [
+                        {
+                            "$group": {
+                                "_id": {
+                                    "name": "$university_name",
+                                    "country": "$country",
+                                    "website": "$university_website",
+                                },
+                                "program_count": {"$sum": 1},
+                                "program_types": {"$addToSet": "$degree_type"},
+                                "last_updated": {"$max": "$last_updated"},
+                            }
                         },
-                        "program_count": {"$sum": 1},
-                        "program_types": {"$addToSet": "$degree_type"},
-                        "last_updated": {"$max": "$last_updated"}
-                    }},
-                    {"$project": {
-                        "university_name": "$_id.name",
-                        "country": "$_id.country",
-                        "website": "$_id.website",
-                        "program_count": 1,
-                        "program_types": 1,
-                        "last_updated": 1,
-                        "_id": 0
-                    }},
-                    {"$sort": {"university_name": 1}},
-                    {"$skip": offset},
-                    {"$limit": limit}
-                ])
+                        {
+                            "$project": {
+                                "university_name": "$_id.name",
+                                "country": "$_id.country",
+                                "website": "$_id.website",
+                                "program_count": 1,
+                                "program_types": 1,
+                                "last_updated": 1,
+                                "_id": 0,
+                            }
+                        },
+                        {"$sort": {"university_name": 1}},
+                        {"$skip": offset},
+                        {"$limit": limit},
+                    ]
+                )
 
                 cursor = conn.collection.aggregate(pipeline)
                 return list(cursor)
@@ -667,13 +731,15 @@ class UniversityRepository:
         try:
             with mongo_session() as conn:
                 university_dict = university.model_dump()
-                university_dict["updated_at"] = datetime.utcnow()
+                university_dict["updated_at"] = datetime.now(
+                    tz=__import__("datetime").timezone.utc
+                )
 
                 # Use upsert to update if exists, insert if not
                 result = conn.universities_collection.replace_one(
                     {"university_id": university.university_id},
                     university_dict,
-                    upsert=True
+                    upsert=True,
                 )
 
                 success = result.acknowledged
@@ -702,12 +768,14 @@ class UniversityRepository:
             try:
                 with mongo_session() as conn:
                     university_dict = university.model_dump()
-                    university_dict["updated_at"] = datetime.utcnow()
+                    university_dict["updated_at"] = datetime.now(
+                        tz=__import__("datetime").timezone.utc
+                    )
 
                     result = conn.universities_collection.replace_one(
                         {"university_id": university.university_id},
                         university_dict,
-                        upsert=True
+                        upsert=True,
                     )
 
                     if result.acknowledged:
@@ -737,7 +805,9 @@ class UniversityRepository:
         """
         try:
             with mongo_session() as conn:
-                data = conn.universities_collection.find_one({"university_id": university_id})
+                data = conn.universities_collection.find_one(
+                    {"university_id": university_id}
+                )
                 return University(**data) if data else None
         except Exception as e:
             logger.error(f"Failed to get university by ID {university_id}: {e}")
@@ -761,14 +831,16 @@ class UniversityRepository:
             logger.error(f"Failed to get university by name {name}: {e}")
             raise QueryError(f"Query failed: {e}") from e
 
-    def search(self,
-               query: Optional[str] = None,
-               country: Optional[str] = None,
-               tier: Optional[str] = None,
-               type_filter: Optional[str] = None,
-               min_ranking: Optional[int] = None,
-               max_ranking: Optional[int] = None,
-               limit: int = 50) -> List[University]:
+    def search(
+        self,
+        query: Optional[str] = None,
+        country: Optional[str] = None,
+        tier: Optional[str] = None,
+        type_filter: Optional[str] = None,
+        min_ranking: Optional[int] = None,
+        max_ranking: Optional[int] = None,
+        limit: int = 50,
+    ) -> List[University]:
         """
         Search universities with various filters.
 
@@ -792,7 +864,7 @@ class UniversityRepository:
                 if query:
                     mongo_query["$or"] = [
                         {"name": safe_regex(query)},
-                        {"alternate_names": {"$in": [safe_regex(query)["$regex"]]}}
+                        {"alternate_names": {"$in": [safe_regex(query)["$regex"]]}},
                     ]
 
                 # Country filter
@@ -873,7 +945,9 @@ class UniversityRepository:
         """
         try:
             with mongo_session() as conn:
-                result = conn.universities_collection.delete_one({"university_id": university_id})
+                result = conn.universities_collection.delete_one(
+                    {"university_id": university_id}
+                )
                 success = result.deleted_count > 0
                 if success:
                     logger.info(f"Deleted university with ID: {university_id}")
@@ -894,28 +968,40 @@ class UniversityRepository:
                 total_count = conn.universities_collection.count_documents({})
 
                 # Count by country
-                countries = list(conn.universities_collection.aggregate([
-                    {"$group": {"_id": "$country", "count": {"$sum": 1}}},
-                    {"$sort": {"count": -1}}
-                ]))
+                countries = list(
+                    conn.universities_collection.aggregate(
+                        [
+                            {"$group": {"_id": "$country", "count": {"$sum": 1}}},
+                            {"$sort": {"count": -1}},
+                        ]
+                    )
+                )
 
                 # Count by tier
-                tiers = list(conn.universities_collection.aggregate([
-                    {"$group": {"_id": "$tier", "count": {"$sum": 1}}},
-                    {"$sort": {"count": -1}}
-                ]))
+                tiers = list(
+                    conn.universities_collection.aggregate(
+                        [
+                            {"$group": {"_id": "$tier", "count": {"$sum": 1}}},
+                            {"$sort": {"count": -1}},
+                        ]
+                    )
+                )
 
                 # Ranking statistics
-                ranking_stats = conn.universities_collection.aggregate([
-                    {"$group": {
-                        "_id": None,
-                        "avg_qs_ranking": {"$avg": "$qs_world_ranking"},
-                        "min_qs_ranking": {"$min": "$qs_world_ranking"},
-                        "max_qs_ranking": {"$max": "$qs_world_ranking"},
-                        "avg_students": {"$avg": "$total_students"},
-                        "total_endowment": {"$sum": "$endowment_usd"}
-                    }}
-                ])
+                ranking_stats = conn.universities_collection.aggregate(
+                    [
+                        {
+                            "$group": {
+                                "_id": None,
+                                "avg_qs_ranking": {"$avg": "$qs_world_ranking"},
+                                "min_qs_ranking": {"$min": "$qs_world_ranking"},
+                                "max_qs_ranking": {"$max": "$qs_world_ranking"},
+                                "avg_students": {"$avg": "$total_students"},
+                                "total_endowment": {"$sum": "$endowment_usd"},
+                            }
+                        }
+                    ]
+                )
 
                 stats_result = next(ranking_stats, {})
 
@@ -926,10 +1012,10 @@ class UniversityRepository:
                     "ranking_stats": {
                         "avg_qs": stats_result.get("avg_qs_ranking"),
                         "min_qs": stats_result.get("min_qs_ranking"),
-                        "max_qs": stats_result.get("max_qs_ranking")
+                        "max_qs": stats_result.get("max_qs_ranking"),
                     },
                     "avg_students": stats_result.get("avg_students"),
-                    "total_endowment_usd": stats_result.get("total_endowment")
+                    "total_endowment_usd": stats_result.get("total_endowment"),
                 }
 
         except Exception as e:
@@ -988,15 +1074,21 @@ class UniversityRepository:
         """Synchronous implementation of get_top_ranked."""
         try:
             with mongo_session() as conn:
-                cursor = conn.universities_collection.find(
-                    {"qs_world_ranking": {"$ne": None}}
-                ).sort("qs_world_ranking", 1).limit(limit)
+                cursor = (
+                    conn.universities_collection.find(
+                        {"qs_world_ranking": {"$ne": None}}
+                    )
+                    .sort("qs_world_ranking", 1)
+                    .limit(limit)
+                )
                 return [University(**doc) for doc in cursor]
         except Exception as e:
             logger.error(f"Failed to get top ranked universities: {e}")
             return []
 
-    def update_university_from_programs(self, university_id: str, extracted_data: Dict[str, Any]) -> bool:
+    def update_university_from_programs(
+        self, university_id: str, extracted_data: Dict[str, Any]
+    ) -> bool:
         """
         Update university record with additional data extracted from program pages.
         Only updates fields that are currently empty/None in the existing record.
@@ -1011,33 +1103,64 @@ class UniversityRepository:
         try:
             with mongo_session() as conn:
                 # Get existing university data
-                existing = conn.universities_collection.find_one({"university_id": university_id})
-                
+                existing = conn.universities_collection.find_one(
+                    {"university_id": university_id}
+                )
+
                 if not existing:
                     logger.warning(f"University not found for update: {university_id}")
                     return False
 
                 # Build update dict - only update fields that are empty/None/default
                 update_fields = {}
-                
+
                 # Define fields that can be enriched from program scraping
                 enrichable_fields = [
-                    "description", "motto", "website", "admissions_url", "email", "phone",
-                    "address", "state_province", "latitude", "longitude", "campus_type",
-                    "founding_year", "total_students", "international_students", "faculty_count",
-                    "student_faculty_ratio", "endowment_usd", "average_tuition_domestic",
-                    "average_tuition_international", "qs_world_ranking", "the_world_ranking",
-                    "us_news_ranking", "arwu_ranking", "type", "tier", "research_intensity",
-                    "libraries_count", "logo_url", "mascot"
+                    "description",
+                    "motto",
+                    "website",
+                    "admissions_url",
+                    "email",
+                    "phone",
+                    "address",
+                    "state_province",
+                    "latitude",
+                    "longitude",
+                    "campus_type",
+                    "founding_year",
+                    "total_students",
+                    "international_students",
+                    "faculty_count",
+                    "student_faculty_ratio",
+                    "endowment_usd",
+                    "average_tuition_domestic",
+                    "average_tuition_international",
+                    "qs_world_ranking",
+                    "the_world_ranking",
+                    "us_news_ranking",
+                    "arwu_ranking",
+                    "type",
+                    "tier",
+                    "research_intensity",
+                    "libraries_count",
+                    "logo_url",
+                    "mascot",
                 ]
-                
+
                 # List fields that should be merged (appended) rather than replaced
                 list_fields = [
-                    "alternate_names", "research_centers", "sports_facilities", "housing_options",
-                    "accreditations", "memberships", "student_organizations", "support_services",
-                    "international_support", "colors"
+                    "alternate_names",
+                    "research_centers",
+                    "sports_facilities",
+                    "housing_options",
+                    "accreditations",
+                    "memberships",
+                    "student_organizations",
+                    "support_services",
+                    "international_support",
+                    "colors",
                 ]
-                
+
                 # Dict fields that should be merged
                 dict_fields = ["subject_rankings", "social_media"]
 
@@ -1045,7 +1168,11 @@ class UniversityRepository:
                     if field in extracted_data and extracted_data[field] is not None:
                         # Check if existing field is empty/None/default
                         existing_value = existing.get(field)
-                        if existing_value is None or existing_value == "" or existing_value == 0:
+                        if (
+                            existing_value is None
+                            or existing_value == ""
+                            or existing_value == 0
+                        ):
                             update_fields[field] = extracted_data[field]
 
                 # Handle list fields - merge unique values
@@ -1071,20 +1198,25 @@ class UniversityRepository:
                             update_fields[field] = merged
 
                 if not update_fields:
-                    logger.debug(f"No new data to update for university: {university_id}")
+                    logger.debug(
+                        f"No new data to update for university: {university_id}"
+                    )
                     return True  # Nothing to update, but not a failure
 
                 # Add timestamp
-                update_fields["updated_at"] = datetime.utcnow()
+                update_fields["updated_at"] = datetime.now(
+                    tz=__import__("datetime").timezone.utc
+                )
 
                 # Perform update
                 result = conn.universities_collection.update_one(
-                    {"university_id": university_id},
-                    {"$set": update_fields}
+                    {"university_id": university_id}, {"$set": update_fields}
                 )
 
                 if result.modified_count > 0:
-                    logger.info(f"Updated university {university_id} with {len(update_fields)} fields")
+                    logger.info(
+                        f"Updated university {university_id} with {len(update_fields)} fields"
+                    )
                     return True
                 else:
                     logger.debug(f"No changes made to university {university_id}")
@@ -1094,7 +1226,9 @@ class UniversityRepository:
             logger.error(f"Failed to update university {university_id}: {e}")
             return False
 
-    def enrich_university_from_aggregated_data(self, university_name: str, aggregated_data: Dict[str, Any]) -> bool:
+    def enrich_university_from_aggregated_data(
+        self, university_name: str, aggregated_data: Dict[str, Any]
+    ) -> bool:
         """
         Enrich university record with aggregated data from multiple program pages.
 
@@ -1106,6 +1240,6 @@ class UniversityRepository:
             bool: True if enrichment was successful
         """
         from models.university import generate_university_id
-        
+
         university_id = generate_university_id(university_name)
         return self.update_university_from_programs(university_id, aggregated_data)

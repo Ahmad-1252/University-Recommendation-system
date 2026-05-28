@@ -2,16 +2,15 @@
 
 import logging
 from contextlib import contextmanager
-from datetime import datetime
-from typing import Dict, List, Optional, Any
-from pymongo import MongoClient, ASCENDING, DESCENDING
+from typing import Optional
+
+from pymongo import ASCENDING, DESCENDING, MongoClient
 from pymongo.collection import Collection
 from pymongo.database import Database
-from pymongo.errors import ConnectionFailure, DuplicateKeyError, OperationFailure
+from pymongo.errors import ConnectionFailure, OperationFailure
 
-from core.config import get_settings
-from core.exceptions import ConnectionError, DuplicateDataError, QueryError
-from models.university import UniversityProgram
+from src.core.config import get_settings
+from src.core.exceptions import ConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +49,10 @@ class MongoDBConnection:
     @property
     def universities_collection(self) -> Collection:
         """Get MongoDB collection for universities."""
-        if not hasattr(self, '_universities_collection') or self._universities_collection is None:
+        if (
+            not hasattr(self, "_universities_collection")
+            or self._universities_collection is None
+        ):
             self._universities_collection = self.database["universities"]
             self._ensure_university_indexes()
         return self._universities_collection
@@ -58,7 +60,10 @@ class MongoDBConnection:
     @property
     def qs_rankings_collection(self) -> Collection:
         """Get MongoDB collection for QS rankings."""
-        if not hasattr(self, '_qs_rankings_collection') or self._qs_rankings_collection is None:
+        if (
+            not hasattr(self, "_qs_rankings_collection")
+            or self._qs_rankings_collection is None
+        ):
             self._qs_rankings_collection = self.database["qs_rankings"]
             self._ensure_qs_rankings_indexes()
         return self._qs_rankings_collection
@@ -70,33 +75,26 @@ class MongoDBConnection:
 
             # Compound unique index on year + institution name
             collection.create_index(
-                [("ranking_year", ASCENDING), ("institution_name_normalized", ASCENDING)],
+                [
+                    ("ranking_year", ASCENDING),
+                    ("institution_name_normalized", ASCENDING),
+                ],
                 unique=True,
-                name="unique_year_institution"
+                name="unique_year_institution",
             )
 
             # Index on rank for ranking queries
-            collection.create_index(
-                [("rank", ASCENDING)],
-                name="rank_index"
-            )
+            collection.create_index([("rank", ASCENDING)], name="rank_index")
 
             # Index on country for geographic filtering
-            collection.create_index(
-                [("country", ASCENDING)],
-                name="country_index"
-            )
+            collection.create_index([("country", ASCENDING)], name="country_index")
 
             # Index on region for regional queries
-            collection.create_index(
-                [("region", ASCENDING)],
-                name="region_index"
-            )
+            collection.create_index([("region", ASCENDING)], name="region_index")
 
             # Index on overall score
             collection.create_index(
-                [("overall_score", DESCENDING)],
-                name="overall_score_index"
+                [("overall_score", DESCENDING)], name="overall_score_index"
             )
 
             logger.info("QS Rankings database indexes created successfully")
@@ -110,10 +108,10 @@ class MongoDBConnection:
                 self.settings.database.connection_string,
                 serverSelectionTimeoutMS=5000,
                 maxPoolSize=10,
-                minPoolSize=2
+                minPoolSize=2,
             )
             # Test the connection
-            self._client.admin.command('ping')
+            self._client.admin.command("ping")
             logger.info("Successfully connected to MongoDB")
         except ConnectionFailure as e:
             logger.error(f"Failed to connect to MongoDB: {e}")
@@ -124,45 +122,37 @@ class MongoDBConnection:
         try:
             # Unique index on source_url to prevent duplicates
             self._collection.create_index(
-                [("source_url", ASCENDING)],
-                unique=True,
-                name="unique_source_url"
+                [("source_url", ASCENDING)], unique=True, name="unique_source_url"
             )
 
             # Index on university_name for filtering
             self._collection.create_index(
-                [("university_name", ASCENDING)],
-                name="university_name_index"
+                [("university_name", ASCENDING)], name="university_name_index"
             )
 
             # Index on country for geographical filtering
             self._collection.create_index(
-                [("country", ASCENDING)],
-                name="country_index"
+                [("country", ASCENDING)], name="country_index"
             )
 
             # Index on degree_type for program type filtering
             self._collection.create_index(
-                [("degree_type", ASCENDING)],
-                name="degree_type_index"
+                [("degree_type", ASCENDING)], name="degree_type_index"
             )
 
             # Compound index for ranking queries
             self._collection.create_index(
-                [("rankings.qs_world_ranking", ASCENDING)],
-                name="qs_ranking_index"
+                [("rankings.qs_world_ranking", ASCENDING)], name="qs_ranking_index"
             )
 
             # Index on last_updated for freshness queries
             self._collection.create_index(
-                [("last_updated", DESCENDING)],
-                name="last_updated_index"
+                [("last_updated", DESCENDING)], name="last_updated_index"
             )
 
             # Index on confidence_score for quality filtering
             self._collection.create_index(
-                [("confidence_score", DESCENDING)],
-                name="confidence_score_index"
+                [("confidence_score", DESCENDING)], name="confidence_score_index"
             )
 
             logger.info("Database indexes created successfully")
@@ -176,63 +166,53 @@ class MongoDBConnection:
 
             # Unique index on university_id
             universities_collection.create_index(
-                [("university_id", ASCENDING)],
-                unique=True,
-                name="unique_university_id"
+                [("university_id", ASCENDING)], unique=True, name="unique_university_id"
             )
 
             # Index on name for searching
             universities_collection.create_index(
-                [("name", ASCENDING)],
-                name="university_name_index"
+                [("name", ASCENDING)], name="university_name_index"
             )
 
             # Index on country for geographical filtering
             universities_collection.create_index(
-                [("country", ASCENDING)],
-                name="university_country_index"
+                [("country", ASCENDING)], name="university_country_index"
             )
 
             # Index on QS ranking for ranking queries
             universities_collection.create_index(
-                [("qs_world_ranking", ASCENDING)],
-                name="qs_ranking_index"
+                [("qs_world_ranking", ASCENDING)], name="qs_ranking_index"
             )
 
             # Index on THE ranking
             universities_collection.create_index(
-                [("the_world_ranking", ASCENDING)],
-                name="the_ranking_index"
+                [("the_world_ranking", ASCENDING)], name="the_ranking_index"
             )
 
             # Index on US News ranking
             universities_collection.create_index(
-                [("us_news_ranking", ASCENDING)],
-                name="us_news_ranking_index"
+                [("us_news_ranking", ASCENDING)], name="us_news_ranking_index"
             )
 
             # Index on tier for filtering
             universities_collection.create_index(
-                [("tier", ASCENDING)],
-                name="tier_index"
+                [("tier", ASCENDING)], name="tier_index"
             )
 
             # Index on type (public/private)
             universities_collection.create_index(
-                [("type", ASCENDING)],
-                name="type_index"
+                [("type", ASCENDING)], name="type_index"
             )
 
             # Index on last_updated for freshness queries
             universities_collection.create_index(
-                [("updated_at", DESCENDING)],
-                name="university_updated_index"
+                [("updated_at", DESCENDING)], name="university_updated_index"
             )
 
             # Compound index for country + ranking queries
             universities_collection.create_index(
                 [("country", ASCENDING), ("qs_world_ranking", ASCENDING)],
-                name="country_qs_ranking_index"
+                name="country_qs_ranking_index",
             )
 
             logger.info("University database indexes created successfully")
@@ -246,14 +226,14 @@ class MongoDBConnection:
             self._client = None
             self._database = None
             self._collection = None
-            if hasattr(self, '_universities_collection'):
+            if hasattr(self, "_universities_collection"):
                 self._universities_collection = None
             logger.info("MongoDB connection closed")
 
     def health_check(self) -> bool:
         """Check if the database connection is healthy."""
         try:
-            self.client.admin.command('ping')
+            self.client.admin.command("ping")
             return True
         except Exception:
             return False

@@ -1,0 +1,262 @@
+[
+  {
+    "university_id": "e30310565f6c",
+    "university_name": "Al-Huda University College",
+    "program_name": "​​​​​​​law",
+    "degree_type": "Master of Science",
+    "degree_level": "Masters",
+    "program_category": "Law",
+    "country": "Unknown",
+    "city": "Unknown",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": null,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/al-huda-university-college/undergrad/law",
+    "confidence_score": 0.16,
+    "last_updated": "2026-02-21T09:50:43.546569",
+    "data_completeness": 0.25
+  },
+  {
+    "university_id": "e30310565f6c",
+    "university_name": "Al-Huda University College",
+    "program_name": "​​​​​​​Pharmacy",
+    "degree_type": "Master of Science",
+    "degree_level": "Masters",
+    "program_category": "Medical",
+    "country": "Unknown",
+    "city": "Unknown",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": null,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/al-huda-university-college/undergrad/pharmacy",
+    "confidence_score": 0.16,
+    "last_updated": "2026-02-21T09:50:43.547325",
+    "data_completeness": 0.25
+  },
+  {
+    "university_id": "446f6f43c3eb",
+    "university_name": "University of Liverpool Management School",
+    "program_name": "​​Clinical Education​ ​​PGCert​",
+    "degree_type": "Master of Science",
+    "degree_level": "Masters",
+    "program_category": "Medical",
+    "country": "United Kingdom",
+    "city": "Liverpool",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": null,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/university-liverpool/postgrad/clinical-education-pgcert",
+    "confidence_score": 0.16,
+    "last_updated": "2026-02-21T09:50:43.547575",
+    "data_completeness": 0.25
+  },
+  {
+    "university_id": "2c1ab83964e9",
+    "university_name": "Nanyang Technological University, Singapore (NTU Singapore)",
+    "program_name": "​Bachelor of Arts in Philosophy",
+    "degree_type": "Master of Science",
+    "degree_level": "Masters",
+    "program_category": "Arts & Humanities",
+    "country": "Singapore",
+    "city": "Singapore",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": null,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/nanyang-technological-university-singapore-ntu-singapore/undergrad/bachelor-arts-philosophy",
+    "confidence_score": 0.16,
+    "last_updated": "2026-02-21T09:50:43.547781",
+    "data_completeness": 0.25
+  },
+  {
+    "university_id": "5bcfdc9a856f",
+    "university_name": "Universiti Teknologi PETRONAS (UTP)",
+    "program_name": "​Bachelor of C​omputer Science (Hons)",
+    "degree_type": "Master of Science",
+    "degree_level": "Masters",
+    "program_category": "Other",
+    "country": "Malaysia",
+    "city": "Seri Iskandar",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": null,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/universiti-teknologi-petronas-utp/undergrad/bachelor-c-omputer-science-hons",
+    "confidence_score": 0.16,
+    "last_updated": "2026-02-21T09:50:43.547992",
+    "data_completeness": 0.25
+  }
+]

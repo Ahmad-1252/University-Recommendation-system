@@ -1,10 +1,12 @@
 """LLM provider factory for creating provider instances."""
 
 from typing import Optional
+
+from src.core.config import get_settings
+
 from .base_provider import LLMProvider
-from .groq_provider import GroqProvider
 from .deepseek_provider import DeepSeekProvider
-from core.config import get_settings
+from .groq_provider import GroqProvider
 
 
 class LLMProviderFactory:
@@ -37,7 +39,7 @@ class LLMProviderFactory:
             return GroqProvider(
                 api_key=settings.llm.groq.api_key,
                 model=settings.llm.groq.model,
-                timeout=settings.llm.groq.timeout
+                timeout=settings.llm.groq.timeout,
             )
 
         elif provider_name == "deepseek":
@@ -46,14 +48,16 @@ class LLMProviderFactory:
             return DeepSeekProvider(
                 api_key=settings.llm.deepseek.api_key,
                 model=settings.llm.deepseek.model,
-                timeout=settings.llm.deepseek.timeout
+                timeout=settings.llm.deepseek.timeout,
             )
 
         else:
             raise ValueError(f"Unsupported LLM provider: {provider_name}")
 
     @staticmethod
-    async def create_provider_with_fallback(primary_provider: Optional[str] = None) -> LLMProvider:
+    async def create_provider_with_fallback(
+        primary_provider: Optional[str] = None,
+    ) -> LLMProvider:
         """
         Create provider with automatic fallback to alternative provider.
 

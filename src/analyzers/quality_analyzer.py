@@ -1,13 +1,13 @@
 """Data quality analysis and monitoring."""
 
 import logging
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timedelta
 from collections import defaultdict
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 from ..core.config import get_settings
-from ..models.university import UniversityProgram, AnalysisResult
 from ..database.repositories import ProgramRepository
+from ..models.university import AnalysisResult, UniversityProgram
 from ..services.validation_service import ValidationService
 
 logger = logging.getLogger(__name__)
@@ -16,14 +16,18 @@ logger = logging.getLogger(__name__)
 class QualityAnalyzer:
     """Analyzes data quality and provides monitoring insights."""
 
-    def __init__(self,
-                 repository: Optional[ProgramRepository] = None,
-                 validation_service: Optional[ValidationService] = None):
+    def __init__(
+        self,
+        repository: Optional[ProgramRepository] = None,
+        validation_service: Optional[ValidationService] = None,
+    ):
         self.settings = get_settings()
         self.repository = repository or ProgramRepository()
         self.validation_service = validation_service or ValidationService()
 
-    def analyze_data_quality(self, programs: Optional[List[UniversityProgram]] = None) -> AnalysisResult:
+    def analyze_data_quality(
+        self, programs: Optional[List[UniversityProgram]] = None
+    ) -> AnalysisResult:
         """
         Analyze the quality of program data.
 
@@ -42,7 +46,7 @@ class QualityAnalyzer:
                 average_completeness=0.0,
                 quality_score=0.0,
                 issues_found=["No programs found to analyze"],
-                recommendations=["Add programs to the database before analysis"]
+                recommendations=["Add programs to the database before analysis"],
             )
 
         total_programs = len(programs)
@@ -63,7 +67,11 @@ class QualityAnalyzer:
                 quality_issues.extend(validation_result["warnings"])
 
         # Calculate aggregate metrics
-        avg_completeness = sum(completeness_scores) / len(completeness_scores) if completeness_scores else 0.0
+        avg_completeness = (
+            sum(completeness_scores) / len(completeness_scores)
+            if completeness_scores
+            else 0.0
+        )
 
         # Calculate overall quality score
         quality_score = self._calculate_overall_quality_score(
@@ -80,14 +88,16 @@ class QualityAnalyzer:
             average_completeness=avg_completeness,
             quality_score=quality_score,
             issues_found=validation_issues + quality_issues,
-            recommendations=recommendations
+            recommendations=recommendations,
         )
 
-    def _calculate_overall_quality_score(self,
-                                       avg_completeness: float,
-                                       validation_issues: List[str],
-                                       quality_issues: List[str],
-                                       total_programs: int) -> float:
+    def _calculate_overall_quality_score(
+        self,
+        avg_completeness: float,
+        validation_issues: List[str],
+        quality_issues: List[str],
+        total_programs: int,
+    ) -> float:
         """Calculate overall quality score from 0.0 to 1.0."""
         # Base score from completeness
         score = avg_completeness * 0.7
@@ -102,22 +112,28 @@ class QualityAnalyzer:
 
         return max(0.0, min(1.0, score))
 
-    def _generate_quality_recommendations(self,
-                                        avg_completeness: float,
-                                        validation_issues: List[str],
-                                        quality_issues: List[str]) -> List[str]:
+    def _generate_quality_recommendations(
+        self,
+        avg_completeness: float,
+        validation_issues: List[str],
+        quality_issues: List[str],
+    ) -> List[str]:
         """Generate recommendations based on quality analysis."""
         recommendations = []
 
         if avg_completeness < 0.7:
-            recommendations.append("Improve data completeness - aim for 80%+ field coverage")
+            recommendations.append(
+                "Improve data completeness - aim for 80%+ field coverage"
+            )
 
         if validation_issues:
             issue_counts = defaultdict(int)
             for issue in validation_issues:
                 issue_counts[issue] += 1
 
-            top_issues = sorted(issue_counts.items(), key=lambda x: x[1], reverse=True)[:3]
+            top_issues = sorted(issue_counts.items(), key=lambda x: x[1], reverse=True)[
+                :3
+            ]
             for issue, count in top_issues:
                 recommendations.append(f"Fix {count} programs with: {issue}")
 
@@ -156,8 +172,12 @@ class QualityAnalyzer:
             "universities_covered": len(university_counts),
             "countries_covered": len(country_counts),
             "degrees_offered": dict(degree_counts),
-            "top_universities": dict(sorted(university_counts.items(), key=lambda x: x[1], reverse=True)[:10]),
-            "country_distribution": dict(sorted(country_counts.items(), key=lambda x: x[1], reverse=True))
+            "top_universities": dict(
+                sorted(university_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+            ),
+            "country_distribution": dict(
+                sorted(country_counts.items(), key=lambda x: x[1], reverse=True)
+            ),
         }
 
     def analyze_freshness(self, days_threshold: int = 30) -> Dict[str, Any]:
@@ -171,7 +191,7 @@ class QualityAnalyzer:
             Freshness analysis results
         """
         programs = self.repository.get_all_programs()
-        cutoff_date = datetime.utcnow() - timedelta(days=days_threshold)
+        cutoff_date = datetime.now(datetime.UTC) - timedelta(days=days_threshold)
 
         fresh_count = 0
         stale_count = 0
@@ -196,7 +216,7 @@ class QualityAnalyzer:
             "freshness_ratio": fresh_count / len(programs) if programs else 0.0,
             "oldest_update": oldest_update.isoformat() if oldest_update else None,
             "newest_update": newest_update.isoformat() if newest_update else None,
-            "days_threshold": days_threshold
+            "days_threshold": days_threshold,
         }
 
     def generate_quality_report(self) -> Dict[str, Any]:
@@ -222,7 +242,7 @@ class QualityAnalyzer:
         stats = self.repository.get_statistics()
 
         return {
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(datetime.UTC).isoformat(),
             "quality_analysis": quality_analysis.model_dump(),
             "coverage_analysis": coverage_analysis,
             "freshness_analysis": freshness_analysis,
@@ -231,7 +251,13 @@ class QualityAnalyzer:
                 "total_programs": len(programs),
                 "overall_quality_score": quality_analysis.quality_score,
                 "data_completeness": quality_analysis.average_completeness,
-                "critical_issues": len([i for i in quality_analysis.issues_found if "required" in i.lower()]),
-                "recommendations_count": len(quality_analysis.recommendations)
-            }
+                "critical_issues": len(
+                    [
+                        i
+                        for i in quality_analysis.issues_found
+                        if "required" in i.lower()
+                    ]
+                ),
+                "recommendations_count": len(quality_analysis.recommendations),
+            },
         }

@@ -2,11 +2,11 @@
 Populate test data based on the last successful scraper run
 """
 
-import json
-from pymongo import MongoClient
-from datetime import datetime
 import os
+from datetime import datetime
+
 from dotenv import load_dotenv
+from pymongo import MongoClient
 
 load_dotenv()
 
@@ -27,7 +27,7 @@ test_programs = [
         "ranking": "1",
         "description": "Advanced computer science program",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.95
+        "confidence_score": 0.95,
     },
     {
         "university_name": "Harvard University",
@@ -44,7 +44,7 @@ test_programs = [
         "ranking": "1",
         "description": "Harvard Business School MBA",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.98
+        "confidence_score": 0.98,
     },
     {
         "university_name": "Stanford University",
@@ -61,7 +61,7 @@ test_programs = [
         "ranking": "2",
         "description": "MS in Computer Science with AI specialization",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.94
+        "confidence_score": 0.94,
     },
     {
         "university_name": "University of Cambridge",
@@ -78,7 +78,7 @@ test_programs = [
         "ranking": "3",
         "description": "Natural Sciences and Engineering",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.92
+        "confidence_score": 0.92,
     },
     {
         "university_name": "University of Cambridge",
@@ -95,7 +95,7 @@ test_programs = [
         "ranking": "3",
         "description": "Mathematics program",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.91
+        "confidence_score": 0.91,
     },
     {
         "university_name": "University of Oxford",
@@ -112,7 +112,7 @@ test_programs = [
         "ranking": "4",
         "description": "Philosophy, Politics and Economics",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.90
+        "confidence_score": 0.90,
     },
     {
         "university_name": "Imperial College London",
@@ -129,7 +129,7 @@ test_programs = [
         "ranking": "5",
         "description": "Advanced Physics MSc",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.93
+        "confidence_score": 0.93,
     },
     {
         "university_name": "ETH Zurich",
@@ -146,7 +146,7 @@ test_programs = [
         "ranking": "9",
         "description": "Civil Engineering Master's program",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.96
+        "confidence_score": 0.96,
     },
     {
         "university_name": "Technical University of Munich",
@@ -163,7 +163,7 @@ test_programs = [
         "ranking": "45",
         "description": "Electrical Engineering MSc",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.88
+        "confidence_score": 0.88,
     },
     {
         "university_name": "University of Toronto",
@@ -180,7 +180,7 @@ test_programs = [
         "ranking": "20",
         "description": "Master of Science in Computer Science",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.89
+        "confidence_score": 0.89,
     },
     {
         "university_name": "University of British Columbia",
@@ -197,7 +197,7 @@ test_programs = [
         "ranking": "34",
         "description": "Environmental Science Graduate Program",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.87
+        "confidence_score": 0.87,
     },
     {
         "university_name": "Australian National University",
@@ -214,7 +214,7 @@ test_programs = [
         "ranking": "54",
         "description": "Master of Advanced Science in Physics",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.85
+        "confidence_score": 0.85,
     },
     {
         "university_name": "University of Melbourne",
@@ -231,7 +231,7 @@ test_programs = [
         "ranking": "46",
         "description": "Melbourne MBA",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.92
+        "confidence_score": 0.92,
     },
     {
         "university_name": "Peking University",
@@ -248,7 +248,7 @@ test_programs = [
         "ranking": "49",
         "description": "Master of Economics",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.84
+        "confidence_score": 0.84,
     },
     {
         "university_name": "Tsinghua University",
@@ -265,49 +265,51 @@ test_programs = [
         "ranking": "50",
         "description": "Master of Science in Computer Science",
         "extracted_at": datetime.now(),
-        "confidence_score": 0.86
-    }
+        "confidence_score": 0.86,
+    },
 ]
+
 
 def populate_test_data():
     """Insert test data into MongoDB"""
     try:
-        mongo_uri = os.getenv('MONGODB_URI', 'mongodb://localhost:27017/')
+        mongo_uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017/")
         client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
-        
+
         # Verify connection
-        client.admin.command('ping')
+        client.admin.command("ping")
         print("[OK] MongoDB connection established")
-        
-        db = client['university_scraper']
-        collection = db['programs']
-        
+
+        db = client["university_scraper"]
+        collection = db["programs"]
+
         # Clear existing data
         collection.delete_many({})
-        print(f"[OK] Cleared existing data")
-        
+        print("[OK] Cleared existing data")
+
         # Insert test data
         result = collection.insert_many(test_programs)
         print(f"[OK] Inserted {len(result.inserted_ids)} programs into database")
-        
+
         # Verify insertion
         count = collection.count_documents({})
         print(f"[OK] Total programs in database: {count}")
-        
+
         # Show distribution by university
-        print(f"\n[OK] Programs by university:")
-        universities = collection.distinct('university_name')
+        print("\n[OK] Programs by university:")
+        universities = collection.distinct("university_name")
         for uni in sorted(universities):
-            count = collection.count_documents({'university_name': uni})
+            count = collection.count_documents({"university_name": uni})
             print(f"  - {uni}: {count} programs")
-        
+
         client.close()
-        print(f"\n[OK] Test data population completed successfully")
+        print("\n[OK] Test data population completed successfully")
         return True
-        
+
     except Exception as e:
         print(f"[ERROR] Failed to populate test data: {e}")
         return False
+
 
 if __name__ == "__main__":
     populate_test_data()

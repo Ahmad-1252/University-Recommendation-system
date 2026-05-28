@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test University Application — UniScout Extension Test</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { max-width: 640px; margin: 40px auto; padding: 0 20px;
+           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+           color: #1e293b; background: #f8fafc; }
+    h1 { font-size: 24px; margin-bottom: 8px; color: #0f172a; }
+    .subtitle { color: #64748b; font-size: 14px; margin-bottom: 32px; }
+    form { background: #fff; padding: 32px; border-radius: 16px;
+           box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+    .field { margin-bottom: 20px; }
+    .field label { display: block; font-size: 13px; font-weight: 600;
+                   color: #334155; margin-bottom: 6px; }
+    .field input, .field textarea, .field select {
+      width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0;
+      border-radius: 10px; font-size: 14px; font-family: inherit;
+      color: #1e293b; background: #fff; transition: border-color .15s;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus {
+      outline: none; border-color: #1F3864; box-shadow: 0 0 0 3px rgba(31,56,100,.15);
+    }
+    .field textarea { resize: vertical; }
+    .section-title { font-size: 16px; font-weight: 700; color: #1F3864;
+                     margin: 28px 0 16px; padding-top: 16px;
+                     border-top: 1px solid #e2e8f0; }
+    .section-title:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+    button[type="submit"] {
+      margin-top: 24px; width: 100%; padding: 12px;
+      background: #1F3864; color: #fff; border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+    }
+    button[type="submit"]:hover { background: #162b50; }
+    .test-info { margin-top: 24px; padding: 16px; background: #fffbeb;
+                 border: 1px solid #fde68a; border-radius: 10px;
+                 font-size: 13px; color: #92400e; }
+    .test-info strong { display: block; margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+
+  <h1>🎓 University Application Form</h1>
+  <p class="subtitle">Test form for UniScout Chrome Extension (covers all 11 field types)</p>
+
+  <form id="application-form">
+
+    <!-- SECTION 1: Personal Information -->
+    <div class="section-title">Personal Information</div>
+
+    <div class="field">
+      <label for="full_name">Full Name</label>
+      <input type="text" id="full_name" name="full_name" placeholder="Your full name">
+    </div>
+
+    <div class="field">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="Email address">
+    </div>
+
+    <div class="field">
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" placeholder="Phone number">
+    </div>
+
+    <div class="field">
+      <label for="dob">Date of Birth</label>
+      <input type="date" id="dob" name="date_of_birth">
+    </div>
+
+    <div class="field">
+      <label for="nationality">Nationality</label>
+      <input type="text" id="nationality" name="nationality" placeholder="Nationality">
+    </div>
+
+    <div class="field">
+      <label for="address">Address</label>
+      <input type="text" id="address" name="address" placeholder="Your address">
+    </div>
+
+    <!-- SECTION 2: Academic Background -->
+    <div class="section-title">Academic Background</div>
+
+    <div class="field">
+      <label for="cgpa">CGPA</label>
+      <input type="number" id="cgpa" name="cgpa" step="0.01" min="0" max="4" placeholder="e.g. 3.75">
+    </div>
+
+    <div class="field">
+      <label for="field_of_study">Field of Study</label>
+      <input type="text" id="field_of_study" name="field_of_study" placeholder="e.g. Computer Science">
+    </div>
+
+    <div class="field">
+      <label for="degree">Degree Level</label>
+      <select id="degree" name="degree">
+        <option value="">Select degree level</option>
+        <option value="bachelors">Bachelor's</option>
+        <option value="masters">Master's</option>
+        <option value="phd">PhD</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="university_attended">University Attended</label>
+      <input type="text" id="university_attended" name="university_attended" placeholder="Previous university">
+    </div>
+
+    <div class="field">
+      <label for="ielts">IELTS Score</label>
+      <input type="number" id="ielts" name="ielts" step="0.5" min="0" max="9" placeholder="e.g. 7.5">
+    </div>
+
+    <!-- SECTION 3: Essays & Statements -->
+    <div class="section-title">Essays & Statements</div>
+
+    <div class="field">
+      <label for="personal_statement">Personal Statement</label>
+      <textarea id="personal_statement" name="personal_statement" rows="6"
+                placeholder="Why do you want to join this program? (150-300 words)"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="short_answer">Short Answer: Describe Yourself</label>
+      <textarea id="short_answer" name="short_answer" rows="3"
+                placeholder="Describe yourself in a few sentences (50-100 words)"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="motivation">Motivation Letter</label>
+      <textarea id="motivation" name="motivation_letter" rows="6"
+                placeholder="What motivates you to pursue this degree?"></textarea>
+    </div>
+
+    <button type="submit">Submit Application</button>
+  </form>
+
+  <div class="test-info">
+    <strong>🧪 This is a test form for UniScout Extension</strong>
+    Expected detections: 14 fields (11 standard + 3 essay).<br>
+    Expected autofill: All standard fields from profile, AI-generated text for essays.
+  </div>
+
+  <!-- SPA Navigation Test (dynamic form injection) -->
+  <script>
+    document.getElementById('application-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Form submitted! (test mode — no actual submission)');
+    });
+  </script>
+
+</body>
+</html>

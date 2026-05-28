@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>UniScout</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- ─── HEADER (always visible) ─── -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="header-title">UniScout</h1>
+        <p class="header-sub">Smart Application Assistant</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── LOADING ─── -->
+  <div id="state-loading" class="state">
+    <div class="loader"></div>
+    <p class="loading-text">Checking session…</p>
+  </div>
+
+  <!-- ═══════════ STATE 1: NOT LOGGED IN ═══════════ -->
+  <div id="state-logged-out" class="state" hidden>
+    <div class="hero-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1F3864"
+           stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/>
+        <polyline points="10 17 15 12 10 7"/>
+        <line x1="15" y1="12" x2="3" y2="12"/>
+      </svg>
+    </div>
+    <h2 class="section-title">Welcome to UniScout</h2>
+    <p class="section-desc">
+      Auto-fill university applications with your profile data and AI-generated essays.
+    </p>
+    <button id="btn-login" class="btn btn-primary btn-full">
+      Login to UniScout
+    </button>
+  </div>
+
+  <!-- ═══════════ STATE 2: LOGGED IN — NO FORM ═══════════ -->
+  <div id="state-no-form" class="state" hidden>
+    <!-- Profile card -->
+    <div class="profile-card">
+      <div class="avatar" id="avatar">—</div>
+      <div class="profile-info">
+        <h3 id="profile-name">Student</h3>
+        <p class="profile-meta">CGPA: <strong id="profile-cgpa">—</strong></p>
+      </div>
+    </div>
+
+    <div class="notice notice-muted">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span>No application form detected on this page.</span>
+    </div>
+
+    <button id="btn-go-app" class="btn btn-primary btn-full">Go to UniScout</button>
+
+    <div class="footer-row">
+      <button id="btn-logout-1" class="btn btn-ghost">Sign out</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ STATE 3: LOGGED IN — FORM DETECTED ═══════════ -->
+  <div id="state-form" class="state" hidden>
+    <!-- Profile summary -->
+    <div class="profile-card">
+      <div class="avatar" id="avatar-2">—</div>
+      <div class="profile-info">
+        <h3 id="profile-name-2">Student</h3>
+        <div class="profile-tags">
+          <span class="tag" id="tag-cgpa">CGPA —</span>
+          <span class="tag" id="tag-field">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detected fields banner -->
+    <div class="notice notice-blue">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10 9 9 9 8 9"/>
+      </svg>
+      <span><strong id="field-count">0</strong> fields detected on this page</span>
+    </div>
+
+    <!-- AI toggle -->
+    <div class="toggle-row">
+      <label class="toggle-label" for="ai-toggle">Use AI for essay fields</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="ai-toggle" checked />
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+
+    <!-- Primary action -->
+    <button id="btn-autofill" class="btn btn-primary btn-full btn-lg">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"/>
+        <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
+      </svg>
+      Auto-Fill Form
+    </button>
+
+    <!-- Progress area (hidden until fill starts) -->
+    <div id="fill-status" class="fill-status" hidden>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+      </div>
+      <p class="progress-text" id="progress-text">Filling fields…</p>
+    </div>
+
+    <div class="footer-row">
+      <button id="btn-logout-2" class="btn btn-ghost">Sign out</button>
+      <button id="btn-rescan" class="btn btn-outline btn-sm">Re-scan</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

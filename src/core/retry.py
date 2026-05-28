@@ -1,13 +1,12 @@
 """Retry policy framework with exponential backoff and jitter."""
 
 import asyncio
-import random
-import time
 import logging
+import random
 from abc import ABC, abstractmethod
-from typing import Callable, Any, Optional, Dict, List
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Callable, List, Optional
 
 from .exceptions import BaseError, ErrorContext
 
@@ -16,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class RetryStrategy(Enum):
     """Retry strategies."""
+
     FIXED = "fixed"
     EXPONENTIAL = "exponential"
     LINEAR = "linear"
@@ -24,6 +24,7 @@ class RetryStrategy(Enum):
 @dataclass
 class RetryConfig:
     """Configuration for retry policies."""
+
     max_attempts: int = 3
     initial_delay: float = 1.0
     max_delay: float = 60.0
@@ -66,7 +67,7 @@ class RetryPolicy(ABC):
         elif self.config.strategy == RetryStrategy.LINEAR:
             delay = self.config.initial_delay * (attempt + 1)
         else:  # EXPONENTIAL
-            delay = self.config.initial_delay * (self.config.backoff_factor ** attempt)
+            delay = self.config.initial_delay * (self.config.backoff_factor**attempt)
 
         # Apply maximum delay limit
         delay = min(delay, self.config.max_delay)
@@ -110,7 +111,7 @@ class ExponentialBackoffRetry(RetryPolicy):
 class CircuitBreakerRetry(ExponentialBackoffRetry):
     """Retry policy integrated with circuit breaker."""
 
-    def __init__(self, config: RetryConfig, circuit_breaker: 'CircuitBreaker'):
+    def __init__(self, config: RetryConfig, circuit_breaker: "CircuitBreaker"):
         super().__init__(config)
         self.circuit_breaker = circuit_breaker
 
@@ -122,15 +123,15 @@ class CircuitBreakerRetry(ExponentialBackoffRetry):
                 f"Circuit breaker is open for {self.circuit_breaker.name}",
                 context=ErrorContext(
                     operation="circuit_breaker_check",
-                    component=self.circuit_breaker.name
-                )
+                    component=self.circuit_breaker.name,
+                ),
             )
 
         try:
             result = await super().execute(func, *args, **kwargs)
             await self.circuit_breaker.record_success()
             return result
-        except Exception as e:
+        except Exception:
             await self.circuit_breaker.record_failure()
             raise
 
@@ -145,7 +146,7 @@ async def retry_with_backoff(
     jitter: bool = True,
     retryable_errors: Optional[List[str]] = None,
     *args,
-    **kwargs
+    **kwargs,
 ) -> Any:
     """Convenience function for exponential backoff retry."""
     config = RetryConfig(
@@ -154,7 +155,7 @@ async def retry_with_backoff(
         backoff_factor=backoff_factor,
         max_delay=max_delay,
         jitter=jitter,
-        retryable_errors=retryable_errors
+        retryable_errors=retryable_errors,
     )
 
     policy = ExponentialBackoffRetry(config)
@@ -167,4 +168,5 @@ from .exceptions import CircuitBreakerError
 
 class CircuitBreakerOpenError(CircuitBreakerError):
     """Raised when circuit breaker is open."""
+
     pass

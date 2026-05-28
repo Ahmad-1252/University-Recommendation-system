@@ -8,5 +8,5 @@ __all__ = [
     "get_mongo_connection",
     "mongo_session",
     "ProgramRepository",
-    "UniversityRepository"
+    "UniversityRepository",
 ]

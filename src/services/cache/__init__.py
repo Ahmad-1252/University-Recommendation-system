@@ -3,10 +3,10 @@
 from .cache import (
     Cache,
     CacheBackend,
+    CacheEntry,
+    CacheFactory,
     MemoryCacheBackend,
     RedisCacheBackend,
-    CacheEntry,
-    CacheFactory
 )
 
 __all__ = [
@@ -15,5 +15,5 @@ __all__ = [
     "MemoryCacheBackend",
     "RedisCacheBackend",
     "CacheEntry",
-    "CacheFactory"
+    "CacheFactory",
 ]

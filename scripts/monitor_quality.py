@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Quality monitoring script for university program data."""
 
+import json
 import logging
 import sys
-import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
@@ -16,11 +16,8 @@ from src.core.config import get_settings
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('logs/quality_monitor.log')
-    ]
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler(), logging.FileHandler("logs/quality_monitor.log")],
 )
 
 logger = logging.getLogger(__name__)
@@ -45,16 +42,16 @@ def main():
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         report_file = reports_dir / f"quality_report_{timestamp}.json"
 
-        with open(report_file, 'w', encoding='utf-8') as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2, ensure_ascii=False, default=str)
 
         logger.info(f"Quality report saved to: {report_file}")
 
         # Print summary to console
-        summary = report['summary']
-        print("\n" + "="*50)
+        summary = report["summary"]
+        print("\n" + "=" * 50)
         print("QUALITY MONITORING REPORT")
-        print("="*50)
+        print("=" * 50)
         print(f"Generated: {report['generated_at']}")
         print(f"Total Programs: {summary['total_programs']}")
         print(".1f")
@@ -64,29 +61,29 @@ def main():
         print()
 
         # Show top issues
-        if report['quality_analysis']['issues_found']:
+        if report["quality_analysis"]["issues_found"]:
             print("TOP ISSUES:")
-            for issue in report['quality_analysis']['issues_found'][:5]:
+            for issue in report["quality_analysis"]["issues_found"][:5]:
                 print(f"• {issue}")
             print()
 
         # Show recommendations
-        if report['quality_analysis']['recommendations']:
+        if report["quality_analysis"]["recommendations"]:
             print("RECOMMENDATIONS:")
-            for rec in report['quality_analysis']['recommendations'][:5]:
+            for rec in report["quality_analysis"]["recommendations"][:5]:
                 print(f"• {rec}")
             print()
 
         # Coverage analysis
-        coverage = report['coverage_analysis']
-        if 'total_programs' in coverage:
+        coverage = report["coverage_analysis"]
+        if "total_programs" in coverage:
             print("COVERAGE ANALYSIS:")
             print(f"• Universities Covered: {coverage['universities_covered']}")
             print(f"• Countries Covered: {coverage['countries_covered']}")
             print()
 
         # Freshness analysis
-        freshness = report['freshness_analysis']
+        freshness = report["freshness_analysis"]
         print("DATA FRESHNESS:")
         print(f"• Fresh Programs (30 days): {freshness['fresh_programs']}")
         print(f"• Stale Programs: {freshness['stale_programs']}")

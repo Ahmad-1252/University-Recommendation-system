@@ -1,12 +1,14 @@
-#!/usr/bin/env python3
+# ! env\Scripts\activate
 """Script to run the FastAPI server."""
 
-import uvicorn
 import logging
-from pathlib import Path
 
 # Add src to path
 import sys
+from pathlib import Path
+
+import uvicorn
+
 src_path = str(Path(__file__).parent / "src")
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
@@ -17,9 +19,5 @@ if __name__ == "__main__":
 
     logger.info("Starting University Recommendation System API")
     uvicorn.run(
-        "api.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
+        "api.main:app", host="0.0.0.0", port=8000, reload=True, log_level="info"
     )

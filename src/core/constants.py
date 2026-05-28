@@ -2,64 +2,123 @@
 
 from typing import Dict, List
 
-
 # Program Categories/Fields to scrape
 PROGRAM_CATEGORIES: Dict[str, List[str]] = {
     "Computer Science": [
-        "computer science", "computing", "informatics", "software engineering",
-        "artificial intelligence", "machine learning", "data science", "cybersecurity",
-        "information technology", "computer engineering"
+        "computer science",
+        "computing",
+        "informatics",
+        "software engineering",
+        "artificial intelligence",
+        "machine learning",
+        "data science",
+        "cybersecurity",
+        "information technology",
+        "computer engineering",
     ],
     "Networking": [
-        "networking", "network engineering", "telecommunications", "network security",
-        "network administration", "computer networks", "wireless networks"
+        "networking",
+        "network engineering",
+        "telecommunications",
+        "network security",
+        "network administration",
+        "computer networks",
+        "wireless networks",
     ],
     "Business": [
-        "business", "mba", "management", "finance", "accounting", "marketing",
-        "entrepreneurship", "business administration", "commerce", "economics",
-        "international business", "supply chain", "operations management"
+        "business",
+        "mba",
+        "management",
+        "finance",
+        "accounting",
+        "marketing",
+        "entrepreneurship",
+        "business administration",
+        "commerce",
+        "economics",
+        "international business",
+        "supply chain",
+        "operations management",
     ],
     "Medical": [
-        "medicine", "medical", "healthcare", "nursing", "pharmacy", "dentistry",
-        "public health", "biomedical", "clinical", "health sciences", "physiotherapy",
-        "occupational therapy", "medical imaging", "pathology"
+        "medicine",
+        "medical",
+        "healthcare",
+        "nursing",
+        "pharmacy",
+        "dentistry",
+        "public health",
+        "biomedical",
+        "clinical",
+        "health sciences",
+        "physiotherapy",
+        "occupational therapy",
+        "medical imaging",
+        "pathology",
     ],
     "Education": [
-        "education", "teaching", "pedagogy", "curriculum", "educational leadership",
-        "special education", "early childhood", "educational psychology", "tesol",
-        "educational technology"
+        "education",
+        "teaching",
+        "pedagogy",
+        "curriculum",
+        "educational leadership",
+        "special education",
+        "early childhood",
+        "educational psychology",
+        "tesol",
+        "educational technology",
     ],
     "Engineering": [
-        "engineering", "mechanical", "electrical", "civil", "chemical", "aerospace",
-        "industrial", "environmental engineering", "materials science"
+        "engineering",
+        "mechanical",
+        "electrical",
+        "civil",
+        "chemical",
+        "aerospace",
+        "industrial",
+        "environmental engineering",
+        "materials science",
     ],
-    "Law": [
-        "law", "legal", "jurisprudence", "llm", "jd"
-    ],
+    "Law": ["law", "legal", "jurisprudence", "llm", "jd"],
     "Arts & Humanities": [
-        "arts", "humanities", "literature", "history", "philosophy", "linguistics",
-        "languages", "music", "fine arts", "creative writing"
+        "arts",
+        "humanities",
+        "literature",
+        "history",
+        "philosophy",
+        "linguistics",
+        "languages",
+        "music",
+        "fine arts",
+        "creative writing",
     ],
     "Sciences": [
-        "biology", "chemistry", "physics", "mathematics", "statistics",
-        "environmental science", "geology", "astronomy"
-    ]
+        "biology",
+        "chemistry",
+        "physics",
+        "mathematics",
+        "statistics",
+        "environmental science",
+        "geology",
+        "astronomy",
+    ],
 }
 
 # Degree Levels to scrape
 DEGREE_LEVELS: Dict[str, List[str]] = {
-    "Undergraduate": [
-        "bachelor", "bsc", "ba", "beng", "bba", "undergraduate", "ug"
-    ],
-    "Graduate": [
-        "graduate", "postgraduate", "pg"
-    ],
+    "Undergraduate": ["bachelor", "bsc", "ba", "beng", "bba", "undergraduate", "ug"],
+    "Graduate": ["graduate", "postgraduate", "pg"],
     "Masters": [
-        "master", "msc", "ma", "mba", "meng", "mphil", "masters", "taught masters"
+        "master",
+        "msc",
+        "ma",
+        "mba",
+        "meng",
+        "mphil",
+        "masters",
+        "taught masters",
     ],
-    "PhD": [
-        "phd", "doctorate", "doctoral", "dphil", "research degree"
-    ]
+    "PhD": ["phd", "doctorate", "doctoral", "dphil", "research degree"],
 }
 
 # University Course Directory URLs - These are the main pages listing all programs
@@ -70,14 +129,14 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "graduate": "https://www.ox.ac.uk/admissions/graduate/courses/courses-a-z-listing/",
         "base_url": "https://www.ox.ac.uk",
         # Matches: /admissions/graduate/courses/msc-advanced-computer-science
-        "program_url_pattern": "/admissions/(?:undergraduate|graduate)/courses/(?:msc|ma|mba|mst|mth|dphil|pgdip|pgcert|bm|bcl|ba|bsc)-[a-z0-9-]+"
+        "program_url_pattern": "/admissions/(?:undergraduate|graduate)/courses/(?:msc|ma|mba|mst|mth|dphil|pgdip|pgcert|bm|bcl|ba|bsc)-[a-z0-9-]+",
     },
     "University of Cambridge": {
         "undergraduate": "https://www.undergraduate.study.cam.ac.uk/courses/directory",
         "graduate": "https://www.postgraduate.study.cam.ac.uk/courses/directory",
         "base_url": "https://www.cam.ac.uk",
         # Matches: /courses/directory/cscsmpacs (course codes)
-        "program_url_pattern": "/courses/directory/[a-z]{4,}"
+        "program_url_pattern": "/courses/directory/[a-z]{4,}",
     },
     "Imperial College London": {
         "undergraduate": "https://www.imperial.ac.uk/study/courses/undergraduate/",
@@ -85,7 +144,7 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "phd": "https://www.imperial.ac.uk/study/courses/postgraduate-research/",
         "base_url": "https://www.imperial.ac.uk",
         # Matches: /study/courses/postgraduate-taught/2026/advanced-computing/ or /study/courses/postgraduate-taught/computing/
-        "program_url_pattern": "/study/courses/(?:undergraduate|postgraduate-taught|postgraduate-research)/(?:\\d{4}/)?[a-z][a-z0-9-]+/?$"
+        "program_url_pattern": "/study/courses/(?:undergraduate|postgraduate-taught|postgraduate-research)/(?:\\d{4}/)?[a-z][a-z0-9-]+/?$",
     },
     "UCL": {
         "undergraduate": "https://www.ucl.ac.uk/prospective-students/undergraduate/degrees",
@@ -93,7 +152,7 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "phd": "https://www.ucl.ac.uk/prospective-students/graduate/research-degrees",
         "base_url": "https://www.ucl.ac.uk",
         # Matches: /prospective-students/graduate/taught-degrees/computer-science-msc
-        "program_url_pattern": "/prospective-students/(?:undergraduate|graduate)/(?:degrees|taught-degrees|research-degrees)/[a-z][a-z0-9-]+-(?:msc|ma|mba|phd|mres|bsc|ba|beng)$"
+        "program_url_pattern": "/prospective-students/(?:undergraduate|graduate)/(?:degrees|taught-degrees|research-degrees)/[a-z][a-z0-9-]+-(?:msc|ma|mba|phd|mres|bsc|ba|beng)$",
     },
     "University of Edinburgh": {
         "undergraduate": "https://study.ed.ac.uk/programmes/undergraduate-a-z",
@@ -101,7 +160,7 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "phd": "https://study.ed.ac.uk/programmes/postgraduate-research-a-z",
         "base_url": "https://study.ed.ac.uk",
         # Matches: /programmes/postgraduate-taught/12345-computer-science-msc
-        "program_url_pattern": "/programmes/(?:undergraduate|postgraduate-taught|postgraduate-research)/[0-9]+-[a-z0-9-]+"
+        "program_url_pattern": "/programmes/(?:undergraduate|postgraduate-taught|postgraduate-research)/[0-9]+-[a-z0-9-]+",
     },
     "University of Manchester": {
         "undergraduate": "https://www.manchester.ac.uk/study/undergraduate/courses/list/",
@@ -109,7 +168,7 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "phd": "https://www.manchester.ac.uk/study/postgraduate-research/programmes/",
         "base_url": "https://www.manchester.ac.uk",
         # Matches: /study/masters/courses/list/02674/msc-advanced-computer-science/
-        "program_url_pattern": "/study/(?:undergraduate|masters|postgraduate-research)/(?:courses/list|programmes)/\\d+/[a-z][a-z0-9-]+/?$"
+        "program_url_pattern": "/study/(?:undergraduate|masters|postgraduate-research)/(?:courses/list|programmes)/\\d+/[a-z][a-z0-9-]+/?$",
     },
     "King's College London": {
         "undergraduate": "https://www.kcl.ac.uk/study/undergraduate/courses",
@@ -117,7 +176,7 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "phd": "https://www.kcl.ac.uk/study/postgraduate-research/courses",
         "base_url": "https://www.kcl.ac.uk",
         # Matches: /study/postgraduate-taught/courses/computer-science-msc
-        "program_url_pattern": "/study/(?:undergraduate|postgraduate-taught|postgraduate-research)/courses/[a-z][a-z0-9-]+-(?:msc|ma|phd|bsc|ba|llm|llb|pg|mres)$"
+        "program_url_pattern": "/study/(?:undergraduate|postgraduate-taught|postgraduate-research)/courses/[a-z][a-z0-9-]+-(?:msc|ma|phd|bsc|ba|llm|llb|pg|mres)$",
     },
     "University of Glasgow": {
         "undergraduate": "https://www.gla.ac.uk/undergraduate/degrees/",
@@ -125,7 +184,7 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "phd": "https://www.gla.ac.uk/postgraduate/research/",
         "base_url": "https://www.gla.ac.uk",
         # Matches: /postgraduate/taught/computing-science/ or /undergraduate/degrees/computing-science/
-        "program_url_pattern": "/(?:undergraduate/degrees|postgraduate/(?:taught|research))/[a-z][a-z0-9-]+/?$"
+        "program_url_pattern": "/(?:undergraduate/degrees|postgraduate/(?:taught|research))/[a-z][a-z0-9-]+/?$",
     },
     "University of Leeds": {
         "undergraduate": "https://courses.leeds.ac.uk/course-search/undergraduate-courses",
@@ -133,14 +192,14 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "phd": "https://courses.leeds.ac.uk/course-search/research-degrees",
         "base_url": "https://courses.leeds.ac.uk",
         # Matches: /j702/advanced-computer-science-msc (course code pattern)
-        "program_url_pattern": "/[a-z]\\d+/[a-z][a-z0-9-]+$"
+        "program_url_pattern": "/[a-z]\\d+/[a-z][a-z0-9-]+$",
     },
     "University of Warwick": {
         "undergraduate": "https://warwick.ac.uk/study/undergraduate/courses/",
         "graduate": "https://warwick.ac.uk/study/postgraduate/courses/",
         "base_url": "https://warwick.ac.uk",
         # Matches: /study/postgraduate/courses/csmscdcs/
-        "program_url_pattern": "/study/(?:undergraduate|postgraduate)/courses/[a-z][a-z0-9]+/?$"
+        "program_url_pattern": "/study/(?:undergraduate|postgraduate)/courses/[a-z][a-z0-9]+/?$",
     },
     "ETH Zurich": {
         "undergraduate": "https://ethz.ch/en/studies/bachelor/degree-programmes.html",
@@ -151,7 +210,7 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "phd": "https://ethz.ch/en/doctorate.html",
         "base_url": "https://ethz.ch",
         # Matches: /studies/master/degree-programmes/engineering-sciences/computer-science.html
-        "program_url_pattern": "/studies/(?:master|bachelor)/degree-programmes/[a-z-]+/[a-z][a-z0-9-]+\\.html$"
+        "program_url_pattern": "/studies/(?:master|bachelor)/degree-programmes/[a-z-]+/[a-z][a-z0-9-]+\\.html$",
     },
     "EPFL": {
         "undergraduate": "https://www.epfl.ch/education/bachelor/programs/",
@@ -159,51 +218,47 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "phd": "https://www.epfl.ch/education/phd/programs/",
         "base_url": "https://www.epfl.ch",
         # Matches: /education/master/programs/computer-science/
-        "program_url_pattern": "/education/(?:bachelor|master|phd)/programs/[a-z][a-z0-9-]+/?$"
+        "program_url_pattern": "/education/(?:bachelor|master|phd)/programs/[a-z][a-z0-9-]+/?$",
     },
     "Technical University of Munich": {
         "all": "https://www.tum.de/en/studies/degree-programs/",
         "base_url": "https://www.tum.de",
         # Matches: /studies/degree-programs/detail/informatics-master-of-science-msc
         "program_url_pattern": "/studies/degree-programs/detail/[a-z][a-z0-9-]+$",
-        "pagination": {
-            "type": "hash",
-            "pattern": "#page={page}",
-            "max_pages": 15
-        }
+        "pagination": {"type": "hash", "pattern": "#page={page}", "max_pages": 15},
     },
     "LMU Munich": {
         "all": "https://www.lmu.de/en/study/all-degrees-and-programs/international-degree-programs/",
         "base_url": "https://www.lmu.de",
         # Matches: LMU Munich program pages (often redirects to uni-muenchen.de)
-        "program_url_pattern": "(?:uni-muenchen\\.de|lmu\\.de)/.*(?:studium|study|degree-program|master|bachelor)[^/]*/?$"
+        "program_url_pattern": "(?:uni-muenchen\\.de|lmu\\.de)/.*(?:studium|study|degree-program|master|bachelor)[^/]*/?$",
     },
     "Heidelberg University": {
         "all": "https://www.uni-heidelberg.de/en/study/all-subjects",
         "base_url": "https://www.uni-heidelberg.de",
         # Matches: /study/all-subjects/computer-science/
-        "program_url_pattern": "/study/all-subjects/[a-z][a-z0-9-]+/?$"
+        "program_url_pattern": "/study/all-subjects/[a-z][a-z0-9-]+/?$",
     },
     "University of Amsterdam": {
         "undergraduate": "https://www.uva.nl/en/programmes/bachelors/bachelors.html",
         "graduate": "https://www.uva.nl/en/programmes/masters/masters.html",
         "base_url": "https://www.uva.nl",
         # Matches: /programmes/masters/computer-science/computer-science.html
-        "program_url_pattern": "/programmes/(?:bachelors|masters)/[a-z][a-z0-9-]+/[a-z][a-z0-9-]+\\.html$"
+        "program_url_pattern": "/programmes/(?:bachelors|masters)/[a-z][a-z0-9-]+/[a-z][a-z0-9-]+\\.html$",
     },
     "Delft University of Technology": {
         "undergraduate": "https://www.tudelft.nl/en/education/programmes/bachelors",
         "graduate": "https://www.tudelft.nl/en/education/programmes/masters",
         "base_url": "https://www.tudelft.nl",
         # Matches: /education/programmes/masters/computer-science
-        "program_url_pattern": "/education/programmes/(?:bachelors|masters)/[a-z][a-z0-9-]+/?$"
+        "program_url_pattern": "/education/programmes/(?:bachelors|masters)/[a-z][a-z0-9-]+/?$",
     },
     "KU Leuven": {
         "undergraduate": "https://www.kuleuven.be/programmes/bachelors",
         "graduate": "https://www.kuleuven.be/programmes/masters",
         "base_url": "https://www.kuleuven.be",
         # Matches: /programmes/master-computer-science
-        "program_url_pattern": "/programmes/(?:bachelor|master)-[a-z][a-z0-9-]+$"
+        "program_url_pattern": "/programmes/(?:bachelor|master)-[a-z][a-z0-9-]+$",
     },
     "Leiden University": {
         "undergraduate": "https://www.universiteitleiden.nl/en/education/study-programmes",
@@ -211,20 +266,20 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "studiegids": "https://studiegids.universiteitleiden.nl/en/studies",
         "base_url": "https://www.universiteitleiden.nl",
         # Matches: /education/study-programmes/master/computer-science or /education/study-programmes/bachelor/archaeology
-        "program_url_pattern": "/education/study-programmes/(?:bachelor|master)/[a-z][a-z0-9-]+(?:/[a-z][a-z0-9-]+)?$"
+        "program_url_pattern": "/education/study-programmes/(?:bachelor|master)/[a-z][a-z0-9-]+(?:/[a-z][a-z0-9-]+)?$",
     },
     "Utrecht University": {
         "undergraduate": "https://www.uu.nl/en/bachelors/bachelors-programmes",
         "graduate": "https://www.uu.nl/en/masters/masters-programmes",
         "base_url": "https://www.uu.nl",
         # Matches: /masters/computer-science
-        "program_url_pattern": "/(?:masters|bachelors)/[a-z][a-z0-9-]+$"
+        "program_url_pattern": "/(?:masters|bachelors)/[a-z][a-z0-9-]+$",
     },
     "Université PSL": {
         "graduate": "https://www.psl.eu/en/education",
         "base_url": "https://www.psl.eu",
         # Matches: /education/master-computer-science
-        "program_url_pattern": "/education/(?:master|bachelor|phd)-[a-z][a-z0-9-]+$"
+        "program_url_pattern": "/education/(?:master|bachelor|phd)-[a-z][a-z0-9-]+$",
     },
     "University of Tartu": {
         "undergraduate": "https://ut.ee/en/bachelors-programmes",
@@ -232,14 +287,14 @@ UNIVERSITY_COURSE_DIRECTORIES: Dict[str, Dict[str, str]] = {
         "phd": "https://ut.ee/en/doctoral-programmes",
         "base_url": "https://ut.ee",
         # Matches: /curriculum/computer-science or /en/curriculum/...
-        "program_url_pattern": "/(?:en/)?curriculum/[a-z][a-z0-9-]+$"
+        "program_url_pattern": "/(?:en/)?curriculum/[a-z][a-z0-9-]+$",
     },
     "National and Kapodistrian University of Athens": {
         "all": "https://en.uoa.gr/studies/",
         "base_url": "https://en.uoa.gr",
         # Matches: /studies/undergraduate/computer-science/ or /studies/postgraduate/...
-        "program_url_pattern": "/studies/(?:undergraduate|postgraduate)/[a-z][a-z0-9-]+/?$"
-    }
+        "program_url_pattern": "/studies/(?:undergraduate|postgraduate)/[a-z][a-z0-9-]+/?$",
+    },
 }
 
 # Legacy: Single program URLs (for backward compatibility)
@@ -253,7 +308,6 @@ UNIVERSITY_URLS: Dict[str, str] = {
     "Université PSL": "https://www.psl.eu/en/education/master-computer-science",
     "Technical University of Munich": "https://www.tum.de/en/studies/degree-programs/detail/informatics-master-of-science-msc",
     "EPFL": "https://www.epfl.ch/education/master/programs/computer-science/",
-
     # Strong Universities - Official Admissions/Program Pages
     "University of Edinburgh": "https://www.ed.ac.uk/studying/postgraduate/degrees/index.php?r=site/view&edition=2024&id=110",
     "University of Manchester": "https://www.manchester.ac.uk/study/masters/courses/list/02674/msc-advanced-computer-science/",
@@ -265,13 +319,12 @@ UNIVERSITY_URLS: Dict[str, str] = {
     "LMU Munich": "https://www.lmu.de/en/study/all-degree-programs/computer-science-master/",
     "University of Warwick": "https://warwick.ac.uk/study/postgraduate/courses/csmscdcs/",
     "Heidelberg University": "https://www.uni-heidelberg.de/en/study/all-subjects/computer-science/computer-science-master",
-
     # Medium Universities - Official Admissions/Program Pages
     "Utrecht University": "https://www.uu.nl/en/masters/computer-science",
     "University of Tartu": "https://ut.ee/en/curriculum/computer-science",
     "National and Kapodistrian University of Athens": "https://www.di.uoa.gr/en/studies/postgraduate",
     "KU Leuven": "https://www.kuleuven.be/programmes/master-computer-science",
-    "Leiden University": "https://www.universiteitleiden.nl/en/education/study-programmes/master/computer-science"
+    "Leiden University": "https://www.universiteitleiden.nl/en/education/study-programmes/master/computer-science",
 }
 
 # University rankings and metadata
@@ -282,7 +335,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 5,
         "the_ranking": 2,
-        "us_news_ranking": 3
+        "us_news_ranking": 3,
     },
     "Stanford University": {
         "country": "United States",
@@ -290,7 +343,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 4,
         "the_ranking": 4,
-        "us_news_ranking": 3
+        "us_news_ranking": 3,
     },
     "MIT": {
         "country": "United States",
@@ -298,7 +351,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 1,
         "the_ranking": 5,
-        "us_news_ranking": 2
+        "us_news_ranking": 2,
     },
     "University of Oxford": {
         "country": "United Kingdom",
@@ -306,7 +359,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 2,
         "the_ranking": 1,
-        "us_news_ranking": 6
+        "us_news_ranking": 6,
     },
     "University of Cambridge": {
         "country": "United Kingdom",
@@ -314,7 +367,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 3,
         "the_ranking": 3,
-        "us_news_ranking": 2
+        "us_news_ranking": 2,
     },
     "Imperial College London": {
         "country": "United Kingdom",
@@ -322,7 +375,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 8,
         "the_ranking": 8,
-        "us_news_ranking": 8
+        "us_news_ranking": 8,
     },
     "ETH Zurich": {
         "country": "Switzerland",
@@ -330,7 +383,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 9,
         "the_ranking": 11,
-        "us_news_ranking": 7
+        "us_news_ranking": 7,
     },
     "EPFL": {
         "country": "Switzerland",
@@ -338,7 +391,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 14,
         "the_ranking": 30,
-        "us_news_ranking": 16
+        "us_news_ranking": 16,
     },
     "Technical University of Munich": {
         "country": "Germany",
@@ -346,7 +399,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 37,
         "the_ranking": 37,
-        "us_news_ranking": 41
+        "us_news_ranking": 41,
     },
     "University of Toronto": {
         "country": "Canada",
@@ -354,7 +407,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 21,
         "the_ranking": 18,
-        "us_news_ranking": 17
+        "us_news_ranking": 17,
     },
     "McGill University": {
         "country": "Canada",
@@ -362,7 +415,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 30,
         "the_ranking": 49,
-        "us_news_ranking": 51
+        "us_news_ranking": 51,
     },
     "University of British Columbia": {
         "country": "Canada",
@@ -370,7 +423,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 40,
         "the_ranking": 37,
-        "us_news_ranking": 35
+        "us_news_ranking": 35,
     },
     "Carnegie Mellon University": {
         "country": "United States",
@@ -378,7 +431,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 52,
         "the_ranking": 24,
-        "us_news_ranking": 22
+        "us_news_ranking": 22,
     },
     "Australian National University": {
         "country": "Australia",
@@ -386,7 +439,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 30,
         "the_ranking": 54,
-        "us_news_ranking": 62
+        "us_news_ranking": 62,
     },
     "University of Melbourne": {
         "country": "Australia",
@@ -394,7 +447,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 14,
         "the_ranking": 33,
-        "us_news_ranking": 37
+        "us_news_ranking": 37,
     },
     "University of Sydney": {
         "country": "Australia",
@@ -402,7 +455,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 19,
         "the_ranking": 41,
-        "us_news_ranking": 41
+        "us_news_ranking": 41,
     },
     "National University of Singapore": {
         "country": "Singapore",
@@ -410,7 +463,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 8,
         "the_ranking": 21,
-        "us_news_ranking": 32
+        "us_news_ranking": 32,
     },
     "University of Hong Kong": {
         "country": "Hong Kong",
@@ -418,7 +471,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 21,
         "the_ranking": 35,
-        "us_news_ranking": 89
+        "us_news_ranking": 89,
     },
     "Peking University": {
         "country": "China",
@@ -426,7 +479,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 12,
         "the_ranking": 14,
-        "us_news_ranking": 43
+        "us_news_ranking": 43,
     },
     "Tsinghua University": {
         "country": "China",
@@ -434,7 +487,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 12,
         "the_ranking": 12,
-        "us_news_ranking": 28
+        "us_news_ranking": 28,
     },
     "UCL": {
         "country": "United Kingdom",
@@ -442,7 +495,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "top",
         "qs_ranking": 9,
         "the_ranking": 22,
-        "us_news_ranking": 16
+        "us_news_ranking": 16,
     },
     "Université PSL": {
         "country": "France",
@@ -450,7 +503,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 44,
         "the_ranking": 46,
-        "us_news_ranking": 60
+        "us_news_ranking": 60,
     },
     "University of Edinburgh": {
         "country": "United Kingdom",
@@ -458,7 +511,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 22,
         "the_ranking": 30,
-        "us_news_ranking": 30
+        "us_news_ranking": 30,
     },
     "University of Manchester": {
         "country": "United Kingdom",
@@ -466,7 +519,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 28,
         "the_ranking": 54,
-        "us_news_ranking": 63
+        "us_news_ranking": 63,
     },
     "King's College London": {
         "country": "United Kingdom",
@@ -474,7 +527,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 35,
         "the_ranking": 35,
-        "us_news_ranking": 35
+        "us_news_ranking": 35,
     },
     "Delft University of Technology": {
         "country": "Netherlands",
@@ -482,7 +535,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 57,
         "the_ranking": 61,
-        "us_news_ranking": 63
+        "us_news_ranking": 63,
     },
     "University of Glasgow": {
         "country": "United Kingdom",
@@ -490,7 +543,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 73,
         "the_ranking": 86,
-        "us_news_ranking": 86
+        "us_news_ranking": 86,
     },
     "University of Leeds": {
         "country": "United Kingdom",
@@ -498,7 +551,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 75,
         "the_ranking": 125,
-        "us_news_ranking": 101
+        "us_news_ranking": 101,
     },
     "University of Amsterdam": {
         "country": "Netherlands",
@@ -506,7 +559,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 58,
         "the_ranking": 58,
-        "us_news_ranking": 58
+        "us_news_ranking": 58,
     },
     "LMU Munich": {
         "country": "Germany",
@@ -514,7 +567,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 64,
         "the_ranking": 32,
-        "us_news_ranking": 43
+        "us_news_ranking": 43,
     },
     "University of Warwick": {
         "country": "United Kingdom",
@@ -522,7 +575,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 64,
         "the_ranking": 104,
-        "us_news_ranking": 78
+        "us_news_ranking": 78,
     },
     "Heidelberg University": {
         "country": "Germany",
@@ -530,7 +583,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 67,
         "the_ranking": 42,
-        "us_news_ranking": 54
+        "us_news_ranking": 54,
     },
     "Utrecht University": {
         "country": "Netherlands",
@@ -538,7 +591,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "standard",
         "qs_ranking": 110,
         "the_ranking": 75,
-        "us_news_ranking": 52
+        "us_news_ranking": 52,
     },
     "University of Tartu": {
         "country": "Estonia",
@@ -546,15 +599,15 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "standard",
         "qs_ranking": 295,
         "the_ranking": 301,
-        "us_news_ranking": 350
+        "us_news_ranking": 350,
     },
-    "University of Athens": {
+    "National and Kapodistrian University of Athens": {
         "country": "Greece",
         "city": "Athens",
         "tier": "standard",
         "qs_ranking": 651,
         "the_ranking": 601,
-        "us_news_ranking": 500
+        "us_news_ranking": 500,
     },
     "KU Leuven": {
         "country": "Belgium",
@@ -562,7 +615,7 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 45,
         "the_ranking": 45,
-        "us_news_ranking": 45
+        "us_news_ranking": 45,
     },
     "Leiden University": {
         "country": "Netherlands",
@@ -570,8 +623,8 @@ UNIVERSITY_METADATA: Dict[str, Dict] = {
         "tier": "good",
         "qs_ranking": 139,
         "the_ranking": 71,
-        "us_news_ranking": 79
-    }
+        "us_news_ranking": 79,
+    },
 }
 
 # Degree types
@@ -582,7 +635,7 @@ DEGREE_TYPES: List[str] = [
     "Master of Arts",
     "Master of Engineering",
     "Doctor of Philosophy",
-    "Doctor of Science"
+    "Doctor of Science",
 ]
 
 # Program specializations
@@ -607,7 +660,7 @@ PROGRAM_SPECIALIZATIONS: List[str] = [
     "Cloud Computing",
     "Blockchain",
     "IoT",
-    "Bioinformatics"
+    "Bioinformatics",
 ]
 
 # Language proficiency requirements
@@ -615,23 +668,19 @@ LANGUAGE_REQUIREMENTS: Dict[str, Dict] = {
     "TOEFL": {
         "min_score": 80,
         "max_score": 120,
-        "sections": ["Reading", "Listening", "Speaking", "Writing"]
+        "sections": ["Reading", "Listening", "Speaking", "Writing"],
     },
     "IELTS": {
         "min_score": 6.0,
         "max_score": 9.0,
-        "sections": ["Listening", "Reading", "Writing", "Speaking"]
+        "sections": ["Listening", "Reading", "Writing", "Speaking"],
     },
     "PTE": {
         "min_score": 50,
         "max_score": 90,
-        "sections": ["Speaking", "Writing", "Reading", "Listening"]
+        "sections": ["Speaking", "Writing", "Reading", "Listening"],
     },
-    "Duolingo": {
-        "min_score": 105,
-        "max_score": 160,
-        "sections": []
-    }
+    "Duolingo": {"min_score": 105, "max_score": 160, "sections": []},
 }
 
 # Currency codes for tuition fees
@@ -644,7 +693,7 @@ CURRENCY_CODES: Dict[str, str] = {
     "CHF": "CHF",
     "CNY": "¥",
     "SGD": "S$",
-    "HKD": "HK$"
+    "HKD": "HK$",
 }
 
 # Application deadlines (typical patterns)
@@ -652,33 +701,21 @@ APPLICATION_DEADLINES: Dict[str, str] = {
     "fall": "December 15 - January 15",
     "spring": "September 1 - October 1",
     "summer": "March 1 - April 1",
-    "rolling": "Various dates throughout the year"
+    "rolling": "Various dates throughout the year",
 }
 
 # Data quality thresholds
 QUALITY_THRESHOLDS: Dict[str, float] = {
     "min_confidence_score": 0.7,
     "min_field_completeness": 0.8,
-    "max_duplicate_rate": 0.05
+    "max_duplicate_rate": 0.05,
 }
 
 # Export format configurations
 EXPORT_CONFIGS: Dict[str, Dict] = {
-    "csv": {
-        "delimiter": ",",
-        "encoding": "utf-8-sig",
-        "date_format": "%Y-%m-%d"
-    },
-    "json": {
-        "indent": 2,
-        "ensure_ascii": False,
-        "date_format": "%Y-%m-%d"
-    },
-    "xlsx": {
-        "engine": "openpyxl",
-        "date_format": "%Y-%m-%d"
-    }
-    
+    "csv": {"delimiter": ",", "encoding": "utf-8-sig", "date_format": "%Y-%m-%d"},
+    "json": {"indent": 2, "ensure_ascii": False, "date_format": "%Y-%m-%d"},
+    "xlsx": {"engine": "openpyxl", "date_format": "%Y-%m-%d"},
 }
 
 # LLM prompt templates
@@ -756,7 +793,7 @@ Be thorough and extract every program you can find.
 Assess the quality and completeness of the extracted program data.
 Rate each field on a scale of 0-1 for confidence in accuracy.
 Calculate overall completeness percentage.
-"""
+""",
 }
 
 
@@ -765,45 +802,83 @@ TOPUNIVERSITIES_CONFIG = {
     "base_url": "https://www.topuniversities.com",
     "urls": {
         "world_rankings": "https://www.topuniversities.com/world-university-rankings",
-        "subject_rankings": "https://www.topuniversities.com/university-rankings/university-subject-rankings",
+        "subject_rankings": "https://www.topuniversities.com/subject-rankings",
+        "sustainability_rankings": "https://www.topuniversities.com/sustainability-rankings",
+        "regional_rankings": "https://www.topuniversities.com/regional-rankings",
         "by_country": "https://www.topuniversities.com/where-to-study",
-        "find_university": "https://www.topuniversities.com/find-your-university"
+        "find_university": "https://www.topuniversities.com/find-your-university",
     },
+    # --- API Configuration (Primary extraction method) ---
+    "api": {
+        "endpoint": "/rankings/endpoint",
+        "items_per_page": 15,
+        "ranking_nids": {
+            # World University Rankings
+            "world": "4061771",  # WUR 2026 (published June 2025)
+            # Subject Rankings (add more as discovered)
+            "subject_computer-science": "4061795",
+            "subject_engineering": "4061796",
+            "subject_business": "4061797",
+            "subject_medicine": "4061798",
+            "subject_law": "4061799",
+            "subject_arts": "4061800",
+            "subject_sciences": "4061801",
+        },
+    },
+    # --- Programs API Configuration (Program Directory) ---
+    "programs_api": {
+        "endpoint": "/pd/endpoint",
+        "items_per_page": 10,  # Server-enforced max
+        "study_levels": {
+            "all": None,  # No filter — returns all 143K+
+            "bachelors": 2,  # Undergrad programs (~71K)
+            "masters": 3,  # Postgrad programs (~56K)
+        },
+    },
+    # --- DOM Selectors (Fallback for profile pages) ---
     "selectors": {
-        # Primary selectors (2026 page structure)
-        "ranking_list": ".ranking-result-table",
-        "ranking_item": "._qs-ranking-data-row.row",
-        "ranking_item_card": ".ind-item",  # Quick View cards
-        "ranking_position": "._univ-rank .td-wrap-in",
-        "ranking_position_card": ".overall-rank-value",  # Quick View
+        # Current structure (Feb 2026)
+        "ranking_row": ".views-row",
+        "ranking_item": ".views-row",
+        "ranking_item_card": ".ind-item",
+        "ranking_position": ".rank-cont .rank",
+        "ranking_position_card": ".overall-rank-value",
         "university_name": "a.uni-link",
+        "location_city": ".city",
+        "location_country": ".country-name",
         "location": ".location",
-        "overall_score": ".overall-score-span",
-        "score_indicator": ".td-wrap-in",
+        "overall_score": ".overall-score-span .overall-score",
+        "score_indicator": ".indicator-score",
+        "indicator_name": ".indicator-name",
         "pagination": ".pagination",
         "next_page_button": ".page-link.next",
         # Fallback selectors
         "fallback_ranking_item": "[class*='ranking'][class*='row']",
         "fallback_university_name": "a[href*='/universities/']",
         "fallback_score": "[class*='score']",
-        # Legacy selectors (for backwards compatibility)
-        "load_more_button": "button:has-text('Load More')"
+        # Legacy selectors (backwards compatibility)
+        "load_more_button": "button:has-text('Load More')",
+        "ranking_list": ".ranking-result-table",
     },
+    # --- Rate Limiting (robots.txt compliance) ---
     "rate_limiting": {
-        "delay_seconds": 2,
+        "delay_seconds": 10,  # robots.txt crawl-delay: 10
         "max_retries": 3,
-        "timeout_seconds": 30
+        "timeout_seconds": 30,
     },
+    # --- Subject Mappings ---
     "subjects": {
         "computer-science": "Computer Science & Information Systems",
         "business": "Business & Management Studies",
-        "engineering": "Engineering",
+        "engineering": "Engineering & Technology",
         "medicine": "Medicine",
         "law": "Law & Legal Studies",
         "education": "Education & Training",
         "arts": "Arts & Humanities",
-        "sciences": "Natural Sciences"
-    }
+        "sciences": "Natural Sciences",
+        "social-sciences": "Social Sciences & Management",
+        "life-sciences": "Life Sciences & Medicine",
+    },
 }
 
 
@@ -832,5 +907,5 @@ UNIVERSITY_NAME_MAPPING = {
     "KU Leuven": "KU Leuven",
     "Université PSL": "Université PSL",
     "University of Tartu": "University of Tartu",
-    "National and Kapodistrian University of Athens": "National and Kapodistrian University of Athens"
+    "National and Kapodistrian University of Athens": "National and Kapodistrian University of Athens",
 }

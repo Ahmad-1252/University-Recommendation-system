@@ -7,21 +7,19 @@ import sys
 from pathlib import Path
 
 # Add src to path
-sys.path.insert(0, str(Path(__file__).parent / "src"))
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parents[1]))
 
+from src.cli.dashboard import Dashboard
 from src.core.config import get_settings
 from src.core.constants import UNIVERSITY_URLS
 from src.scrapers.university_scraper import UniversityScraper
-from src.cli.dashboard import Dashboard
 
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('logs/scraper.log')
-    ]
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler(), logging.FileHandler("logs/scraper.log")],
 )
 
 logger = logging.getLogger(__name__)

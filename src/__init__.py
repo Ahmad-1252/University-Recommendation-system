@@ -5,12 +5,6 @@ __author__ = "University Recommendation System Team"
 __description__ = "AI-powered system for scraping and analyzing computer science programs from global universities"
 
 # Import main components for easy access
-from .core import get_settings, Settings
+from .core import Settings, get_settings
 
-__all__ = [
-    "get_settings",
-    "Settings",
-    "__version__",
-    "__author__",
-    "__description__"
-]
+__all__ = ["get_settings", "Settings", "__version__", "__author__", "__description__"]

@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: university-recommender
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements-deploy.txt
+    startCommand: cd src && python -m uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.5"
+      - key: MONGO_CONNECTION_STRING
+        sync: false # Set manually in Render dashboard
+      - key: DATABASE_NAME
+        value: "university_db"
+      - key: COLLECTION_NAME
+        value: "programs"
+      - key: API_KEY
+        generateValue: true
+      - key: LOG_LEVEL
+        value: "INFO"
+      - key: ENVIRONMENT
+        value: "production"

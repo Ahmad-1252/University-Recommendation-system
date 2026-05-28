@@ -1,0 +1,418 @@
+[
+  {
+    "university_id": "446f6f43c3eb",
+    "university_name": "University of Liverpool Management School",
+    "program_name": "Clinical Education PGCert",
+    "degree_type": "Master of Science",
+    "degree_level": "Masters",
+    "program_category": "Medical",
+    "country": "United Kingdom",
+    "city": "Liverpool",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": 147,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/university-liverpool/postgrad/clinical-education-pgcert",
+    "confidence_score": 0.42,
+    "last_updated": "2026-02-21T08:43:14.383130",
+    "data_completeness": 0.25
+  },
+  {
+    "university_id": "2c1ab83964e9",
+    "university_name": "Nanyang Technological University, Singapore (NTU Singapore)",
+    "program_name": "Bachelor of Arts in Philosophy",
+    "degree_type": "Bachelor of Science",
+    "degree_level": "Undergraduate",
+    "program_category": "Arts & Humanities",
+    "country": "Singapore",
+    "city": "Singapore",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": 12,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/nanyang-technological-university-singapore-ntu-singapore/undergrad/bachelor-arts-philosophy",
+    "confidence_score": 0.42,
+    "last_updated": "2026-02-21T08:43:14.383543",
+    "data_completeness": 0.25
+  },
+  {
+    "university_id": "5bcfdc9a856f",
+    "university_name": "Universiti Teknologi PETRONAS (UTP)",
+    "program_name": "Bachelor of Computer Science (Hons)",
+    "degree_type": "Bachelor of Science",
+    "degree_level": "Undergraduate",
+    "program_category": "Computer Science",
+    "country": "Malaysia",
+    "city": "Seri Iskandar",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": 251,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/universiti-teknologi-petronas-utp/undergrad/bachelor-c-omputer-science-hons",
+    "confidence_score": 0.42,
+    "last_updated": "2026-02-21T08:43:14.383659",
+    "data_completeness": 0.25
+  },
+  {
+    "university_id": "2227d3519383",
+    "university_name": "Universitat Politècnica de Catalunya · BarcelonaTech (UPC)",
+    "program_name": "Bachelor'sdegree inAudiovisual Systems Engineering",
+    "degree_type": "Bachelor of Science",
+    "degree_level": "Undergraduate",
+    "program_category": "Engineering",
+    "country": "Spain",
+    "city": "Barcelona",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": 392,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/universitat-politecnica-de-catalunya-barcelonatech-upc/undergrad/bachelors-degree-audiovisual-systems-engineering",
+    "confidence_score": 0.42,
+    "last_updated": "2026-02-21T08:43:14.383776",
+    "data_completeness": 0.25
+  },
+  {
+    "university_id": "2227d3519383",
+    "university_name": "Universitat Politècnica de Catalunya · BarcelonaTech (UPC)",
+    "program_name": "Bachelor'sdegree inBusiness, Innovation and Technology-Marketing, Innovation and Technology (double degree)",
+    "degree_type": "Bachelor of Science",
+    "degree_level": "Undergraduate",
+    "program_category": "Business",
+    "country": "Spain",
+    "city": "Barcelona",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": 392,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/universitat-politecnica-de-catalunya-barcelonatech-upc/undergrad/bachelors-degree-business-innovation-technology-marketing-innovation-technology-double",
+    "confidence_score": 0.42,
+    "last_updated": "2026-02-21T08:43:14.383872",
+    "data_completeness": 0.25
+  },
+  {
+    "university_id": "2227d3519383",
+    "university_name": "Universitat Politècnica de Catalunya · BarcelonaTech (UPC)",
+    "program_name": "Bachelor'sdegree inCivil Engineering + master'sdegree inCivil Engineering. Sequential academic programme (PARS): Civil Engineer",
+    "degree_type": "Bachelor of Science",
+    "degree_level": "Undergraduate",
+    "program_category": "Engineering",
+    "country": "Spain",
+    "city": "Barcelona",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": 392,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/universitat-politecnica-de-catalunya-barcelonatech-upc/undergrad/bachelors-degree-civil-engineering-masters-degree-civil-engineering-sequential-academic",
+    "confidence_score": 0.42,
+    "last_updated": "2026-02-21T08:43:14.383955",
+    "data_completeness": 0.25
+  },
+  {
+    "university_id": "2227d3519383",
+    "university_name": "Universitat Politècnica de Catalunya · BarcelonaTech (UPC)",
+    "program_name": "Bachelor'sdegree inDigital Design and Multimedia Technologies",
+    "degree_type": "Bachelor of Science",
+    "degree_level": "Undergraduate",
+    "program_category": "Computer Science",
+    "country": "Spain",
+    "city": "Barcelona",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": 392,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/universitat-politecnica-de-catalunya-barcelonatech-upc/undergrad/bachelors-degree-digital-design-multimedia-technologies",
+    "confidence_score": 0.42,
+    "last_updated": "2026-02-21T08:43:14.384040",
+    "data_completeness": 0.25
+  },
+  {
+    "university_id": "2227d3519383",
+    "university_name": "Universitat Politècnica de Catalunya · BarcelonaTech (UPC)",
+    "program_name": "Bachelor'sdegree inElectrical Engineering and Railway Systems",
+    "degree_type": "Bachelor of Science",
+    "degree_level": "Undergraduate",
+    "program_category": "Computer Science",
+    "country": "Spain",
+    "city": "Barcelona",
+    "gpa_requirement_min": null,
+    "language_requirements": {
+      "toefl_min": null,
+      "ielts_min": null,
+      "pte_min": null,
+      "duolingo_min": null,
+      "gre_required": null
+    },
+    "prerequisites": [],
+    "duration_years": null,
+    "program_description": "",
+    "specializations": [],
+    "faculty_research_interests": [],
+    "tuition_fees": {
+      "domestic_per_year": null,
+      "international_per_year": null,
+      "currency": "USD",
+      "additional_fees": null
+    },
+    "scholarships_available": [],
+    "cost_of_living_estimate": null,
+    "application_deadlines": {
+      "fall_deadline": null,
+      "spring_deadline": null,
+      "summer_deadline": null,
+      "rolling_admission": false
+    },
+    "application_fee": null,
+    "rankings": {
+      "qs_world_ranking": 392,
+      "the_world_ranking": null,
+      "us_news_ranking": null,
+      "subject_ranking_cs": null
+    },
+    "career_outcomes": [],
+    "research_opportunities": [],
+    "campus_facilities": [],
+    "student_reviews_rating": null,
+    "source_url": "https://www.topuniversities.com/universities/universitat-politecnica-de-catalunya-barcelonatech-upc/undergrad/bachelors-degree-electrical-engineering-railway-systems",
+    "confidence_score": 0.42,
+    "last_updated": "2026-02-21T08:43:14.384119",
+    "data_completeness": 0.25
+  }
+]

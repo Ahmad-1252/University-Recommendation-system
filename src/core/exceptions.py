@@ -1,12 +1,13 @@
 """Enhanced exception classes with error codes, severity levels, and recovery strategies."""
 
 import enum
-from typing import Dict, Any, Optional
 from dataclasses import dataclass
+from typing import Any, Dict, Optional
 
 
 class ErrorSeverity(enum.Enum):
     """Error severity levels."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -15,6 +16,7 @@ class ErrorSeverity(enum.Enum):
 
 class ErrorCategory(enum.Enum):
     """Error categories for classification."""
+
     NETWORK = "network"
     API = "api"
     DATABASE = "database"
@@ -28,6 +30,7 @@ class ErrorCategory(enum.Enum):
 @dataclass
 class ErrorContext:
     """Additional context information for errors."""
+
     operation: str
     component: str
     metadata: Optional[Dict[str, Any]] = None
@@ -45,17 +48,14 @@ class BaseError(Exception):
         severity: ErrorSeverity,
         category: ErrorCategory,
         context: Optional[ErrorContext] = None,
-        cause: Optional[Exception] = None
+        cause: Optional[Exception] = None,
     ):
         super().__init__(message)
         self.message = message
         self.error_code = error_code
         self.severity = severity
         self.category = category
-        self.context = context or ErrorContext(
-            operation="unknown",
-            component="unknown"
-        )
+        self.context = context or ErrorContext(operation="unknown", component="unknown")
         self.cause = cause
         self.timestamp = None  # Will be set when logged
 
@@ -74,27 +74,39 @@ class BaseError(Exception):
             "recoverable": self.context.recoverable,
             "retry_count": self.context.retry_count,
             "metadata": self.context.metadata,
-            "cause": str(self.cause) if self.cause else None
+            "cause": str(self.cause) if self.cause else None,
         }
 
 
 # Legacy exceptions for backward compatibility
 class UniversityScraperError(BaseError):
     """Base exception for scraping-related errors."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         super().__init__(
             message=message,
             error_code="SCRAPE_001",
             severity=ErrorSeverity.MEDIUM,
             category=ErrorCategory.SCRAPING,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class ScrapingError(UniversityScraperError):
     """Raised when scraping a webpage fails."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         # Call BaseError directly to avoid duplicating error_code
         BaseError.__init__(
             self,
@@ -103,13 +115,19 @@ class ScrapingError(UniversityScraperError):
             severity=ErrorSeverity.MEDIUM,
             category=ErrorCategory.SCRAPING,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class LLMExtractionError(UniversityScraperError):
     """Raised when LLM extraction fails."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         # Call BaseError directly to avoid duplicating error_code
         BaseError.__init__(
             self,
@@ -118,13 +136,19 @@ class LLMExtractionError(UniversityScraperError):
             severity=ErrorSeverity.HIGH,
             category=ErrorCategory.PROCESSING,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class ValidationError(UniversityScraperError):
     """Raised when data validation fails."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         # Call BaseError directly to avoid duplicating error_code
         BaseError.__init__(
             self,
@@ -133,26 +157,38 @@ class ValidationError(UniversityScraperError):
             severity=ErrorSeverity.MEDIUM,
             category=ErrorCategory.VALIDATION,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class DatabaseError(BaseError):
     """Base exception for database-related errors."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         super().__init__(
             message=message,
             error_code="DB_001",
             severity=ErrorSeverity.HIGH,
             category=ErrorCategory.DATABASE,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class ConnectionError(DatabaseError):
     """Raised when database connection fails."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         BaseError.__init__(
             self,
             message=message,
@@ -160,13 +196,19 @@ class ConnectionError(DatabaseError):
             severity=ErrorSeverity.CRITICAL,
             category=ErrorCategory.DATABASE,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class DuplicateDataError(DatabaseError):
     """Raised when attempting to save duplicate data."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         BaseError.__init__(
             self,
             message=message,
@@ -174,13 +216,19 @@ class DuplicateDataError(DatabaseError):
             severity=ErrorSeverity.LOW,
             category=ErrorCategory.DATABASE,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class QueryError(DatabaseError):
     """Raised when database query fails."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         BaseError.__init__(
             self,
             message=message,
@@ -188,65 +236,98 @@ class QueryError(DatabaseError):
             severity=ErrorSeverity.HIGH,
             category=ErrorCategory.DATABASE,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class ConfigurationError(BaseError):
     """Raised when configuration is invalid or missing."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         super().__init__(
             message=message,
             error_code="CONFIG_001",
             severity=ErrorSeverity.CRITICAL,
             category=ErrorCategory.CONFIGURATION,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class APIError(BaseError):
     """Base exception for external API errors."""
-    def __init__(self, message: str, error_code: str = "API_001", severity: ErrorSeverity = ErrorSeverity.HIGH, category: ErrorCategory = ErrorCategory.API, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        error_code: str = "API_001",
+        severity: ErrorSeverity = ErrorSeverity.HIGH,
+        category: ErrorCategory = ErrorCategory.API,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         super().__init__(
             message=message,
             error_code=error_code,
             severity=severity,
             category=category,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class GroqAPIError(APIError):
     """Raised when Groq API calls fail."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         super().__init__(
             message=message,
             error_code="API_002",
             severity=ErrorSeverity.HIGH,
             category=ErrorCategory.API,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class DeepSeekAPIError(APIError):
     """Raised when DeepSeek API calls fail."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         super().__init__(
             message=message,
             error_code="API_003",
             severity=ErrorSeverity.HIGH,
             category=ErrorCategory.API,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class RateLimitError(APIError):
     """Raised when API rate limits are exceeded."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         BaseError.__init__(
             self,
             message=message,
@@ -254,26 +335,38 @@ class RateLimitError(APIError):
             severity=ErrorSeverity.MEDIUM,
             category=ErrorCategory.API,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class NetworkError(BaseError):
     """Raised when network operations fail."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         super().__init__(
             message=message,
             error_code="NET_001",
             severity=ErrorSeverity.HIGH,
             category=ErrorCategory.NETWORK,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class TimeoutError(NetworkError):
     """Raised when operations timeout."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         BaseError.__init__(
             self,
             message=message,
@@ -281,70 +374,100 @@ class TimeoutError(NetworkError):
             severity=ErrorSeverity.MEDIUM,
             category=ErrorCategory.NETWORK,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class ExportError(BaseError):
     """Raised when data export fails."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         super().__init__(
             message=message,
             error_code="EXPORT_001",
             severity=ErrorSeverity.MEDIUM,
             category=ErrorCategory.PROCESSING,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class FileOperationError(BaseError):
     """Raised when file operations fail."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         super().__init__(
             message=message,
             error_code="FILE_001",
             severity=ErrorSeverity.MEDIUM,
             category=ErrorCategory.SYSTEM,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class QualityCheckError(BaseError):
     """Raised when data quality checks fail."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         super().__init__(
             message=message,
             error_code="QUALITY_001",
             severity=ErrorSeverity.LOW,
             category=ErrorCategory.VALIDATION,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class CacheError(BaseError):
     """Raised when cache operations fail."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         super().__init__(
             message=message,
             error_code="CACHE_001",
             severity=ErrorSeverity.MEDIUM,
             category=ErrorCategory.SYSTEM,
             context=context,
-            cause=cause
+            cause=cause,
         )
 
 
 class CircuitBreakerError(BaseError):
     """Raised when circuit breaker is open."""
-    def __init__(self, message: str, context: Optional[ErrorContext] = None, cause: Optional[Exception] = None):
+
+    def __init__(
+        self,
+        message: str,
+        context: Optional[ErrorContext] = None,
+        cause: Optional[Exception] = None,
+    ):
         super().__init__(
             message=message,
             error_code="CIRCUIT_001",
             severity=ErrorSeverity.HIGH,
             category=ErrorCategory.SYSTEM,
             context=context,
-            cause=cause
+            cause=cause,
         )

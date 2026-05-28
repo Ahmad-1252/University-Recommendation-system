@@ -1,15 +1,15 @@
 """Data models for the University Recommendation System."""
 
 from .university import (
-    UniversityProgram,
-    DegreeType,
-    LanguageProficiency,
-    TuitionFees,
+    AnalysisResult,
     ApplicationDeadlines,
+    DegreeType,
+    ExportResult,
+    LanguageProficiency,
     Rankings,
     ScrapingConfig,
-    AnalysisResult,
-    ExportResult
+    TuitionFees,
+    UniversityProgram,
 )
 
 __all__ = [
@@ -21,5 +21,5 @@ __all__ = [
     "Rankings",
     "ScrapingConfig",
     "AnalysisResult",
-    "ExportResult"
+    "ExportResult",
 ]

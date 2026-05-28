@@ -1,13 +1,8 @@
 """Scraping modules for the University Recommendation System."""
 
-from scrapers.base_scraper import BaseScraper
-from scrapers.university_scraper import UniversityScraper
-from scrapers.content_extractor import ContentExtractor
-from scrapers.link_discoverer import LinkDiscoverer
+from .base_scraper import BaseScraper
+from .content_extractor import ContentExtractor
+from .link_discoverer import LinkDiscoverer
+from .university_scraper import UniversityScraper
 
-__all__ = [
-    "BaseScraper",
-    "UniversityScraper",
-    "ContentExtractor",
-    "LinkDiscoverer"
-]
+__all__ = ["BaseScraper", "UniversityScraper", "ContentExtractor", "LinkDiscoverer"]

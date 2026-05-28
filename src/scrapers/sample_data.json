@@ -1,0 +1,30 @@
+{
+    "program_name": "Law",
+    "location": "Al huda University college",
+    "duration": "48 months",
+    "application_deadline": "30 jul, 2026",
+    "main_subject_area": "history",
+    "degree": "LAW",
+    "study_level" : "Undergraduate",
+    "study_mode" : "On Campus",
+    "Description": "",
+    "application_procedure" : [], 
+    "tuition_fee": {
+        "domestic": "",
+        "international": "",
+        "out_of_state": ""
+    },
+    "language": "English",
+    "program_website": "https://www.university.ac.uk/law",
+    "university_website": "",
+    "requirements": [
+        "A-Levels: AAA",
+        "IELTS: 7.0",
+        "UCAS points: 120"
+    ],
+    "career_outcomes": [
+        "Lawyer",
+        "Barrister",
+        "Solicitor"
+    ]
+}

@@ -1,0 +1,89 @@
+{
+  "model_backend": "lightgbm",
+  "target_column": "university_tier",
+  "class_names": [
+    "good",
+    "standard",
+    "top"
+  ],
+  "numeric_features": [
+    "gpa_requirement_min",
+    "ielts_min",
+    "toefl_min",
+    "duration_years",
+    "tuition_domestic",
+    "tuition_international",
+    "cost_of_living",
+    "application_fee"
+  ],
+  "categorical_features": [
+    "program_name",
+    "degree_type",
+    "degree_level",
+    "program_category",
+    "country",
+    "tuition_currency",
+    "university_size",
+    "university_focus",
+    "university_research",
+    "university_status"
+  ],
+  "text_features": [
+    "specializations",
+    "career_outcomes"
+  ],
+  "id_features": [
+    "university_id",
+    "university_name",
+    "city",
+    "confidence_score",
+    "data_completeness"
+  ],
+  "leaky_features_removed": [
+    "qs_academic_reputation",
+    "qs_citations",
+    "qs_employer_reputation",
+    "qs_employment_outcomes",
+    "qs_faculty_student_ratio",
+    "qs_intl_students",
+    "qs_overall_score",
+    "qs_sustainability",
+    "qs_world_ranking"
+  ],
+  "best_params": {
+    "model__subsample": 0.7,
+    "model__num_leaves": 127,
+    "model__n_estimators": 500,
+    "model__min_child_samples": 20,
+    "model__max_depth": 20,
+    "model__learning_rate": 0.05,
+    "model__colsample_bytree": 0.7
+  },
+  "best_cv_score": 0.9997,
+  "metrics": {
+    "accuracy": 0.9955,
+    "f1_macro": 0.9965,
+    "f1_weighted": 0.9955
+  },
+  "baseline_metrics": {
+    "accuracy": 0.6238,
+    "f1_macro": 0.2561,
+    "strategy": "most_frequent"
+  },
+  "accuracy_gap_over_baseline": 0.3717,
+  "leakage_check_passed": true,
+  "dataset_shape": [
+    13808,
+    36
+  ],
+  "train_size": 11809,
+  "test_size": 1999,
+  "group_split_column": "university_name",
+  "n_groups_train": 1277,
+  "n_groups_test": 226,
+  "training_time_seconds": 237.0,
+  "data_hash": "b8ef9d4e1cf7ebed",
+  "python_version": "3.13.5",
+  "sklearn_version": "1.8.0",
+  "created_at": "2026-02-19T06:57:19.338665"
+}

@@ -1,13 +1,12 @@
 """Data viewer CLI for browsing and analyzing program data."""
 
 import logging
-from typing import List, Optional
+from typing import List
+
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
-from rich.text import Text
-from rich.prompt import Prompt, Confirm
-from rich.progress import Progress
+from rich.prompt import Confirm, Prompt
+from rich.table import Table
 
 from ..core.config import get_settings
 from ..database.repositories import ProgramRepository
@@ -24,9 +23,9 @@ class DataViewer:
         self.settings = get_settings()
         self.repository = ProgramRepository()
 
-    def view_programs_table(self,
-                          programs: List[UniversityProgram],
-                          title: str = "Programs") -> None:
+    def view_programs_table(
+        self, programs: List[UniversityProgram], title: str = "Programs"
+    ) -> None:
         """Display programs in a table format."""
         if not programs:
             console.print("[yellow]No programs to display.[/yellow]")
@@ -42,15 +41,27 @@ class DataViewer:
 
         for program in programs:
             completeness = f"{program.data_completeness:.1%}"
-            updated = program.last_updated.strftime("%Y-%m-%d") if program.last_updated else "N/A"
+            updated = (
+                program.last_updated.strftime("%Y-%m-%d")
+                if program.last_updated
+                else "N/A"
+            )
 
             table.add_row(
-                program.university_name[:23] + "..." if len(program.university_name) > 23 else program.university_name,
-                program.program_name[:33] + "..." if len(program.program_name) > 33 else program.program_name,
-                program.degree_type[:13] + "..." if len(program.degree_type) > 13 else program.degree_type,
-                program.country[:13] + "..." if len(program.country or "") > 13 else (program.country or "N/A"),
+                program.university_name[:23] + "..."
+                if len(program.university_name) > 23
+                else program.university_name,
+                program.program_name[:33] + "..."
+                if len(program.program_name) > 33
+                else program.program_name,
+                program.degree_type[:13] + "..."
+                if len(program.degree_type) > 13
+                else program.degree_type,
+                program.country[:13] + "..."
+                if len(program.country or "") > 13
+                else (program.country or "N/A"),
                 completeness,
-                updated
+                updated,
             )
 
         console.print(table)
@@ -187,16 +198,18 @@ class DataViewer:
 [bold blue]Geographic Distribution:[/bold blue]
 """
 
-            for country_info in stats['countries'][:10]:  # Top 10 countries
-                stats_text += f"• {country_info['_id']}: {country_info['count']} programs\n"
+            for country_info in stats["countries"][:10]:  # Top 10 countries
+                stats_text += (
+                    f"• {country_info['_id']}: {country_info['count']} programs\n"
+                )
 
-            stats_text += f"\n[bold blue]Degree Types:[/bold blue]\n"
-            for degree, count in stats['degree_types'].items():
+            stats_text += "\n[bold blue]Degree Types:[/bold blue]\n"
+            for degree, count in stats["degree_types"].items():
                 stats_text += f"• {degree}: {count} programs\n"
 
-            if 'tuition_range' in stats:
-                tuition = stats['tuition_range']
-                stats_text += f"\n[bold blue]Tuition Range:[/bold blue]\n"
+            if "tuition_range" in stats:
+                tuition = stats["tuition_range"]
+                stats_text += "\n[bold blue]Tuition Range:[/bold blue]\n"
                 stats_text += f"• Minimum: ${tuition.get('min', 'N/A'):,}\n"
                 stats_text += f"• Maximum: ${tuition.get('max', 'N/A'):,}\n"
                 stats_text += f"• Average: ${tuition.get('avg', 'N/A'):,}\n"

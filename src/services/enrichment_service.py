@@ -1,12 +1,11 @@
 """Data enrichment and gap-filling services."""
 
 import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime
+from typing import Optional
 
 from ..core.config import get_settings
 from ..core.constants import UNIVERSITY_METADATA
-from ..models.university import UniversityProgram, University
+from ..models.university import University, UniversityProgram
 from ..services.llm_service import LLMService
 
 logger = logging.getLogger(__name__)
@@ -18,9 +17,13 @@ class EnrichmentService:
     def __init__(self, llm_service: Optional[LLMService] = None, ranking_service=None):
         self.settings = get_settings()
         self.llm_service = llm_service or LLMService()
-        self.ranking_service = ranking_service  # Lazy import to avoid circular dependency
+        self.ranking_service = (
+            ranking_service  # Lazy import to avoid circular dependency
+        )
 
-    async def enrich_program_data(self, program: UniversityProgram) -> UniversityProgram:
+    async def enrich_program_data(
+        self, program: UniversityProgram
+    ) -> UniversityProgram:
         """
         Enrich program data with additional information.
 
@@ -32,7 +35,7 @@ class EnrichmentService:
         """
         # Enrich with university metadata (static first)
         program = self._enrich_university_metadata(program)
-        
+
         # Enrich with TopUniversities rankings (if available)
         if self.ranking_service:
             program = await self._enrich_with_topuniversities(program)
@@ -47,51 +50,63 @@ class EnrichmentService:
         program.data_completeness = self._calculate_completeness(program)
 
         return program
-    
+
     async def enrich_university_data(self, university: University) -> University:
         """
         Enrich university data with rankings from TopUniversities.com.
-        
+
         Args:
             university: University instance to enrich
-            
+
         Returns:
             Enriched University instance
         """
         # Enrich with TopUniversities rankings
         if self.ranking_service:
             try:
-                university = await self.ranking_service.update_university_rankings(university)
+                university = await self.ranking_service.update_university_rankings(
+                    university
+                )
                 logger.info(f"Enriched {university.name} with TopUniversities rankings")
             except Exception as e:
-                logger.error(f"Failed to enrich {university.name} with TopUniversities: {e}")
-        
+                logger.error(
+                    f"Failed to enrich {university.name} with TopUniversities: {e}"
+                )
+
         return university
-    
-    async def _enrich_with_topuniversities(self, program: UniversityProgram) -> UniversityProgram:
+
+    async def _enrich_with_topuniversities(
+        self, program: UniversityProgram
+    ) -> UniversityProgram:
         """Enrich program with rankings from TopUniversities.com."""
         try:
             # Get ranking for this university
-            ranking_data = await self.ranking_service.get_university_ranking(program.university_name)
-            
+            ranking_data = await self.ranking_service.get_university_ranking(
+                program.university_name
+            )
+
             if ranking_data:
                 # Update QS ranking (TopUniversities is QS rankings)
-                if ranking_data.get('rank') and not program.rankings.qs_world_ranking:
-                    program.rankings.qs_world_ranking = ranking_data['rank']
-                    logger.info(f"Updated QS ranking for {program.university_name}: {ranking_data['rank']}")
-                
+                if ranking_data.get("rank") and not program.rankings.qs_world_ranking:
+                    program.rankings.qs_world_ranking = ranking_data["rank"]
+                    logger.info(
+                        f"Updated QS ranking for {program.university_name}: {ranking_data['rank']}"
+                    )
+
                 # Update location if not set
-                if not program.country and ranking_data.get('country'):
-                    program.country = ranking_data['country']
-                if not program.city and ranking_data.get('city'):
-                    program.city = ranking_data['city']
-        
+                if not program.country and ranking_data.get("country"):
+                    program.country = ranking_data["country"]
+                if not program.city and ranking_data.get("city"):
+                    program.city = ranking_data["city"]
+
         except Exception as e:
             logger.error(f"Error enriching with TopUniversities: {e}")
-        
+
         return program
 
-    def _enrich_university_metadata(self, program: UniversityProgram) -> UniversityProgram:
+    def _enrich_university_metadata(
+        self, program: UniversityProgram
+    ) -> UniversityProgram:
         """Enrich program with university metadata."""
         university_name = program.university_name
 
@@ -128,10 +143,15 @@ class EnrichmentService:
 
         # Set default country if not available
         if not program.country and program.university_name:
-            program.country = self._infer_country_from_university(program.university_name)
+            program.country = self._infer_country_from_university(
+                program.university_name
+            )
 
         # Add basic program description if missing
-        if not program.program_description or len(program.program_description.strip()) < 10:
+        if (
+            not program.program_description
+            or len(program.program_description.strip()) < 10
+        ):
             program.program_description = self._generate_basic_description(program)
 
         return program
@@ -178,7 +198,7 @@ class EnrichmentService:
             "ma": "Master of Arts",
             "phd": "Doctor of Philosophy",
             "doctorate": "Doctor of Philosophy",
-            "doctoral": "Doctor of Philosophy"
+            "doctoral": "Doctor of Philosophy",
         }
 
         return mappings.get(degree_lower, degree_type)
@@ -189,15 +209,28 @@ class EnrichmentService:
 
         # Check for country indicators in name
         country_indicators = {
-            "united states": ["stanford", "harvard", "mit", "berkeley", "california", "yale"],
-            "united kingdom": ["oxford", "cambridge", "london", "manchester", "edinburgh"],
+            "united states": [
+                "stanford",
+                "harvard",
+                "mit",
+                "berkeley",
+                "california",
+                "yale",
+            ],
+            "united kingdom": [
+                "oxford",
+                "cambridge",
+                "london",
+                "manchester",
+                "edinburgh",
+            ],
             "germany": ["munich", "heidelberg", "berlin", "hamburg"],
             "switzerland": ["zurich", "lausanne", "geneva"],
             "canada": ["toronto", "montreal", "vancouver", "british columbia"],
             "australia": ["melbourne", "sydney", "canberra"],
             "singapore": ["singapore"],
             "china": ["beijing", "shanghai", "tsinghua", "peking"],
-            "netherlands": ["amsterdam", "delft", "utrecht"]
+            "netherlands": ["amsterdam", "delft", "utrecht"],
         }
 
         for country, indicators in country_indicators.items():
@@ -212,7 +245,9 @@ class EnrichmentService:
         field = "Computer Science"
 
         if program.specializations:
-            specializations_text = f" with specializations in {', '.join(program.specializations[:3])}"
+            specializations_text = (
+                f" with specializations in {', '.join(program.specializations[:3])}"
+            )
         else:
             specializations_text = ""
 
@@ -243,7 +278,7 @@ class EnrichmentService:
             ("specializations", list),
             ("faculty_research_interests", list),
             ("country", str),
-            ("city", str)
+            ("city", str),
         ]
 
         for field_path, expected_types in fields_to_check:
@@ -289,10 +324,11 @@ class EnrichmentService:
             # Generate enhanced description
             if program.program_description and len(program.program_description) < 200:
                 enhanced_desc = await self.llm_service.generate_summary(
-                    content=program.program_description,
-                    max_length=500
+                    content=program.program_description, max_length=500
                 )
-                if enhanced_desc and len(enhanced_desc) > len(program.program_description):
+                if enhanced_desc and len(enhanced_desc) > len(
+                    program.program_description
+                ):
                     program.program_description = enhanced_desc
 
             # Infer missing specializations
@@ -308,11 +344,11 @@ class EnrichmentService:
 
                 try:
                     response = await self.llm_service.generate_completion(
-                        prompt=prompt,
-                        temperature=0.3,
-                        max_tokens=100
+                        prompt=prompt, temperature=0.3, max_tokens=100
                     )
-                    specializations = [s.strip() for s in response.split(",") if s.strip()]
+                    specializations = [
+                        s.strip() for s in response.split(",") if s.strip()
+                    ]
                     if specializations:
                         program.specializations = specializations[:5]
                 except Exception as e:
@@ -330,11 +366,11 @@ class EnrichmentService:
 
                 try:
                     response = await self.llm_service.generate_completion(
-                        prompt=prompt,
-                        temperature=0.3,
-                        max_tokens=150
+                        prompt=prompt, temperature=0.3, max_tokens=150
                     )
-                    research_areas = [r.strip() for r in response.split(",") if r.strip()]
+                    research_areas = [
+                        r.strip() for r in response.split(",") if r.strip()
+                    ]
                     if research_areas:
                         program.faculty_research_interests = research_areas[:5]
                 except Exception as e:

@@ -1,16 +1,15 @@
 """CLI dashboard for the University Recommendation System."""
 
 import logging
-from typing import Optional
-from rich.console import Console
-from rich.table import Table
-from rich.panel import Panel
-from rich.text import Text
-from rich.columns import Columns
 
+from rich.columns import Columns
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+
+from ..analyzers.quality_analyzer import QualityAnalyzer
 from ..core.config import get_settings
 from ..database.repositories import ProgramRepository
-from ..analyzers.quality_analyzer import QualityAnalyzer
 
 logger = logging.getLogger(__name__)
 console = Console()
@@ -49,11 +48,17 @@ class Dashboard:
 
             # Database status
             db_status = "✅ Connected" if stats else "❌ Disconnected"
-            db_details = f"{stats.get('total_programs', 0)} programs" if stats else "N/A"
+            db_details = (
+                f"{stats.get('total_programs', 0)} programs" if stats else "N/A"
+            )
 
             status_table.add_row("Database", db_status, db_details)
-            status_table.add_row("Configuration", "✅ Loaded", f"Model: {self.settings.llm.model}")
-            status_table.add_row("Scraping", "✅ Ready", f"Timeout: {self.settings.scraping.timeout}s")
+            status_table.add_row(
+                "Configuration", "✅ Loaded", f"Model: {self.settings.llm.model}"
+            )
+            status_table.add_row(
+                "Scraping", "✅ Ready", f"Timeout: {self.settings.scraping.timeout}s"
+            )
 
             console.print(status_table)
 
@@ -63,7 +68,9 @@ class Dashboard:
     def show_data_overview(self) -> None:
         """Display data overview and quality metrics."""
         try:
-            programs = self.repository.get_all_programs(limit=1000)  # Sample for performance
+            programs = self.repository.get_all_programs(
+                limit=1000
+            )  # Sample for performance
 
             if not programs:
                 console.print("[yellow]No programs found in database.[/yellow]")
@@ -81,12 +88,14 @@ class Dashboard:
             overview_table.add_row(
                 "Total Programs",
                 str(analysis.total_programs),
-                "✅" if analysis.total_programs > 0 else "❌"
+                "✅" if analysis.total_programs > 0 else "❌",
             )
 
             completeness_pct = f"{analysis.average_completeness:.1%}"
             completeness_status = "✅" if analysis.average_completeness >= 0.7 else "⚠️"
-            overview_table.add_row("Avg Completeness", completeness_pct, completeness_status)
+            overview_table.add_row(
+                "Avg Completeness", completeness_pct, completeness_status
+            )
 
             quality_pct = f"{analysis.quality_score:.1%}"
             quality_status = "✅" if analysis.quality_score >= 0.7 else "⚠️"
@@ -99,7 +108,7 @@ class Dashboard:
                 issues_panel = Panel(
                     "\n".join(f"• {issue}" for issue in analysis.issues_found[:5]),
                     title=f"Top Issues ({len(analysis.issues_found)} total)",
-                    border_style="red"
+                    border_style="red",
                 )
                 console.print(issues_panel)
 
@@ -122,11 +131,19 @@ class Dashboard:
             activity_table.add_column("Updated", style="yellow")
 
             for program in recent_programs[:10]:  # Show last 10
-                updated_str = program.last_updated.strftime("%Y-%m-%d %H:%M") if program.last_updated else "N/A"
+                updated_str = (
+                    program.last_updated.strftime("%Y-%m-%d %H:%M")
+                    if program.last_updated
+                    else "N/A"
+                )
                 activity_table.add_row(
-                    program.university_name[:28] + "..." if len(program.university_name) > 28 else program.university_name,
-                    program.program_name[:38] + "..." if len(program.program_name) > 38 else program.program_name,
-                    updated_str
+                    program.university_name[:28] + "..."
+                    if len(program.university_name) > 28
+                    else program.university_name,
+                    program.program_name[:38] + "..."
+                    if len(program.program_name) > 38
+                    else program.program_name,
+                    updated_str,
                 )
 
             console.print(activity_table)
@@ -176,17 +193,21 @@ class Dashboard:
             while True:
                 self.display_full_dashboard()
 
-                console.print("\n[dim]Press Enter to refresh, 'q' to quit:[/dim] ", end="")
+                console.print(
+                    "\n[dim]Press Enter to refresh, 'q' to quit:[/dim] ", end=""
+                )
                 choice = input().strip().lower()
 
-                if choice in ['q', 'quit', 'exit']:
+                if choice in ["q", "quit", "exit"]:
                     console.print("[green]Goodbye! 👋[/green]")
                     break
-                elif choice == '':
+                elif choice == "":
                     continue  # Refresh
                 else:
                     console.print(f"[yellow]Unknown command: {choice}[/yellow]")
-                    console.print("[dim]Type 'q' to quit or press Enter to refresh[/dim]")
+                    console.print(
+                        "[dim]Type 'q' to quit or press Enter to refresh[/dim]"
+                    )
                     input()
 
         except KeyboardInterrupt:

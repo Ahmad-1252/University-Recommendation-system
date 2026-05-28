@@ -1,21 +1,22 @@
-"""Groq LLM provider implementation."""
-
 import json
+import logging
 import time
-from typing import Dict, Any, Optional
-import hashlib
 
-from groq import Groq, APIError, RateLimitError, AuthenticationError
+from groq import APIError, AuthenticationError, Groq, RateLimitError
 
-from .base_provider import LLMProvider, LLMResponse, LLMError
+from .base_provider import LLMError, LLMProvider, LLMResponse
+
+logger = logging.getLogger(__name__)
 
 
 class GroqProvider(LLMProvider):
     """Groq LLM provider implementation using llama3 models."""
 
-    def __init__(self, api_key: str, model: str = "llama-3.3-70b-versatile", timeout: int = 30):
+    def __init__(
+        self, api_key: str, model: str = "llama-3.3-70b-versatile", timeout: int = 120
+    ):
         super().__init__("groq", model, api_key, timeout)
-        self.client = Groq(api_key=api_key)
+        self.client = Groq(api_key=api_key, timeout=timeout)
 
     async def extract_program_data(self, content: str, prompt: str) -> LLMResponse:
         """
@@ -34,6 +35,14 @@ class GroqProvider(LLMProvider):
         start_time = time.time()
 
         try:
+            # Content truncation guard — keep content under ~25K tokens
+            max_content_chars = 80000
+            if len(content) > max_content_chars:
+                logger.warning(
+                    f"Content truncated from {len(content)} to {max_content_chars} chars"
+                )
+                content = content[:max_content_chars] + "... [TRUNCATED]"
+
             # Create the full prompt
             full_prompt = f"{prompt}\n\nContent to analyze:\n{content}"
 
@@ -41,12 +50,16 @@ class GroqProvider(LLMProvider):
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {"role": "system", "content": "You are an expert at extracting structured data from university program web pages. Always respond with valid JSON."},
-                    {"role": "user", "content": full_prompt}
+                    {
+                        "role": "system",
+                        "content": "You are an expert at extracting structured data from university program web pages. Always respond with valid JSON.",
+                    },
+                    {"role": "user", "content": full_prompt},
                 ],
+                response_format={"type": "json_object"},
                 temperature=0.1,  # Low temperature for consistent extraction
                 max_tokens=min(self.max_tokens, 4000),  # Limit response size
-                timeout=self.timeout
+                timeout=self.timeout,
             )
 
             # Extract response content
@@ -64,7 +77,7 @@ class GroqProvider(LLMProvider):
                 provider_name=self.name,
                 model_name=self.model,
                 tokens_used=response.usage.total_tokens if response.usage else None,
-                processing_time=processing_time
+                processing_time=processing_time,
             )
 
         except AuthenticationError as e:
@@ -72,28 +85,28 @@ class GroqProvider(LLMProvider):
                 provider_name=self.name,
                 error_type="authentication",
                 message=f"Invalid API key: {str(e)}",
-                retryable=False
+                retryable=False,
             )
         except RateLimitError as e:
             raise LLMError(
                 provider_name=self.name,
                 error_type="rate_limit",
                 message=f"Rate limit exceeded: {str(e)}",
-                retryable=True
+                retryable=True,
             )
         except APIError as e:
             raise LLMError(
                 provider_name=self.name,
                 error_type="api_error",
                 message=f"API error: {str(e)}",
-                retryable=True
+                retryable=True,
             )
         except Exception as e:
             raise LLMError(
                 provider_name=self.name,
                 error_type="unknown",
                 message=f"Unexpected error: {str(e)}",
-                retryable=True
+                retryable=True,
             )
 
     async def validate_connection(self) -> bool:
@@ -103,16 +116,16 @@ class GroqProvider(LLMProvider):
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[{"role": "user", "content": "Hello"}],
-                max_tokens=10
+                max_tokens=10,
             )
             return True
         except Exception:
             return False
 
     async def get_token_count(self, text: str) -> int:
-        """Estimate token count for Groq (rough approximation)."""
-        # Rough approximation: 1 token ≈ 4 characters for English text
-        return len(text) // 4
+        """Estimate token count for Groq (improved approximation)."""
+        # Conservative approximation: ~0.3 tokens per character is safer for university content.
+        return int(len(text) * 0.3)
 
     @property
     def max_tokens(self) -> int:
@@ -145,9 +158,16 @@ class GroqProvider(LLMProvider):
             score -= 0.2  # Invalid JSON decreases confidence
 
         # Check for structured content indicators
-        if any(keyword in response_content.lower() for keyword in [
-            "university", "program", "degree", "requirements", "tuition"
-        ]):
+        if any(
+            keyword in response_content.lower()
+            for keyword in [
+                "university",
+                "program",
+                "degree",
+                "requirements",
+                "tuition",
+            ]
+        ):
             score += 0.1
 
         # Length check (too short responses are suspicious)

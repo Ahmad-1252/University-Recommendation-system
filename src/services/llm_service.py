@@ -1,24 +1,24 @@
 """LLM service with provider abstraction and enhanced features."""
 
 import asyncio
-import logging
-from typing import Dict, List, Optional, Any
 import hashlib
 import json
+import logging
+from typing import Any, Dict, List, Optional
 
+from ..core.circuit_breaker import CircuitBreakerConfig, get_circuit_breaker
 from ..core.config import get_settings
+from ..core.constants import LLM_PROMPTS
 from ..core.exceptions import (
-    GroqAPIError,
-    RateLimitError,
     DeepSeekAPIError,
     ErrorContext,
+    GroqAPIError,
     NetworkError,
-    TimeoutError
+    RateLimitError,
+    TimeoutError,
 )
-from ..core.constants import LLM_PROMPTS
-from ..core.retry import retry_with_backoff, RetryConfig
-from ..core.circuit_breaker import get_circuit_breaker, CircuitBreakerConfig
-from .llm import LLMProviderFactory, LLMProvider, LLMResponse, LLMError
+from ..core.retry import RetryConfig, retry_with_backoff
+from .llm import LLMError, LLMProvider, LLMProviderFactory, LLMResponse
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +46,7 @@ class LLMService:
         if use_cache:
             try:
                 from .cache import CacheFactory
+
                 self._cache = CacheFactory.create_cache()
                 self._cache_enabled = True
                 logger.info("LLM service cache initialized")
@@ -61,7 +62,7 @@ class LLMService:
                     recovery_timeout=self.settings.error_handling.circuit_recovery_timeout,
                     success_threshold=self.settings.error_handling.circuit_success_threshold,
                     timeout=self.settings.error_handling.circuit_timeout,
-                    name="llm_api"
+                    name="llm_api",
                 )
                 self._circuit_breaker = get_circuit_breaker("llm_api", circuit_config)
                 logger.info("LLM service circuit breaker initialized")
@@ -73,7 +74,7 @@ class LLMService:
             "completions": "llm:completions",
             "extractions": "llm:extractions",
             "validations": "llm:validations",
-            "summaries": "llm:summaries"
+            "summaries": "llm:summaries",
         }
 
     @property
@@ -90,7 +91,9 @@ class LLMService:
                 self.model = self._provider.model
                 self.timeout = self._provider.timeout
 
-                logger.info(f"Initialized LLM service with provider: {self._provider.name}")
+                logger.info(
+                    f"Initialized LLM service with provider: {self._provider.name}"
+                )
             except ValueError as e:
                 logger.error(f"Failed to initialize LLM provider: {e}")
                 raise
@@ -131,16 +134,18 @@ class LLMService:
             "prompt": prompt,
             "provider": self.provider.name,
             "model": self.provider.model,
-            **kwargs
+            **kwargs,
         }
         key_string = json.dumps(key_data, sort_keys=True)
         return hashlib.md5(key_string.encode()).hexdigest()
 
-    async def generate_completion(self,
-                                prompt: str,
-                                temperature: float = 0.1,
-                                max_tokens: Optional[int] = None,
-                                **kwargs) -> str:
+    async def generate_completion(
+        self,
+        prompt: str,
+        temperature: float = 0.1,
+        max_tokens: Optional[int] = None,
+        **kwargs,
+    ) -> str:
         """
         Generate a completion using the configured LLM provider.
 
@@ -161,9 +166,13 @@ class LLMService:
         """
         # Check cache first
         if self._cache_enabled and self._cache:
-            cache_key = self._get_cache_key(prompt, temperature=temperature, max_tokens=max_tokens, **kwargs)
+            cache_key = self._get_cache_key(
+                prompt, temperature=temperature, max_tokens=max_tokens, **kwargs
+            )
             try:
-                cached_response = await self._cache.get(cache_key, self._namespaces["completions"])
+                cached_response = await self._cache.get(
+                    cache_key, self._namespaces["completions"]
+                )
                 if cached_response is not None:
                     logger.debug("Using cached LLM response")
                     return cached_response
@@ -181,7 +190,7 @@ class LLMService:
 
                 response: LLMResponse = await self.provider.extract_program_data(
                     content="",  # Empty content for general completion
-                    prompt=full_prompt
+                    prompt=full_prompt,
                 )
 
                 generated_text = response.content
@@ -199,41 +208,35 @@ class LLMService:
                     metadata={
                         "provider": self.provider.name,
                         "model": self.provider.model,
-                        "prompt_length": len(prompt)
-                    }
+                        "prompt_length": len(prompt),
+                    },
                 )
 
                 if e.error_type == "rate_limit":
                     raise RateLimitError(
-                        f"Rate limit exceeded: {e.message}",
-                        context=error_context
+                        f"Rate limit exceeded: {e.message}", context=error_context
                     ) from e
                 elif e.error_type == "timeout":
                     raise TimeoutError(
-                        f"Request timeout: {e.message}",
-                        context=error_context
+                        f"Request timeout: {e.message}", context=error_context
                     ) from e
                 elif e.error_type == "network":
                     raise NetworkError(
-                        f"Network error: {e.message}",
-                        context=error_context
+                        f"Network error: {e.message}", context=error_context
                     ) from e
                 else:
                     # Provider-specific errors
                     if "groq" in self.provider.name.lower():
                         raise GroqAPIError(
-                            f"Groq API error: {e.message}",
-                            context=error_context
+                            f"Groq API error: {e.message}", context=error_context
                         ) from e
                     elif "deepseek" in self.provider.name.lower():
                         raise DeepSeekAPIError(
-                            f"DeepSeek API error: {e.message}",
-                            context=error_context
+                            f"DeepSeek API error: {e.message}", context=error_context
                         ) from e
                     else:
                         raise GroqAPIError(
-                            f"LLM API error: {e.message}",
-                            context=error_context
+                            f"LLM API error: {e.message}", context=error_context
                         ) from e
 
         try:
@@ -243,31 +246,79 @@ class LLMService:
                 initial_delay=self.settings.error_handling.default_retry_delay,
                 max_delay=self.settings.error_handling.default_max_retry_delay,
                 backoff_factor=self.settings.error_handling.default_backoff_factor,
-                retryable_errors=["API_002", "API_003", "API_004", "NET_001", "NET_002"]  # API and network errors
+                retryable_errors=[
+                    "API_002",
+                    "API_003",
+                    "API_004",
+                    "NET_001",
+                    "NET_002",
+                ],  # API and network errors
             )
 
-            # Execute with retry and circuit breaker
-            if self._circuit_breaker:
-                # Use circuit breaker retry
-                from ..core.retry import CircuitBreakerRetry
-                retry_policy = CircuitBreakerRetry(retry_config, self._circuit_breaker)
-                generated_text = await retry_policy.execute(_api_call)
-            else:
-                # Use simple exponential backoff retry
-                generated_text = await retry_with_backoff(
-                    _api_call,
-                    max_attempts=retry_config.max_attempts,
-                    initial_delay=retry_config.initial_delay,
-                    backoff_factor=retry_config.backoff_factor,
-                    max_delay=retry_config.max_delay,
-                    retryable_errors=retry_config.retryable_errors
+            # Try primary provider with retry and circuit breaker
+            try:
+                if self._circuit_breaker:
+                    # Use circuit breaker retry
+                    from ..core.retry import CircuitBreakerRetry
+
+                    retry_policy = CircuitBreakerRetry(
+                        retry_config, self._circuit_breaker
+                    )
+                    generated_text = await retry_policy.execute(_api_call)
+                else:
+                    # Use simple exponential backoff retry
+                    generated_text = await retry_with_backoff(
+                        _api_call,
+                        max_attempts=retry_config.max_attempts,
+                        initial_delay=retry_config.initial_delay,
+                        backoff_factor=retry_config.backoff_factor,
+                        max_delay=retry_config.max_delay,
+                        retryable_errors=retry_config.retryable_errors,
+                    )
+            except (
+                RateLimitError,
+                GroqAPIError,
+                DeepSeekAPIError,
+                TimeoutError,
+                NetworkError,
+            ):
+                # If primary fails, try fallback if available
+                available_providers = LLMProviderFactory.get_available_providers()
+                current_provider = self.provider.name
+                fallbacks = [p for p in available_providers if p != current_provider]
+
+                if not fallbacks:
+                    logger.error(
+                        f"Primary provider {current_provider} failed and no fallbacks available."
+                    )
+                    raise
+
+                logger.warning(
+                    f"Primary provider {current_provider} failed. Attempting fallback to {fallbacks[0]}..."
                 )
+
+                # Switch to first available fallback
+                original_provider = self.provider
+                try:
+                    self.switch_provider(fallbacks[0])
+                    # Re-run with the new provider (minimal retry for fallback)
+                    generated_text = await _api_call()
+                    logger.info(f"Fallback to {fallbacks[0]} successful.")
+                finally:
+                    # Switch back or keep the new one? Usually better to keep for this session to avoid flap
+                    # or switch back if it was just a transient error.
+                    # For now, let's keep the new one to avoid immediate re-failure.
+                    pass
 
             # Cache the response if caching is enabled
             if self._cache_enabled and self._cache:
                 try:
-                    cache_key = self._get_cache_key(prompt, temperature=temperature, max_tokens=max_tokens, **kwargs)
-                    await self._cache.set(cache_key, generated_text, None, self._namespaces["completions"])
+                    cache_key = self._get_cache_key(
+                        prompt, temperature=temperature, max_tokens=max_tokens, **kwargs
+                    )
+                    await self._cache.set(
+                        cache_key, generated_text, None, self._namespaces["completions"]
+                    )
                     logger.debug("Cached LLM response")
                 except Exception as e:
                     logger.debug(f"Cache storage failed: {e}")
@@ -285,10 +336,12 @@ class LLMService:
             logger.error(f"Unexpected error in generate_completion: {e}")
             raise GroqAPIError(f"LLM completion failed: {str(e)}") from e
 
-    async def extract_structured_data(self,
-                                    content: str,
-                                    schema: Dict[str, Any],
-                                    prompt_template: Optional[str] = None) -> Dict[str, Any]:
+    async def extract_structured_data(
+        self,
+        content: str,
+        schema: Dict[str, Any],
+        prompt_template: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """
         Extract structured data from content using LLM.
 
@@ -305,25 +358,26 @@ class LLMService:
 
         # Format the prompt with content and schema
         prompt = prompt_template.format(
-            content=content,
-            schema=json.dumps(schema, indent=2)
+            content=content, schema=json.dumps(schema, indent=2)
         )
 
         try:
             response = await self.generate_completion(
                 prompt=prompt,
                 temperature=0.0,  # Low temperature for extraction tasks
-                max_tokens=2000
+                max_tokens=2000,
             )
 
             # Try to parse JSON response
             try:
                 return json.loads(response)
             except json.JSONDecodeError:
-                logger.warning("LLM response is not valid JSON, attempting to extract JSON from text")
+                logger.warning(
+                    "LLM response is not valid JSON, attempting to extract JSON from text"
+                )
                 # Try to extract JSON from the response
-                json_start = response.find('{')
-                json_end = response.rfind('}') + 1
+                json_start = response.find("{")
+                json_end = response.rfind("}") + 1
                 if json_start != -1 and json_end > json_start:
                     json_str = response[json_start:json_end]
                     return json.loads(json_str)
@@ -334,9 +388,9 @@ class LLMService:
             logger.error(f"Structured data extraction failed: {e}")
             raise GroqAPIError(f"Data extraction failed: {e}") from e
 
-    async def extract_program_data(self,
-                                 content: str,
-                                 prompt: Optional[str] = None) -> Dict[str, Any]:
+    async def extract_program_data(
+        self, content: str, prompt: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Extract program data using the LLM provider.
 
@@ -351,7 +405,9 @@ class LLMService:
             prompt = LLM_PROMPTS["program_extraction"]
 
         try:
-            response: LLMResponse = await self.provider.extract_program_data(content, prompt)
+            response: LLMResponse = await self.provider.extract_program_data(
+                content, prompt
+            )
 
             # Try to parse the response as JSON
             try:
@@ -362,14 +418,16 @@ class LLMService:
                     "provider": response.provider_name,
                     "model": response.model_name,
                     "tokens_used": response.tokens_used,
-                    "processing_time": response.processing_time
+                    "processing_time": response.processing_time,
                 }
                 return data
             except json.JSONDecodeError:
-                logger.warning("LLM response is not valid JSON, attempting to extract JSON from text")
+                logger.warning(
+                    "LLM response is not valid JSON, attempting to extract JSON from text"
+                )
                 # Try to extract JSON from the response
-                json_start = response.content.find('{')
-                json_end = response.content.rfind('}') + 1
+                json_start = response.content.find("{")
+                json_end = response.content.rfind("}") + 1
                 if json_start != -1 and json_end > json_start:
                     json_str = response.content[json_start:json_end]
                     data = json.loads(json_str)
@@ -379,7 +437,7 @@ class LLMService:
                         "provider": response.provider_name,
                         "model": response.model_name,
                         "tokens_used": response.tokens_used,
-                        "processing_time": response.processing_time
+                        "processing_time": response.processing_time,
                     }
                     return data
                 else:
@@ -389,9 +447,9 @@ class LLMService:
             logger.error(f"Program data extraction failed: {e}")
             raise GroqAPIError(f"Data extraction failed: {e.message}") from e
 
-    async def validate_data_quality(self,
-                                  data: Dict[str, Any],
-                                  criteria: List[str]) -> Dict[str, Any]:
+    async def validate_data_quality(
+        self, data: Dict[str, Any], criteria: List[str]
+    ) -> Dict[str, Any]:
         """
         Validate data quality using LLM.
 
@@ -419,9 +477,7 @@ class LLMService:
 
         try:
             response = await self.generate_completion(
-                prompt=prompt,
-                temperature=0.0,
-                max_tokens=1000
+                prompt=prompt, temperature=0.0, max_tokens=1000
             )
 
             return json.loads(response)
@@ -432,12 +488,10 @@ class LLMService:
                 "overall_score": 0.0,
                 "criteria_scores": {},
                 "issues": [str(e)],
-                "recommendations": ["Manual review required"]
+                "recommendations": ["Manual review required"],
             }
 
-    async def generate_summary(self,
-                             content: str,
-                             max_length: int = 300) -> str:
+    async def generate_summary(self, content: str, max_length: int = 300) -> str:
         """
         Generate a summary of content using LLM.
 
@@ -457,9 +511,7 @@ class LLMService:
 
         try:
             return await self.generate_completion(
-                prompt=prompt,
-                temperature=0.3,
-                max_tokens=500
+                prompt=prompt, temperature=0.3, max_tokens=500
             )
 
         except Exception as e:
@@ -496,7 +548,10 @@ class LLMService:
         """Get circuit breaker statistics."""
         if self._circuit_breaker:
             return self._circuit_breaker.get_stats()
-        return {"circuit_breaker_enabled": False, "error": "Circuit breaker not available"}
+        return {
+            "circuit_breaker_enabled": False,
+            "error": "Circuit breaker not available",
+        }
 
     def get_service_stats(self) -> Dict[str, Any]:
         """Get service statistics."""
@@ -515,6 +570,6 @@ class LLMService:
                 "retry_delay": self.settings.error_handling.default_retry_delay,
                 "max_retry_delay": self.settings.error_handling.default_max_retry_delay,
                 "backoff_factor": self.settings.error_handling.default_backoff_factor,
-                "circuit_breakers_enabled": self.settings.error_handling.enable_circuit_breakers
-            }
+                "circuit_breakers_enabled": self.settings.error_handling.enable_circuit_breakers,
+            },
         }

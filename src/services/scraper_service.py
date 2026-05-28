@@ -1,7 +1,7 @@
 """Web scraping service for university data."""
 
 import logging
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +24,4 @@ class ScraperService:
         """
         # Placeholder implementation
         logger.info(f"Scraping {len(urls)} URLs")
-        return {
-            "status": "completed",
-            "urls_processed": len(urls),
-            "results": []
-        }
+        return {"status": "completed", "urls_processed": len(urls), "results": []}

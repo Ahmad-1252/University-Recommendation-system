@@ -2,12 +2,10 @@
 
 import json
 import time
-from typing import Dict, Any, Optional
-import hashlib
 
 import httpx
 
-from .base_provider import LLMProvider, LLMResponse, LLMError
+from .base_provider import LLMError, LLMProvider, LLMResponse
 
 
 class DeepSeekProvider(LLMProvider):
@@ -20,9 +18,9 @@ class DeepSeekProvider(LLMProvider):
             base_url=self.base_url,
             headers={
                 "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
-            timeout=timeout
+            timeout=timeout,
         )
 
     async def extract_program_data(self, content: str, prompt: str) -> LLMResponse:
@@ -42,19 +40,33 @@ class DeepSeekProvider(LLMProvider):
         start_time = time.time()
 
         try:
-            # Create the full prompt
+            # Create the full prompt with truncation guard (C9)
+            # DeepSeek max context is large (32K+), but we use 8192 for response safety
+            # Prompt is ~1KB, leaving 31KB for content.
+            # We'll truncate content to ~100,000 chars (~25K tokens) to stay safe.
+            max_content_chars = 100000
+            if len(content) > max_content_chars:
+                logger.warning(
+                    f"Content truncated from {len(content)} to {max_content_chars} chars"
+                )
+                content = content[:max_content_chars] + "... [TRUNCATED]"
+
             full_prompt = f"{prompt}\n\nContent to analyze:\n{content}"
 
             # Prepare request payload
             payload = {
                 "model": self.model,
                 "messages": [
-                    {"role": "system", "content": "You are an expert at extracting structured data from university program web pages. Always respond with valid JSON."},
-                    {"role": "user", "content": full_prompt}
+                    {
+                        "role": "system",
+                        "content": "You are an expert at extracting structured data from university program web pages. Always respond with valid JSON.",
+                    },
+                    {"role": "user", "content": full_prompt},
                 ],
                 "temperature": 0.1,  # Low temperature for consistent extraction
-                "max_tokens": min(self.max_tokens, 4000),  # Limit response size
-                "stream": False
+                "max_tokens": self.max_tokens,  # Use increased limit
+                "stream": False,
+                "response_format": {"type": "json_object"},  # Structured Output (C10)
             }
 
             # Make API call
@@ -78,7 +90,7 @@ class DeepSeekProvider(LLMProvider):
                 provider_name=self.name,
                 model_name=self.model,
                 tokens_used=data.get("usage", {}).get("total_tokens"),
-                processing_time=processing_time
+                processing_time=processing_time,
             )
 
         except httpx.HTTPStatusError as e:
@@ -87,35 +99,35 @@ class DeepSeekProvider(LLMProvider):
                     provider_name=self.name,
                     error_type="authentication",
                     message=f"Invalid API key: {e.response.text}",
-                    retryable=False
+                    retryable=False,
                 )
             elif e.response.status_code == 429:
                 raise LLMError(
                     provider_name=self.name,
                     error_type="rate_limit",
                     message=f"Rate limit exceeded: {e.response.text}",
-                    retryable=True
+                    retryable=True,
                 )
             else:
                 raise LLMError(
                     provider_name=self.name,
                     error_type="api_error",
                     message=f"API error ({e.response.status_code}): {e.response.text}",
-                    retryable=True
+                    retryable=True,
                 )
         except httpx.TimeoutException:
             raise LLMError(
                 provider_name=self.name,
                 error_type="timeout",
                 message="Request timed out",
-                retryable=True
+                retryable=True,
             )
         except Exception as e:
             raise LLMError(
                 provider_name=self.name,
                 error_type="unknown",
                 message=f"Unexpected error: {str(e)}",
-                retryable=True
+                retryable=True,
             )
 
     async def validate_connection(self) -> bool:
@@ -125,7 +137,7 @@ class DeepSeekProvider(LLMProvider):
             payload = {
                 "model": self.model,
                 "messages": [{"role": "user", "content": "Hello"}],
-                "max_tokens": 10
+                "max_tokens": 10,
             }
             response = await self.client.post("/chat/completions", json=payload)
             response.raise_for_status()
@@ -134,9 +146,9 @@ class DeepSeekProvider(LLMProvider):
             return False
 
     async def get_token_count(self, text: str) -> int:
-        """Estimate token count for DeepSeek (rough approximation)."""
-        # Rough approximation: 1 token ≈ 4 characters for English text
-        return len(text) // 4
+        """Estimate token count for DeepSeek (improved approximation)."""
+        # Conservative approximation: ~0.3 tokens per character.
+        return int(len(text) * 0.3)
 
     async def close(self):
         """Close the HTTP client."""
@@ -145,7 +157,7 @@ class DeepSeekProvider(LLMProvider):
     @property
     def max_tokens(self) -> int:
         """Maximum tokens for DeepSeek models."""
-        return 4096  # DeepSeek has lower context limits
+        return 8192  # Increased for larger extraction tasks
 
     @property
     def cost_per_token(self) -> float:
@@ -173,9 +185,16 @@ class DeepSeekProvider(LLMProvider):
             score -= 0.2  # Invalid JSON decreases confidence
 
         # Check for structured content indicators
-        if any(keyword in response_content.lower() for keyword in [
-            "university", "program", "degree", "requirements", "tuition"
-        ]):
+        if any(
+            keyword in response_content.lower()
+            for keyword in [
+                "university",
+                "program",
+                "degree",
+                "requirements",
+                "tuition",
+            ]
+        ):
             score += 0.1
 
         # Length check (too short responses are suspicious)

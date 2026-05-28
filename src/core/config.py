@@ -1,45 +1,44 @@
 """Centralized configuration management for the University Recommendation System."""
 
-import os
+from pathlib import Path
 from typing import List, Optional
+
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pathlib import Path
-
-
-"""Centralized configuration management for the University Recommendation System."""
-
-import os
-from typing import List, Optional
-from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pathlib import Path
 
 
 class DatabaseSettings(BaseSettings):
     """MongoDB database configuration."""
 
-    connection_string: str = Field("mongodb://localhost:27017", alias="MONGO_CONNECTION_STRING")
+    connection_string: str = Field(
+        "mongodb://localhost:27017", alias="MONGO_CONNECTION_STRING"
+    )
     database_name: str = Field("university_db", alias="DATABASE_NAME")
     collection_name: str = Field("programs", alias="COLLECTION_NAME")
     connection_timeout: int = Field(30)
     max_pool_size: int = Field(10)
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, env_prefix="", extra="ignore"
+    )
 
 
 class LLMSettings(BaseSettings):
     """LLM API configuration."""
 
-    provider: str = Field("deepseek", alias="LLM_PROVIDER")  # deepseek (primary) or groq (fallback)
+    provider: str = Field(
+        "deepseek", alias="LLM_PROVIDER"
+    )  # deepseek (primary) or groq (fallback)
     max_retries: int = Field(3)
     temperature: float = Field(0.1)
 
     # Provider-specific settings
-    groq: 'GroqSettings' = Field(default_factory=lambda: GroqSettings())
-    deepseek: 'DeepSeekSettings' = Field(default_factory=lambda: DeepSeekSettings())
+    groq: "GroqSettings" = Field(default_factory=lambda: GroqSettings())
+    deepseek: "DeepSeekSettings" = Field(default_factory=lambda: DeepSeekSettings())
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, env_prefix="", extra="ignore"
+    )
 
 
 class GroqSettings(BaseSettings):
@@ -49,7 +48,9 @@ class GroqSettings(BaseSettings):
     model: str = Field("llama-3.3-70b-versatile", alias="GROQ_MODEL")
     timeout: int = Field(30, alias="GROQ_TIMEOUT")
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, env_prefix="", extra="ignore"
+    )
 
 
 class DeepSeekSettings(BaseSettings):
@@ -59,7 +60,9 @@ class DeepSeekSettings(BaseSettings):
     model: str = Field("deepseek-chat", alias="DEEPSEEK_MODEL")
     timeout: int = Field(30, alias="DEEPSEEK_TIMEOUT")
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, env_prefix="", extra="ignore"
+    )
 
 
 class ScrapingSettings(BaseSettings):
@@ -67,11 +70,16 @@ class ScrapingSettings(BaseSettings):
 
     timeout: int = Field(30, alias="SCRAPE_TIMEOUT")
     max_concurrent_requests: int = Field(5, alias="MAX_CONCURRENT_REQUESTS")
-    user_agent: str = Field("UniversityRecommendationBot/1.0")
+    user_agent: str = Field(
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        alias="USER_AGENT",
+    )
     retry_attempts: int = Field(3)
     retry_backoff_factor: float = Field(1.0, alias="RATE_LIMIT_DELAY")
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, env_prefix="", extra="ignore"
+    )
 
 
 class LoggingSettings(BaseSettings):
@@ -90,7 +98,9 @@ class LoggingSettings(BaseSettings):
             raise ValueError(f"Log level must be one of: {valid_levels}")
         return v.upper()
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, env_prefix="", extra="ignore"
+    )
 
 
 class ExportSettings(BaseSettings):
@@ -99,7 +109,9 @@ class ExportSettings(BaseSettings):
     output_directory: str = Field("data/exports", alias="EXPORT_DIR")
     supported_formats: List[str] = Field(["csv", "json", "xlsx"])
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, env_prefix="", extra="ignore"
+    )
 
 
 class APISettings(BaseSettings):
@@ -113,7 +125,9 @@ class APISettings(BaseSettings):
     enable_cors: bool = Field(True)
     cors_origins: List[str] = Field(["*"])
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, env_prefix="", extra="ignore"
+    )
 
 
 class RedisSettings(BaseSettings):
@@ -127,7 +141,9 @@ class RedisSettings(BaseSettings):
     max_connections: int = Field(10, alias="REDIS_MAX_CONNECTIONS")
     decode_responses: bool = Field(True)
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, env_prefix="", extra="ignore"
+    )
 
 
 class ErrorHandlingSettings(BaseSettings):
@@ -149,7 +165,9 @@ class ErrorHandlingSettings(BaseSettings):
     enable_circuit_breakers: bool = Field(True, alias="ENABLE_CIRCUIT_BREAKERS")
     enable_retry_logging: bool = Field(True, alias="ENABLE_RETRY_LOGGING")
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, env_prefix="", extra="ignore"
+    )
 
 
 class Settings(BaseSettings):
@@ -188,7 +206,9 @@ class Settings(BaseSettings):
         """Get exports directory path."""
         return self.project_root / "data" / "exports"
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, env_prefix="", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, env_prefix="", extra="ignore"
+    )
 
 
 # Global settings instance

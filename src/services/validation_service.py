@@ -2,13 +2,12 @@
 
 import asyncio
 import logging
-from typing import List, Dict, Any, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
-import re
+
 from crawl4ai import AsyncWebCrawler
 
 from ..core.config import get_settings
-from ..core.exceptions import ValidationError
 from ..models.university import UniversityProgram
 
 logger = logging.getLogger(__name__)
@@ -23,14 +22,27 @@ class ValidationService:
 
         # URL validation patterns
         self.university_domains = {
-            ".edu", ".ac.uk", ".ac.au", ".ac.nz", ".ac.ca",
-            ".edu.au", ".edu.sg", ".edu.hk", ".edu.cn"
+            ".edu",
+            ".ac.uk",
+            ".ac.au",
+            ".ac.nz",
+            ".ac.ca",
+            ".edu.au",
+            ".edu.sg",
+            ".edu.hk",
+            ".edu.cn",
         }
 
         # Content validation patterns
         self.program_keywords = [
-            "computer science", "masters", "bachelor", "phd",
-            "admission", "tuition", "requirements", "application"
+            "computer science",
+            "masters",
+            "bachelor",
+            "phd",
+            "admission",
+            "tuition",
+            "requirements",
+            "application",
         ]
 
     async def validate_url(self, url: str) -> Tuple[bool, str]:
@@ -56,9 +68,7 @@ class ValidationService:
             # Accessibility check
             async with AsyncWebCrawler() as crawler:
                 result = await crawler.arun(
-                    url=url,
-                    timeout=self.timeout,
-                    only_text=True
+                    url=url, timeout=self.timeout, only_text=True
                 )
 
                 if not result.success:
@@ -130,8 +140,7 @@ class ValidationService:
 
         # Count relevant keywords
         keyword_count = sum(
-            1 for keyword in self.program_keywords
-            if keyword in content_lower
+            1 for keyword in self.program_keywords if keyword in content_lower
         )
 
         # Check for minimum relevance threshold
@@ -158,7 +167,7 @@ class ValidationService:
             ("program_name", "Program name is required"),
             ("degree_type", "Degree type is required"),
             ("country", "Country is required"),
-            ("source_url", "Source URL is required")
+            ("source_url", "Source URL is required"),
         ]
 
         for field, error_msg in required_fields:
@@ -188,7 +197,7 @@ class ValidationService:
         max_score += 1
         try:
             parsed = urlparse(program.source_url)
-            if parsed.scheme not in ['http', 'https']:
+            if parsed.scheme not in ["http", "https"]:
                 issues.append("Source URL must use HTTP or HTTPS")
             else:
                 score += 1
@@ -199,7 +208,10 @@ class ValidationService:
         if program.program_description and len(program.program_description) < 50:
             warnings.append("Program description seems too short")
 
-        if program.tuition_fees.international_per_year and program.tuition_fees.international_per_year < 1000:
+        if (
+            program.tuition_fees.international_per_year
+            and program.tuition_fees.international_per_year < 1000
+        ):
             warnings.append("Tuition fee seems unusually low")
 
         # Calculate final score
@@ -210,10 +222,12 @@ class ValidationService:
             "score": final_score,
             "issues": issues,
             "warnings": warnings,
-            "recommendations": self._generate_recommendations(issues, warnings)
+            "recommendations": self._generate_recommendations(issues, warnings),
         }
 
-    def _generate_recommendations(self, issues: List[str], warnings: List[str]) -> List[str]:
+    def _generate_recommendations(
+        self, issues: List[str], warnings: List[str]
+    ) -> List[str]:
         """Generate recommendations based on validation issues."""
         recommendations = []
 
@@ -231,7 +245,9 @@ class ValidationService:
 
         return recommendations
 
-    async def check_url_freshness(self, url: str, last_checked: Optional[float] = None) -> Dict[str, Any]:
+    async def check_url_freshness(
+        self, url: str, last_checked: Optional[float] = None
+    ) -> Dict[str, Any]:
         """
         Check if a URL content has changed since last check.
 
@@ -245,16 +261,14 @@ class ValidationService:
         try:
             async with AsyncWebCrawler() as crawler:
                 result = await crawler.arun(
-                    url=url,
-                    timeout=self.timeout,
-                    only_text=True
+                    url=url, timeout=self.timeout, only_text=True
                 )
 
                 if not result.success:
                     return {
                         "is_fresh": False,
                         "error": result.error_message,
-                        "needs_update": True
+                        "needs_update": True,
                     }
 
                 # In a real implementation, you'd compare content hashes
@@ -262,12 +276,8 @@ class ValidationService:
                 return {
                     "is_fresh": True,
                     "last_checked": asyncio.get_event_loop().time(),
-                    "needs_update": False
+                    "needs_update": False,
                 }
 
         except Exception as e:
-            return {
-                "is_fresh": False,
-                "error": str(e),
-                "needs_update": True
-            }
+            return {"is_fresh": False, "error": str(e), "needs_update": True}

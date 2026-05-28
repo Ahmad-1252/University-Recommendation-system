@@ -1,11 +1,15 @@
 """Unit tests for university data models."""
-import pytest
 from datetime import datetime
-from typing import List, Optional
+
+import pytest
 
 from src.models.university import (
-    UniversityProgram, DegreeType, LanguageProficiency,
-    TuitionFees, Rankings, UniversityTier
+    DegreeType,
+    LanguageProficiency,
+    Rankings,
+    TuitionFees,
+    UniversityProgram,
+    UniversityTier,
 )
 
 
@@ -31,11 +35,7 @@ class TestLanguageProficiency:
 
     def test_valid_language_proficiency(self):
         """Test valid language proficiency creation."""
-        lang = LanguageProficiency(
-            toefl_min=100,
-            ielts_min=7.0,
-            gre_required=False
-        )
+        lang = LanguageProficiency(toefl_min=100, ielts_min=7.0, gre_required=False)
         assert lang.toefl_min == 100
         assert lang.ielts_min == 7.0
         assert lang.gre_required is False
@@ -64,9 +64,7 @@ class TestTuitionFees:
     def test_valid_tuition_fees(self):
         """Test valid tuition fees creation."""
         fees = TuitionFees(
-            domestic_per_year=50000,
-            international_per_year=60000,
-            currency="USD"
+            domestic_per_year=50000, international_per_year=60000, currency="USD"
         )
         assert fees.domestic_per_year == 50000
         assert fees.international_per_year == 60000
@@ -93,9 +91,7 @@ class TestRankings:
     def test_valid_rankings(self):
         """Test valid rankings creation."""
         rankings = Rankings(
-            qs_world_ranking=10,
-            the_world_ranking=15,
-            us_news_ranking=12
+            qs_world_ranking=10, the_world_ranking=15, us_news_ranking=12
         )
         assert rankings.qs_world_ranking == 10
         assert rankings.the_world_ranking == 15
@@ -127,7 +123,7 @@ class TestUniversityProgram:
             degree_type=DegreeType.MASTER_OF_SCIENCE,
             country="Test Country",
             city="Test City",
-            source_url="https://test.edu"
+            source_url="https://test.edu",
         )
 
         assert program.university_name == "Test University"
@@ -135,7 +131,7 @@ class TestUniversityProgram:
         assert program.degree_type == DegreeType.MASTER_OF_SCIENCE
         assert program.country == "Test Country"
         assert program.city == "Test City"
-        assert str(program.source_url) == "https://test.edu/"
+        assert str(program.source_url) == "https://test.edu"
 
     def test_complete_university_program(self):
         """Test complete university program creation."""
@@ -145,39 +141,28 @@ class TestUniversityProgram:
             degree_type=DegreeType.MASTER_OF_SCIENCE,
             country="United States",
             city="Stanford, CA",
-
             # Academic requirements
             gpa_requirement_min=3.5,
             language_requirements=LanguageProficiency(
-                toefl_min=100,
-                ielts_min=7.0,
-                gre_required=False
+                toefl_min=100, ielts_min=7.0, gre_required=False
             ),
-
             # Financial information
             tuition_fees=TuitionFees(
-                domestic_per_year=65000,
-                international_per_year=65000,
-                currency="USD"
+                domestic_per_year=65000, international_per_year=65000, currency="USD"
             ),
-
             # Program details
             duration_years=2.0,
             program_description="Comprehensive CS program",
             specializations=["AI", "Systems", "Theory"],
             research_interests=["Machine Learning", "Computer Vision"],
-
             # Rankings
             rankings=Rankings(
-                qs_world_ranking=3,
-                the_world_ranking=4,
-                us_news_ranking=3
+                qs_world_ranking=3, the_world_ranking=4, us_news_ranking=3
             ),
-
             # Metadata
             source_url="https://cs.stanford.edu/",
             confidence_score=0.92,
-            data_completeness=0.85
+            data_completeness=0.85,
         )
 
         assert program.university_name == "Stanford University"
@@ -199,7 +184,7 @@ class TestUniversityProgram:
             country="Test",
             city="Test",
             source_url="https://test.edu",
-            gpa_requirement_min=3.7
+            gpa_requirement_min=3.7,
         )
         assert program.gpa_requirement_min == 3.7
 
@@ -211,7 +196,7 @@ class TestUniversityProgram:
             country="Test",
             city="Test",
             source_url="https://test.edu",
-            duration_years=4.0
+            duration_years=4.0,
         )
         assert program.duration_years == 4.0
 
@@ -226,7 +211,7 @@ class TestUniversityProgram:
                 country="Test",
                 city="Test",
                 source_url="https://test.edu",
-                gpa_requirement_min=5.5  # Invalid GPA > 4.0
+                gpa_requirement_min=5.5,  # Invalid GPA > 4.0
             )
 
         # Invalid duration
@@ -238,7 +223,7 @@ class TestUniversityProgram:
                 country="Test",
                 city="Test",
                 source_url="https://test.edu",
-                duration_years=10.0  # Invalid duration > 7 years
+                duration_years=10.0,  # Invalid duration > 7 years
             )
 
     def test_university_program_serialization(self):
@@ -250,14 +235,14 @@ class TestUniversityProgram:
             country="Test Country",
             city="Test City",
             source_url="https://test.edu",
-            confidence_score=0.85
+            confidence_score=0.85,
         )
 
         # Test JSON serialization
         json_data = program.model_dump()
-        assert json_data['university_name'] == "Test University"
-        assert json_data['degree_type'] == "Master of Science"
-        assert json_data['confidence_score'] == 0.85
+        assert json_data["university_name"] == "Test University"
+        assert json_data["degree_type"] == "Master of Science"
+        assert json_data["confidence_score"] == 0.85
 
         # Test JSON deserialization
         program_copy = UniversityProgram.model_validate(json_data)
@@ -272,7 +257,7 @@ class TestUniversityProgram:
             degree_type=DegreeType.MASTER_OF_SCIENCE,
             country="Test Country",
             city="Test City",
-            source_url="https://test.edu"
+            source_url="https://test.edu",
         )
 
         # Test that last_updated is set

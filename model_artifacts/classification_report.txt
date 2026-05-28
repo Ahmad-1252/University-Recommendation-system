@@ -1,0 +1,18 @@
+Training Date: 2026-02-19T06:57:19.325887
+Data Hash: b8ef9d4e1cf7ebed
+Backend: lightgbm
+
+              precision    recall  f1-score   support
+
+        good       1.00      0.99      0.99       656
+    standard       0.99      1.00      1.00      1247
+         top       1.00      1.00      1.00        96
+
+    accuracy                           1.00      1999
+   macro avg       1.00      1.00      1.00      1999
+weighted avg       1.00      1.00      1.00      1999
+
+Confusion Matrix:
+[[ 648    8    0]
+ [   1 1246    0]
+ [   0    0   96]]

@@ -1,14 +1,15 @@
 """Abstract base class for LLM providers."""
 
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Optional
 
 
 @dataclass
 class LLMResponse:
     """Standardized response from LLM providers."""
+
     content: str
     confidence_score: float
     provider_name: str
@@ -24,14 +25,14 @@ class LLMResponse:
 
 class LLMError(Exception):
     """Standardized error from LLM providers."""
-    
+
     def __init__(
         self,
         provider_name: str,
         error_type: str,
         message: str,
         retryable: bool = True,
-        timestamp: datetime = None
+        timestamp: datetime = None,
     ):
         super().__init__(message)
         self.provider_name = provider_name
@@ -39,7 +40,7 @@ class LLMError(Exception):
         self.message = message
         self.retryable = retryable
         self.timestamp = timestamp or datetime.now()
-    
+
     def __str__(self):
         return f"[{self.provider_name}] {self.error_type}: {self.message}"
 
@@ -104,7 +105,7 @@ class LLMProvider(ABC):
     def cost_per_token(self) -> float:
         """Cost per token in USD (for cost tracking)."""
         pass
-    
+
     async def close(self) -> None:
         """Close any resources used by the provider. Override if needed."""
         pass  # Default implementation does nothing
